@@ -15,6 +15,9 @@ AGENT person {
     CONST inf_distance = 3;
     CONST inf_timespan = 14;
 
+    DYNAMIC a = FILTER(neighbors, p => EXPR);
+    DYNAMIC b = FILTER(AGENTS(person), p => EXPR);
+
     DYNAMIC days_remaining = IF infected THEN days_remaining - 1 ELSE inf_timespan;
 
     DYNAMIC neighbours = FILTER(person, SQRT(x * person.x + y * person.y) < inf_distance);
