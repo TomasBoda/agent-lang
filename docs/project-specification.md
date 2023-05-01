@@ -185,6 +185,24 @@ AGENT person {
     DYNAMIC people_in_proximity = FILTER(AGENTS(person) as p, SQRT(x * p.x + y * p.y) < distance));
 }
 ```
+- `MIN` - this method returns one agent with the minimal value defined as the second argument among all other agents
+```
+AGENT person {
+   VARIABLE x: RANDOM(0, WIDTH) = x + RANDOM(0, 1) - 0.5;
+   VARIABLE y: RANDOM(0, HEIGHT) = y + RANDOM(0, 1) - 0.5;
+   
+   DYNAMIC closest_person = MIN(AGENTS(person) as p, SQRT(x * p.x + y * p.y));
+}
+```
+- `MAX` - this method returns one agent with the minimal value defined as the second argument among all other agents
+```
+AGENT person {
+   VARIABLE x: RANDOM(0, WIDTH) = x + RANDOM(0, 1) - 0.5;
+   VARIABLE y: RANDOM(0, HEIGHT) = y + RANDOM(0, 1) - 0.5;
+   
+   DYNAMIC furthest_person = MAX(AGENTS(person) as p, SQRT(x * p.x + y * p.y));
+}
+```
 - `COUNT` - this method returns the number of agents in an array
 ```
 AGENT animal { ... }

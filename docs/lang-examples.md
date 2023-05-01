@@ -1,5 +1,5 @@
-# Example programs
-This document demonstrates the ABM Lang on example programs.
+# AgentLang example programs
+This document demonstrates example programs in the **AgentLang** programming language.
 
 ## Epidemic
 This program simulates the epidemic using people as agents.
@@ -15,15 +15,13 @@ AGENT person {
     CONST inf_distance = 3;
     CONST inf_timespan = 14;
 
-    DYNAMIC a = FILTER(neighbors, p => EXPR);
-    DYNAMIC b = FILTER(AGENTS(person), p => EXPR);
-
     DYNAMIC days_remaining = IF infected THEN days_remaining - 1 ELSE inf_timespan;
 
-    DYNAMIC neighbours = FILTER(person, SQRT(x * person.x + y * person.y) < inf_distance);
-    DYNAMIC infected_neighbours = FILTER(neighbours as person, person.infected == TRUE);
+    DYNAMIC neighbours = FILTER(AGENTS(person) AS p, SQRT(x * p.x + y * p.y) < inf_distance);
+    DYNAMIC infected_neighbours = FILTER(neighbours AS p, p.infected == TRUE);
     DYNAMIC should_infect = RANDOM(0, 1) < inf_probability;
-    DYNAMIC infected = infected OR (COUNT(in_proximity) > 0 AND should_infect);
+    
+    DYNAMIC infected = (infected AND days_remaining > 0) OR (COUNT(in_proximity) > 0 AND should_infect);
 }
 
 GENERATE(person, 100);
@@ -51,7 +49,7 @@ AGENT bird_follower {
 
     CONST speed = 3;
 
-    DYNAMIC closest = MIN(bird_leader, SQRT(x * bird_leader.x + y * bird_leader.y))
+    DYNAMIC closest = MIN(AGENTS(bird_leader) AS bl, SQRT(x * bl.x + y * bl.y))
     DYNAMIC turn_angle = ARCTAN(closest.y - y, closest.x - x) * 0.5;
 }
 
