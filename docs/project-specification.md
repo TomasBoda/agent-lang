@@ -4,12 +4,12 @@ This document serves as a detailed project specification for the agent-based mod
 
 <table>
     <tr><td><b>Author</b></td><td>Tomáš Boďa</td></tr>
-    <tr><td><b>Version</b></td><td>1.0.0</td></tr>
-    <tr><td><b>Date</b></td><td>30 April, 2023</td></tr>
+    <tr><td><b>Version</b></td><td>1.1.0</td></tr>
+    <tr><td><b>Date</b></td><td>21 May, 2023</td></tr>
 </table>
 
 ## About
-**AgentLang** is a programming language designed exclusively for modeling agent-based simulations. Its syntax and structure allows for simple understanding and usage, but more importantly for easy conversion to table-based, almost no-code interface for modeling agent-based simulations.
+**AgentLang** is a programming language designed exclusively for modeling agent-based simulations. Its syntax and structure allows for simple understanding and usage, but more importantly for easy conversion to table-based, almost no-code interface for modeling agent-based simulations. Therefore, its usage is suitable for people of all scientific fields without the need for any programming experience.
 
 ## Table of contents
 1. [Basic information](#basic-information)
@@ -24,15 +24,22 @@ This document serves as a detailed project specification for the agent-based mod
          1. [Source code editor](#source-code-editor)
          2. [Table-based editor](#table-based-editor)
          3. [Visualisation](#visualisation)
-   3. [Wireframe](#wireframe)
+   3. [Wireframes](#wireframe)
 3. [Language design](#language-design)
    1. [Agents](#agents)
-   2. [Data types](#data-types)
+   2. [Datatypes](#datatypes)
    3. [Variables](#variables)
    4. [Conditional statements](#conditional-statements)
    5. [Built-in functions](#built-in-functions)
       1. [Agent-related functions](#agent-related-functions)
       2. [Mathematical functions](#mathematical-functions)
+4. [Additional functionality](#additional-functionality)
+   1. [Source code editor](#source-code-editor)
+      1. [Syntax highlighting](#syntax-highlighting)
+      2. [Line numbers](#line-numbers)
+      3. [Error console](#error-console)
+5. [Other requirements](#other-requirements)
+6. [Additional notes](#additional-notes)
 
 ## Basic information
 
@@ -40,11 +47,7 @@ This document serves as a detailed project specification for the agent-based mod
 Agent-based model is a computational model and a simulation technique that uses autonomous entities (agents) in order to understand the behaviour and outcome of a system over time. It is used in variety of scientific fields, most common of which are social science, epidemiology, biology or economy. Agent-based models are most commonly implemented as computer simulations, therefore, a programming language for defining agents and their behaviour is necessary to be able to simulate an agent-based model.
 
 ### Project description
-The main purpose of this project is to develop an interpreted programming language designed exclusively for agent-based simulations. Moreover, the language should be accessible to people of all scientific fields, especially those with little or no programming experience. Therefore, the language is designed in a way it can be easily converted to and represented by a table of agents and their attributes, making it easy to understand and implement.
-
-The project consists of the following modules.
-- **interpreter** - a program that parses and runs the **AgentLang** source code
-- **web application** - a web-based interface for editing source code and visualising the simulation
+The main purpose of this project is to develop an interpreted programming language designed exclusively for agent-based simulations. The project features an interpreter for the **AgentLang** programming language as well as a web-based interface consisting of a source code editor, agent manipulation components and a real-time visualisation of the modelled simulation.
 
 ### Technologies
 Since agent-based simulations do not require fast and efficient processing and runtime, the **AgentLang** interpreter as well as the web-based interface will be developed in **TypeScript** using the **Node.js** runtime environment. For the web-based application, I opted for the **React.js** framework to handle the user interface.
@@ -53,6 +56,10 @@ Since agent-based simulations do not require fast and efficient processing and r
 
 ### Aim of the project
 Since agent-based modeling is useful in many scientific fields, it is necessary to allow people with little to none programming background to be able to model agent-based simulations. Therefore, the main reason behind the idea of this project is the market absence of a simple agent-based modeling language available for everyone including people with non-technical background. Because of that, apart from the programming language itself, the user will be able to use the table-based modeling interface which requires only rudimentary programming knowledge. The source code and the table-based editor will be mutually convertible, meaning that the user will be able to use both simultaneously.
+
+The project consists of the following parts.
+- **interpreter** - a program that parses and runs the **AgentLang** source code
+- **web application** - a web-based interface for editing source code and visualising the simulation
 
 ### Main functionality
 
@@ -67,10 +74,10 @@ The web interface will consist of the following parts.
 - control panel
 
 ##### Source code editor
-The source code editor will be an editable component featuring line numbers and syntax highlighting. It is used for editing the source code of the agent-based simulation.
+The source code editor will be an editable component featuring line numbers and syntax highlighting. It is used for editing the **AgentLang** source code.
 
 ##### Table-based editor
-The table-based editor is an interactive, no-code editor for modeling agent-based simulations. Since **AgentLang** supports multiple agent types, there will be a table for each agent type.
+The table-based editor is an interactive, almost no-code editor for modeling agent-based simulations. Since **AgentLang** supports multiple agent types, there will be a table for each agent type.
 
 A table consists of rows and columns.
 
@@ -79,42 +86,43 @@ Columns represent individual attributes of the corresponding agent, together wit
 Rows represent individual agents and the values of their attributes. These values are calculated based on the column formulas.
 
 ##### Visualisation
-The visualisation will be a two-dimensional grid displaying agents and their attributes. **AgentLang** is built upon a two-dimensional system, meaning that the agents can move in a two-dimensional grid based on their coordinates. Each step of the simulation, the agents' attributes are recalculated and the visualisation is updated in real-time.
+The visualisation will be a two-dimensional grid displaying agents and their attributes. **AgentLang** is built upon a two-dimensional system, meaning that the agents can move in a two-dimensional space based on their coordinates. Each step of the simulation, the agents' attributes are recalculated and the visualisation is updated in real-time.
 
 ##### Control panel
-The control panel serves as a configuration panel, mainly for the visualisation. The user will be able to start, stop and reset the visualisation, set the default `x` and `y` agent coordinate attributes or change the color of the agents based on their attributes.
+The control panel serves as a configuration panel, mainly for the visualisation. The user will be able to **start**, **stop** and **reset** the visualisation, set the default `x` and `y` agent coordinate attributes or change the color of the agents based on their attributes.
 
 #### Wireframe
-Below is a wireframe to the web-based interface containing the source code editor, agent tables, visualisation and control panel.
+Below is a wireframe to the web-based interface containing the source code editor, agent tables, visualisation panel and control panel.
 
 ![Wireframe](./assets/wireframe.png)
 
 ## Language design
-The following sections describe the **AgentLang** language in detail including its syntax, data types, variables, keywords and built-in functions.
+The following sections describe the **AgentLang** programming language in detail including its syntax, data types, variables, keywords and built-in functions.
 
 ### Agents
 Agent-based models are based on autonomous entities - agents. Therefore, the `AGENT` datatype is the primary building block of the simulation. It is similar to a class, representing the individual agent attributes (variables) and their behaviour (methods).
 
-The simulation can consist of one or multiple agents, each is given an identifier (name) using which it can be accessed. The following code snippet demonstrates the creation of an agent named `person` and an agent named `house`.
+The simulation can consist of one or multiple agents, each defined by its identifier (name) using which it can be accessed. The following code snippet demonstrates the creation of an agent named `person` and an agent named `house`.
 ```
 AGENT person { ... }
 AGENT house { ... }
 ```
 We define an agent by declaring the `AGENT` datatype followed by its identifier. All its attributes and methods are enclosed in the curly brackets `{ ... }`.
 
-### Data types
-**AgentLang** is dynamically typed, meaning it determines the data type of a variable on its own. There are three main data types used in the **AgentLang** language.
+### Datatypes
+**AgentLang** is dynamically typed, meaning it determines the datatype of a variable on its own. There are three main data types used in the **AgentLang** language.
 - **number** - a decimal number
 - **boolean** - a true/false value
 - **array** - a collection of agents
+- **agent** - an instance of an agent
 
 #### Variables
-An agent can have one or multiple attributes which define its behaviour. There are three main variable types an agent can have.
+An agent can have one or multiple attributes which define its behaviour. There are three main attribute types an agent can have.
 - `VARIABLE` - an attribute which is changed each step of the simulation. It requires initial value initialization followed by an expression based on which it is recalculated
 - `CONST` - an attribute representing a constant value which cannot be changed during the course of the simulation
-- `DYNAMIC` - an attribute representing a value which is recalculated each step of the simulation using an expression which can but does not have to be dependent on the `VARIABLE` and `CONST` attributes. It is similar to a function, however, it does not support any parameters
+- `DYNAMIC` - an attribute representing a value which is recalculated each step of the simulation using an expression which can but does not have to be dependent on the `VARIABLE` and `CONST` attributes. It is similar to a function, however, it does not allow for any parameters
 
-Below is an example of a `tired_person` agent, which spawns at certain `x` and `y` coordinates, moves in a random direction each step of the simulation and determines whether to fall asleep or not at the given step based on some probability.
+Below is an example of a `tired_person` agent, which spawns at certain `x` and `y` coordinates, moves in a random direction each step of the simulation and determines whether to fall asleep or not at any given step based on some probability.
 ```
 AGENT tired_person {
     VARIABLE x: RANDOM(0, WIDTH) = x + RANDOM(0, 1) - 0.5;
@@ -125,7 +133,13 @@ AGENT tired_person {
     DYNAMIC is_asleep = RANDOM(0, 1) < sleep_probability;
 }
 ```
-First, we set the initial values to `VARIABLE` attributes `x` and `y` to random coordinates. Then, we change these values in each step of the simulation by the formula `x + RANDOM(0, 1) - 0.5` and `y + RANDOM(0, 1) - 0.5` respectively. This ensures movement in random direction. Next, we define a `CONST` attribute representing the probability of the agent falling asleep, which is set to `0.3`. Finally, we check in each step whether the agent is asleep or not by generating a random value in range 0 and 1 and checking if it is less than the probability using the formula `RANDOM(0, 1) < sleep_probability`.
+First, we set the initial values to `VARIABLE` attributes `x` and `y` to random coordinates.
+
+Then, we change these values in each step of the simulation by the formula `x + RANDOM(0, 1) - 0.5` and `y + RANDOM(0, 1) - 0.5` respectively. This ensures movement in random direction.
+
+Next, we define a `CONST` attribute representing the probability of the agent falling asleep, which is set to `0.3`.
+
+Finally, we check in each step whether the agent is asleep or not by generating a random value in range 0 and 1 and checking if it is less than the probability using the formula `RANDOM(0, 1) < sleep_probability`.
  
 #### Conditional statements
 **AgentLang** supports basic conditional statements. There are five important keywords which can be used in conditional statements.
@@ -136,7 +150,9 @@ First, we set the initial values to `VARIABLE` attributes `x` and `y` to random 
 - `AND` - this keyword is used in boolean expressions and represents conjunction
 - `OR` - this keyword is used in boolean expressions and represents disjunction
 
-Suppose we are simulating the progression of an epidemic. We need to know how many days remain until an infected person gets healthy again. We set the infected timespan to a constant number of 14 days and create a `DYNAMIC` attribute indicating whether a person is infected or not (not implemented here). To determine the remaining infected days, we can create a conditional statement. If the person is already infected, decrement its value, since a day passed (day = simulation step) Otherwise, set its value to the infected timespan, since the patient is healthy.
+Suppose we are simulating the progression of an epidemic. We need to know how many days remain until an infected person gets healthy again. We set the `infected_timespan` to a constant number of 14 days and create a `DYNAMIC` attribute indicating whether a person is infected or not (not implemented here).
+
+To determine the remaining infected days, we can create a conditional statement. If the person is already infected, decrement its value, since a day passed (day = simulation step) Otherwise, set its value to the infected timespan, since the patient is healthy.
 ```
 AGENT person {
     CONST infected_timespan = 14;
@@ -161,7 +177,7 @@ AGENT person {
 There are several built-in functions that are used primarily for agent aggregations and mathematical calculations.
 
 ##### Agent-related functions
-- `GENERATE` - this method is necessary in starting the simulation is used to generate a fixed number of agents. The first parameter is the agent identifier and the second parameter is the number of agents to be generated
+- `GENERATE` - this method is necessary in starting the simulation and is used to generate a fixed number of agents. The first parameter is the agent identifier and the second parameter is the number of agents to be generated
 ```
 AGENT person { ... }
 
@@ -228,9 +244,21 @@ AGENT person {
 - `COTH` - returns the hyperbolic cotangent of a number
 - `LOG` - returns the logarithm to base 10 of a number
 - `LN` - returns the natural logarithm of a number
+- ... more to be added soon
 
-## Functionality
-The following sections describe detailed functionality of the agent-based modeling language interpreter.
+## Additional functionality
+
+### Source code editor
+The source code editor will have the following features
+
+#### Syntax highlighting
+The source code editor will offer basic syntax highlighting specifically tailored to the **AgentLang** syntax. It will highlight keywords as well as some special symbols, such as arithmetic operators to enhance easy orientation in the source code.
+
+#### Line numbers
+The source code editor will support line numbering mainly for debugging purposes and exception handling.
+
+#### Error console
+The source code editor will also have a simple console used primarily for exception handling, such as syntax errors.
 
 ## Other requirements
 
