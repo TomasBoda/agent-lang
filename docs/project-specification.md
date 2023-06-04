@@ -38,8 +38,7 @@ This document serves as a detailed project specification for the agent-based mod
       1. [Syntax highlighting](#syntax-highlighting)
       2. [Line numbers](#line-numbers)
       3. [Error console](#error-console)
-5. [Other requirements](#other-requirements)
-6. [Additional notes](#additional-notes)
+5. [Not included](#not-included)
 
 ## Basic information
 
@@ -77,13 +76,11 @@ The web interface will consist of the following parts.
 The source code editor will be an editable component featuring line numbers and syntax highlighting. It is used for editing the **AgentLang** source code.
 
 ##### Table-based editor
-The table-based editor is an interactive, almost no-code editor for modeling agent-based simulations. Since **AgentLang** supports multiple agent types, there will be a table for each agent type.
+The table-based editor is an interactive, almost no-code editor for modeling agent-based simulations. It is an alternative to writing **AgentLang** source code. Both the source code and the table-based editor are equivalent and mutually convertible, meaning that after editing one, the other is updated too and the user can choose which option they want to use, or they can switch between the two options.
 
-A table consists of rows and columns.
+The table consists of rows and columns. Columns represent individual agent attributes (`VARIABLE`, `CONST` and `DYNAMIC`) and rows represent individual agents. After running the simulation, the table cells are updated in real-time.
 
-Columns represent individual attributes of the corresponding agent, together with the formulas for each attribute. An attribute formula can be edited by clicking the column and editing its value. After editing an attribute, the table is recalculated.
-
-Rows represent individual agents and the values of their attributes. These values are calculated based on the column formulas.
+When the simulation is not running, the most recent values are shown in the table. The user can edit individual user attribute formulas. After editing an attribute formula, the agent values are recalculated based on their most recent values, meaning that  for instance the `DYNAMIC` attributes will be recalculated based on the latest `VARIABLE` and `CONST` attributes. The user can edit an attribute by selecting its cell (clicking on it) and writing a formula to an input field shown next to the table. After clicking "Save", the new formula is saved and the remaining values dependent on this attribute are recalculated and updated.
 
 ##### Visualisation
 The visualisation will be a two-dimensional grid displaying agents and their attributes. **AgentLang** is built upon a two-dimensional system, meaning that the agents can move in a two-dimensional space based on their coordinates. Each step of the simulation, the agents' attributes are recalculated and the visualisation is updated in real-time.
@@ -260,6 +257,12 @@ The source code editor will support line numbering mainly for debugging purposes
 #### Error console
 The source code editor will also have a simple console used primarily for exception handling, such as syntax errors.
 
-## Other requirements
+## Not included
+The **AgentLang** project includes all the above-mentioned functionality. However, the following is not promised to be delivered with the project, but may be implemented if time allows.
+- **authentication** - user registration, login and account
+- **data persistence** - after reloading the page, all data will be lost (source code, table values, visualisation, configuration)
+- **saving locally** - the project will not be able to save current source code or configuration as a file to local machine
+- **mobile responsive** - the web application will not be suitable for mobile devices or smaller screen dimensions
 
-## Additional notes
+\
+by [Tomas Boda](https://github.com/tomasboda)
