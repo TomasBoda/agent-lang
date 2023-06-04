@@ -5,7 +5,7 @@ This document serves as a detailed project specification for the agent-based mod
 <table>
     <tr><td><b>Author</b></td><td>Tomáš Boďa</td></tr>
     <tr><td><b>Version</b></td><td>1.1.0</td></tr>
-    <tr><td><b>Date</b></td><td>21 May, 2023</td></tr>
+    <tr><td><b>Date</b></td><td>June 4, 2023</td></tr>
 </table>
 
 ## About
