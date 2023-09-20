@@ -9,4 +9,4 @@ The aim of this thesis is to create a new programming language for agent-based m
 \[3\] NetLogo models library. Available at: https://ccl.northwestern.edu/netlogo/models/ \
 \[4\] Marasoiu, M., Nauck, D. and Blackwell, A.F. Cuscus: An end user programming tool for data visualisation. In End-User Development: 7th International Symposium, IS-EUD 2019, Hatfield, UK, July 10-12, 2019, Proceedings 7 (pp. 115-131). Springer International Publishing, 2019. \
 \[5\] Abar, Sameera, Georgios K. Theodoropoulos, Pierre Lemarinier, and Gregory MP O'Hare. "Agent Based Modelling and Simulation tools: A review of the state-of-art software." Computer Science Review 24 (2017): 13-33. \
-\[6\] Farmer, J.D. and Foley, D., 2009. The economy needs agent-based modelling. Nature, 460(7256), pp.685-686. \
+\[6\] Farmer, J.D. and Foley, D., 2009. The economy needs agent-based modelling. Nature, 460(7256), pp.685-686.
