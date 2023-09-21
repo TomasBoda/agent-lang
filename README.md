@@ -26,6 +26,6 @@ Documentation to the AgentLang programming language can be found on the [Documen
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## License
-[MIT](/LICENSE)
+[MIT](/LICENSE.md)
 
 Made by [Tomas Boda](https://github.com/TomasBoda)
