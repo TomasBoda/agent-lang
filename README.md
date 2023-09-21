@@ -1,8 +1,8 @@
-![AgentLang Logo](/logo.png)
+<img src="./logo.png" width="200">
 
-![Version Badge](https://img.shields.io/badge/version-1.0.0-blue?style=flat-square)
-![License Badge](https://img.shields.io/badge/license-MIT-red?style=flat-square)
-![Contributors Badge](https://img.shields.io/badge/contributors-1-green?style=flat-square)
+![Version Badge](https://img.shields.io/badge/version-1.0.0-blue?style=flat)
+![License Badge](https://img.shields.io/badge/license-MIT-red?style=flat)
+![Contributors Badge](https://img.shields.io/badge/contributors-1-green?style=flat)
 
 ## About
 **AgentLang** is a programming language designed exclusively to model agent-based simulations. It has simple syntax and easy usage, yet it is powerful and can handle complex simulations with hundreds of agents.
