@@ -12,14 +12,20 @@
 AgentLang consists of two main parts, which is the [Interpreter](https://github.com/TomasBoda/agent-lang-interpreter) and the [Code Sandbox](https://github.com/TomasBoda/agent-lang-web).
 
 ### Interpreter
-[AgentLang Interpreter](https://github.com/TomasBoda/agent-lang-interpreter) is written purely in TypeScript and uses the [Bun](https://bun.sh/) runtime framework.
+AgentLang [Interpreter](https://github.com/TomasBoda/agent-lang-interpreter) is written purely in TypeScript and uses the [Bun](https://bun.sh/) runtime framework.
 
 ### Code Sandbox
-[AgentLang Code Sandbox](https://github.com/TomasBoda/agent-lang-web) is a web interface that provides a live code sandbox with a code editor and a live visualisation for trying out AgentLang without further configuration.
+AgentLang [Code Sandbox](https://github.com/TomasBoda/agent-lang-web) is a web interface that provides a live code sandbox with a code editor and a live visualisation for trying out AgentLang without further configuration.
 
-To try out AgentLang, visit the [AgentLang Website](https://agent-lang-web.vercel.app).
+To try out AgentLang, visit the [Code Sandbox](https://agent-lang-web.vercel.app) website.
 
 ## Documentation
-Documentation to the AgentLang programming language can be found on the [Documentation](https://agent-lang-web.vercel.app/documentation) page of the [AgentLang Website](https://agent-lang-web.vercel.app) website.
+Documentation to the AgentLang programming language can be found on the [Documentation](https://agent-lang-web.vercel.app/documentation) page of the AgentLang website.
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+## License
+[MIT](/LICENSE)
 
 Made by [Tomas Boda](https://github.com/TomasBoda)
