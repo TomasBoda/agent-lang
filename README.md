@@ -1,5 +1,5 @@
-<img src="./logo-dark.png#gh-light-mode-only" width="230">
-<img src="./logo-light.png#gh-dark-mode-only" width="230">
+<img src="./logo-dark.svg#gh-light-mode-only" width="220">
+<img src="./logo-light.svg#gh-dark-mode-only" width="220">
 
 ![Version Badge](https://img.shields.io/badge/version-1.0.0-blue?style=flat)
 ![License Badge](https://img.shields.io/badge/license-MIT-red?style=flat)
