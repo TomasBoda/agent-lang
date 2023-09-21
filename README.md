@@ -1,5 +1,5 @@
-<img src="./logo-dark.svg#gh-light-mode-only" width="220">
-<img src="./logo-light.svg#gh-dark-mode-only" width="220">
+<img src="./agent-lang-logo-black.png#gh-light-mode-only" width="220">
+<img src="./agent-lang-logo-white.png#gh-dark-mode-only" width="220">
 
 ![Version Badge](https://img.shields.io/badge/version-1.0.0-blue?style=flat)
 ![Contributors Badge](https://img.shields.io/badge/contributors-1-green?style=flat)
