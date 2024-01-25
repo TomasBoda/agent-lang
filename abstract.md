@@ -1,0 +1,12 @@
+### Agent-based programming language with spreadsheet-like interface
+
+Agent-based modelling (ABM) [5] is an increasingly popular modelling paradigm used in areas such as sociology, epidemiology or economics [6]. With agent-based modelling, simulations are modelled using agents that interact with each other using their defined behaviour. Such simulations are becoming popular partly because they are easier to understand than more complex mathematical models. Therefore there is an increasing need and demand for simpler tools and languages to model agent-based simulations.
+
+The aim of this thesis is to create a new programming language for agent-based modelling. The language should be focused specifically on agent-based modelling and should have constructs for representing agents, their properties and their interaction logic. It can draw on existing libraries, e.g., JavaScript based [1, 2], but the primary aim is to design a simpler and more focused interface. The language will be evaluated through a number of case studies such as those developed for NetLogo [3]. Another possible innovation over the state of the art is a spreadsheet-like programming interface, as for example in [4], which would make editing of agent-based simulations accessible not just to software engineers, but also domain experts with little to none technical background.
+
+\[1\] Densmore, O. AgentScript. Available at: https://github.com/backspaces/agentscript/, Accessed 9/2023 \
+\[2\] Donaldson, S. Flocc: Agent-based modelling in JavaScript. Available at: https://github.com/o-p-e-n-s-e-t/flocc/, Accessed 9/2023 \
+\[3\] NetLogo models library. Available at: https://ccl.northwestern.edu/netlogo/models/ \
+\[4\] Marasoiu, M., Nauck, D. and Blackwell, A.F. Cuscus: An end user programming tool for data visualisation. In End-User Development: 7th International Symposium, IS-EUD 2019, Hatfield, UK, July 10-12, 2019, Proceedings 7 (pp. 115-131). Springer International Publishing, 2019. \
+\[5\] Abar, Sameera, Georgios K. Theodoropoulos, Pierre Lemarinier, and Gregory MP O'Hare. "Agent Based Modelling and Simulation tools: A review of the state-of-art software." Computer Science Review 24 (2017): 13-33. \
+\[6\] Farmer, J.D. and Foley, D., 2009. The economy needs agent-based modelling. Nature, 460(7256), pp.685-686.
