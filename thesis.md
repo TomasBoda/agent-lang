@@ -504,6 +504,61 @@ agent person 120 {
 The `filter()` function takes a lambda expression as a parameter. We use the `p` parameter to access each individual agent and their properties. Finally, the right-hand side of the lambda expression is used for filtering the agents based on their proximity to the current agent. The result of `in_proximity` property is a filtered array of agents of type `person`.
 
 ### 2.6 Core Library
+The AgentLang core library consists of built-in functions necessary for agent manipulation and mathematical calculations. Below is the complete list of built-in functions and their usage.
+
+#### 2.6.1 Mathematical Functions
+
+The `sqrt(number): number` function is used to calculate the square root of a numeric value.
+
+The `abs(number): number` function is used to calculate the absolute value of a numeric value.
+
+The `floor(number): number` function is used to return the floor value of a decimal numeric value.
+
+The `ceil(number): number` function is used to return the ceil value of a decimal numeric value.
+
+The `round(number): number` function is used to return a rounded value of a decimal numeric value.
+
+The `sin(number): number` function is used to return the sine value of a numeric value.
+
+The `cos(number): number` function is used to return the cosine value of a numeric value.
+
+The `tan(number): number` function is used to return the tangent value of a numeric value.
+
+The `atan(number): number` function is used to return the arc tangent value of a numeric value.
+
+The `pi(): number` function is used to return the value of Pi (3.14...).
+
+#### 2.6.2 Agent Manipulation Functions
+
+The `filter(lambda): AgentList` function takes a lambda argument with a boolean expression as its value and returns a filtered list of agents based on this value.
+
+The `sum(lambda): number` function takes a lambda argument with a numeric expression as its value and returns a sum of these values (from all agents).
+
+The `min(lambda): AgentObject` function takes a lambda argument with a numeric expression as its value and returns an agent object with the minimum corresponding value.
+
+The `max(lambda): AgentObject` function takes a lambda argument with a numeric expression as its value and returns an agent object with the maximum corresponding value.
+
+#### 2.6.3 Utility Functions
+
+The `agents(identifier): AgentList` function returns the list of all agents of the provided type.
+
+The `count(identifier): number` function takes an agent identifier as a parameter and returns the number of agents of this type present in the simulation.
+
+The `empty(): AgentList` function return an empty array of agents and is used primarily in defining default property values in case of topological errors.
+
+The `prob(number): boolean` function takes a decimal numeric value between 0 and 1 representing a probability ratio and returns a boolean value based on this probability. If we use `prob(0.8)`, we have a 80% chance of getting a `true` value and a 20% change of getting a `false` value as a result.
+
+The `dist(number, number, number, number): number` function is used to calculate the distance betweem two points in a two-dimensional space. The parameters represent `x1`, `y1`, `x2` and `y2` values.
+
+#### 2.6.4 Special Functions
+
+The `width(): number` function returns the current width of the visualisation grid, which was provided in the interpreter's configuration.
+
+The `height(): number` function returns the current height of the visualisation grid, which was provided in the interpreter's configuration.
+
+The `index(): number` function returns the numeric index of the current agent, starting from 0.
+
+The `step(): number` function returns the current step, starting from 0.
 
 ## 3. Implementation
 
