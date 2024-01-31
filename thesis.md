@@ -808,14 +808,88 @@ The corresponding AST looks like this.
 ```
 The top-level unit (root node) is the program itself. It has a body, which is an array of statements (declarations). In our program, the only statement is the one agent declaration with identifier `person`. The agent declaration also has a body, which is an array of property declarations. The first property declaration has a value of a numeric literal, whereas the second property declaration has a value of a boolean literal. Each node also has the `position` property holding the line number and character of the corresponding node in the source code, which is useful for providing the user a detailed description of potential errors. This above AST is a real example of the AgentLang parser's output, which is then passed to the runtime module for real-time AST evaluation.
 
+##### 3.1.3.1 Topological Sort of Properties
+TODO
+
 #### 3.1.4 Runtime
 The runtime module is responsible for traversing the input AST, evaluating it in real-time and producing the program's output. This technique is however specific to interpreters only. Interpreters depend on the implementation language, in this case TypeScript, that only recognizes the intentions of the AgentLang program and performs calculations of the AgentLang's program using its own data types, structures and mechanisms, whereas compilers transform the AST into machine instructions directly executable by the target CPU architecture. Therefore interpreters are in most cases slower than compilers.
 
-##### 3.1.4.1 Runtime Value
-AgentLang's runtime module uses an abstract interface called `RuntimeValue`, which represents a real value calculated from the AST. For instance, binary expressions contain many operands, operators and nested or parenthesised expressions. However, these binary expressions are only defined in the context of AST. When a binary expression in an AST is being evaluated by the runtime module, it is traversed, calculated and its result is a single instance of the `RuntimeValue` interface holding the resulting numeric value.
+AgentLang's runtime module uses an abstract interface called `RuntimeValue` across all its functionality, which represents a real value calculated from the AST. For instance, binary expressions contain many operands, operators and nested or parenthesised expressions. However, these binary expressions are only defined in the context of AST. When a binary expression in an AST is being evaluated by the runtime module, it is traversed, calculated and its result is a single instance of the `RuntimeValue` interface holding the resulting numeric value.
 
-##### 3.1.4.2 Environments
-Another concept used by the runtime module is the concept of environments. There are multiple environments in an AgentLang program. Firstly, there is a global environment containing all user-defined global variables as well as built-in functions provided by the core library. Then there is the local environment of each agent holding the agent's property values. Finally, there is the lambda environment, which holds the current value of the lambda parameter so that it can be accessed and used by the lambda value expression during calculations. Environments are nested into each other, creating a tree-like structure. A child environment can access all values from its ancestral enviromnets, but an environment does not have access to the values in the environments of their descendants.
+The output of the runtime module is an object based on the `RuntimeOutput` interface, defined as follows.
+```ts
+export interface RuntimeOutput extends RuntimeValue {
+    type: ValueType.Output;
+    step: number;
+    agents: RuntimeAgent[];
+}
+
+export interface RuntimeAgent {
+    id: string;
+    identifier: string;
+    variables: Map<string, RuntimeValue>;
+}
+```
+The output emits an array of agents with their current property values as well as the value of the current step.
+
+The array of agents is saved in the runtime module to a variable called `previousAgents: RuntimeAgent[]`. This is because the values of properties in the next step are calculated from their previous values (values in the last step). This is to ensure the avoidance of problems with sequential interpreting. Since agent are evaluated one by one, it could happen that an agent's property is dependent on the previous agent's property and that would result in a chain of unwanted values in the same step. Therefore, new values are always calculated based on previous values. Step 0 is therefore a special case of step, where not only `const` properties are initialised, but also default initial values are calculated and saved to the previous output.
+
+The runtime module is implemented in a similar way to the parser module. Each method has its own domain logic and is responsible for a certain type of `RuntimeValue`. These methods call each other to calculate property values. There are two special methods that do not return anything, which are the `define` declaration and `agent` declaration. The former only saves the global variable to the global environment and the latter saves the agent instance to the previous output. Below is an example of the `evaluateDefineDeclaration()` method, which evaluates the value of the global variable and saves it to the global environment for future uses.
+```ts
+private evaluateDefineDeclaration(declaration: DefineDeclaration): void {
+  const { identifier, value, position } = declaration;
+
+  let result: RuntimeValue;
+
+  switch (value.type) {
+      case NodeType.NumericLiteral:
+        result = this.evaluateNumericLiteral(value as NumericLiteral);
+        break;
+      case NodeType.BooleanLiteral:
+        result = this.evaluateBooleanLiteral(value as BooleanLiteral);
+        break;
+      default:
+        throw new ErrorRuntime(`Only numeric and boolean literals are allowed in define declaration`, position);
+  }
+
+  this.globalEnvironment.declareVariable(identifier, result);
+}
+```
+
+Perhaps the most important and most used method in the runtime module is the `evaluateRuntimeValue()` method, which is used everytime we need to evaluate an expression. It routes the AST node to the corresponding evaluator method and returns its result.
+```ts
+private evaluateRuntimeValue(node: ParserValue, id: string): RuntimeValue {
+  switch (node.type) {
+    case NodeType.Identifier:
+      return this.evaluateIdentifier(node as Identifier, id);
+    case NodeType.NumericLiteral:
+      return this.evaluateNumericLiteral(node as NumericLiteral);
+    case NodeType.BooleanLiteral:
+      return this.evaluateBooleanLiteral(node as BooleanLiteral);
+    case NodeType.BinaryExpression:
+      return this.evaluateBinaryExpression(node as BinaryExpression, id);
+    case NodeType.UnaryExpression:
+      return this.evaluateUnaryExpression(node as UnaryExpression, id);
+    case NodeType.LogicalExpression:
+      return this.evaluateLogicalExpression(node as LogicalExpression, id);
+    case NodeType.ConditionalExpression:
+      return this.evaluateConditionalExpression(node as ConditionalExpression, id);
+    case NodeType.CallExpression:
+      return this.evaluateCallExpression(node as CallExpression, id);
+    case NodeType.LambdaExpression:
+      return this.evaluateLambdaExpression(node as LambdaExpression, id);
+    case NodeType.MemberExpression:
+      return this.evaluateMemberExpression(node as MemberExpression, id);
+    case NodeType.OtherwiseExpression:
+      return this.evaluateOtherwiseExpression(node as OtherwiseExpression, id);
+    default:
+      throw new ErrorRuntime(`Unknown runtime node '${node.type}'`, node.position);
+  }
+}
+```
+The remaining evaluator methods handle specific types of nodes and return their resulting value (number, boolean, agent list, agent object, ...).
+
+One interesting concept used by the runtime module is the concept of environments. There are multiple environments in an AgentLang program. Firstly, there is a global environment containing all user-defined global variables as well as built-in functions provided by the core library. Then there is the lambda environment, which holds the current value of the lambda parameter so that it can be accessed and used by the lambda value expression during calculations. Local agent environments are not needed, since agent property values are stored in the `previousOutput` variable, which serves as some kind of its own environment.
 
 #### 3.1.5 Interpreter
 
