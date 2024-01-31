@@ -561,6 +561,263 @@ The `index(): number` function returns the numeric index of the current agent, s
 The `step(): number` function returns the current step, starting from 0.
 
 ## 3. Implementation
+The following sections describe the basics about the AgentLang interpreter's implementation and point out the most important or interesting parts of its architecture and functioning.
+
+### 3.1 Overview and Architecture
+The AgentLang's interpreter is written in TypeScript. The choice of this specific language resulted from various reasons. First and foremost, we needed good compatibility and integrability with the web-based interface, which is the primary environment where AgentLang is used. Furthemore, there was no strong need for high performance, since AgentLang is intended mainly for simple simulations as a proof of concept of the language itself. Since modern web applications are written mainly in JavaScript frameowks and we opted for the TypeScript-based Next.js framework for the web interface, TypeScript felt like a solid choice and a common ground for this project.
+
+The interpreter itself follows an architecture resembling a pipeline architectural style. It consists of five main parts, which are symbolizer, lexer, parser, runtime and intepreter. The AgentLang source code is passed to the symbolizer, which splits the source code into individual symbols and their positions. These are forwarded to the lexer, which tranforms the input symbols into tokens. Tokens represent low-level units of the program, such as keywords, language-specific symbols, identifiers, numbers etc. This step is called lexical analysis. Tokens are then passed to the parser, whose main function is to analyze these tokens and their order, validate them and generate a tree-like structure representing the semantics of the program. This step is called semantic analysis and it produces a so called abstract syntax tree (henceforth referred to as AST) holding the entire structure of the program. If the program is without any lexical or semantical errors, the AST is passed to the runtime module, which is responsible for traversing the structure, interpreting it in real-time and producing the program's output. All of these four modules are controlled by the interpreter module, which takes source code as its input, runs it through the four aforementioned modules and provides the result of the program.
+
+#### 3.1.1 Symbolizer
+Symbolizer is a very simple module responsible for one task only - to convert the source code to individual symbols and produce metadata for each symbol, such as its position in the source code. Although it can be a part of the lexer module itself, we decided to put it to a standalone module for better modularity and code readability.
+
+The main and only method in the symbolizer module is `symbolize()`, which produces an array of symbols.
+```ts
+public symbolize(): Symbol[] {
+  const symbols: Symbol[] = [];
+  // code logic here ...
+  return symbols;
+}
+```
+A symbol is based on a simple interface containing the symbol's value and position.
+```ts
+export interface Symbol {
+  value: string;
+  position: Position;
+}
+
+export interface Position {
+  line: number;
+  character: number;
+}
+```
+
+#### 3.1.2 Lexer
+As opposed to the symbolizer module, lexer performs a slightly more complicated task. The lexer module contains syntax-specific logic for correctly producing tokens supported by the language. It groups together symbols sequentially and produces corresponding tokens with correct types. For instance, it distinguishes user-defined identifiers from language-specific reserved keywords, so that the parser can handle tokens accordingly. Apart from the program's keywords, the lexer adds a special token at the end of the token array, called the end-of-file token. This token serves as an indicator to the program's end.
+
+The token has again a very simple interface, holding its value, type and position in the source code. The position of a token is naturally defined by the position of the first character.
+```ts
+export interface Token {
+  value: string;
+  type: TokenType;
+  position: Position;
+}
+```
+There are many token types, some of which are:
+```ts
+export enum TokenType {
+  Agent = "Agent",
+  Define = "Define",
+  Property = "Property",
+  Const = "Const",
+  // more token types ...
+}
+```
+The lexer itself traverses through the array of symbols and checks their value, based on which it decides which token to generate.
+```ts
+public tokenize(): Token[] {
+  this.clearTokens();
+
+  while (this.hasNext()) {
+    switch (this.getNext().value) {
+      case "(":
+        this.token(TokenType.OpenParen);
+        break;
+      case ")":
+        this.token(TokenType.CloseParen);
+        break;
+      // more token types here ...
+    }
+  }
+
+  this.generateEOFToken();
+  return this.tokens;
+}
+```
+
+#### 3.1.3 Parser
+Parser is without doubt one of the most interesting parts of the interpreter. Parsers are usually implemented as pushdown automata with states and transitions representing the syntax grammar of the specific language they parse. The parser automaton is fed a stream of tokens from the lexer. The evaluation starts at the initial state and based on the next token, it decides what states it goes to next. In case it comes across a token which cannot be pushed to a new state, since such state does not exist, it is redirected to a fallback state, which represents a semantical error in terms of language interpretation.
+
+Pushdown automata can be implemented in various ways. I opted for recursive descent parsing, which is a top-down parsing technique where the parser starts with the top-level grammar rule and recursively applies production rules to recognize the input. Each non-terminal in the grammar corresponds to a method of the parser and these methods call each other to parse different structures and parts of the input. The idea behind the implementation of such pushdown automaton is that the stack of the automaton is implemented using the call-stack of the language (TypeScript) itself. We are pushing non-terminals onto the stack, processing them, producing parts of the AST and in case of correct input eventually ending up back in the initial state with an empty stack.
+
+The first non-terminal is the initial state, which is the program itself.
+```ts
+public parse(): Program {
+  const program = this.createEmptyProgram();
+
+  while (this.notEndOfFile()) {
+    const statement = this.parseStatement();
+    program.body.push(statement);
+  }
+
+  return program;
+}
+```
+In AgentLang, the top-level program scope allows for two declarations, which is the declaration of a global variable or an agent, both are statements.
+```ts
+private parseStatement(): Statement {
+  switch (this.at().type) {
+    case TokenType.Define:
+      return this.parseDefineDeclaration();
+    case TokenType.Agent:
+      return this.parseObjectDeclaration();
+    default:
+      throw new ErrorParser(`Only agent and define declarations are allowed in program scope, '${this.at().type}' provided`, this.position());
+  }
+}
+```
+The parser checks whether the program continues with a `define` declaration or an `agent` declaration. If so, it parses the appropriate declaration and returns it as a sub-part of the AST which is being generated. Otherwise, it is redirected to the fallback state (semantical error), which is implemented as an exception.
+
+To illustrate a basic technique for parsing a variable, we provide an example of parsing the `define` declaration.
+```ts
+private parseDefineDeclaration(): DefineDeclaration {
+  if (this.isNotOf(TokenType.Define)) {
+    throw new ErrorParser("Expected define keyword in define declaration", this.position());
+  }
+
+  const { position } = this.next();
+
+  if (this.isNotOf(TokenType.Identifier)) {
+    throw new ErrorParser("Expected identifier after define keyword in define declaration", this.position());
+  }
+
+  const identifier = this.next().value;
+
+  if (this.isNotOf(TokenType.AssignmentOperator)) {
+    throw new ErrorParser("Expected assignment symbol after identifier in define declaration", this.position());
+  }
+
+  this.next();
+
+  const value = this.parseExpression();
+
+  if (this.isNotOf(TokenType.Semicolon)) {
+    throw new ErrorParser("Expected a semicolon after value in define declaration", this.position());
+  }
+
+  this.next();
+
+  const defineDeclaration: DefineDeclaration = {
+      type: NodeType.DefineDeclaration,
+      identifier,
+      value,
+      position
+  };
+
+  return defineDeclaration;
+}
+```
+This method sequentially checks for current token types, saves the important tokens and their values to local variables and if all is correct, returns an object representing the `define` declaration with all its metadata needed for the runtime module. This object is one node of the AST, which is being generated by the parser. There are numerous node types (non-terminals), each representing an essential meaningful unit of the AST, such as variable declaration, binary expression, call expression etc.
+
+It is also important to mention, that the order in which these parser methods call themselves is of high importance, especially in parsing expressions. Let's illustrate this on an example of parsing additive and multiplicative expressions.
+```ts
+private parseAdditiveExpression(): Expression {
+  let left = this.parseMultiplicativeExpression();
+
+  while (this.at().value === "+" || this.at().value === "-") {
+    const token = this.next();
+    const operator = token.value;
+    const position = token.position;
+
+    const right = this.parseMultiplicativeExpression();
+
+    left = {
+      type: NodeType.BinaryExpression,
+      left,
+      right,
+      operator,
+      position
+    } as BinaryExpression;
+  }
+
+  return left;
+}
+```
+This method is responsible for parsing an additive binary expression in form of `number +/- number`. Notice that first, the left-hand side of the expression is evaluated by the `parseMultiplicativeExpression()` function call. This is due to the operator precedence in mathematics. During runtime, the AST is evaluated using depth-first search (DFS), meaning that the lower a node is, the sooner is is evaluated. Since multiplicative operators have higher precedence than additive operators, we need to parse them first. This also applies to the right-hand side of the additive binary expression, which is evaluated using the `parseMultiplicativeExpression()` function call, which attempts to parse a potential multiplicative binary expression before returning the additive binary expression. After parsing the left-hand side of the expression, if the additive operator is not found, the left-hand side is returned as it is (which is expected to be a multiplicative binary expression, however, since the `parseMultiplicativeExpression()` works based on the same mechanism, it further nests into more and more low-level expression types, reaching primary expressions at the end).
+
+We talk a lot about the AST, now let's look at how the AST actually looks like. Suppose the following simple AgentLang program.
+```
+agent person 1 {
+    const age = 28;
+    const is_employed = false;
+}
+```
+The corresponding AST looks like this.
+```json
+{
+  "type": "Program",
+  "body": [
+    {
+      "type": "ObjectDeclaration",
+      "identifier": "person",
+      "count": {
+        "type": "NumericLiteral",
+        "value": 1,
+        "position": {
+          "line": 1,
+          "character": 14
+        }
+      },
+      "body": [
+        {
+          "type": "VariableDeclaration",
+          "variableType": "const",
+          "identifier": "age",
+          "value": {
+            "type": "NumericLiteral",
+            "value": 28,
+            "position": {
+              "line": 2,
+              "character": 17
+            }
+          },
+          "position": {
+            "line": 2,
+            "character": 5
+          }
+        },
+        {
+          "type": "VariableDeclaration",
+          "variableType": "const",
+          "identifier": "is_employed",
+          "value": {
+            "type": "BooleanLiteral",
+            "value": false,
+            "position": {
+              "line": 3,
+              "character": 25
+            }
+          },
+          "position": {
+            "line": 3,
+            "character": 5
+          }
+        }
+      ],
+      "position": {
+          "line": 1,
+          "character": 1
+      }
+    }
+  ],
+  "position": {
+      "line": 0,
+      "character": 0
+  }
+}
+```
+The top-level unit (root node) is the program itself. It has a body, which is an array of statements (declarations). In our program, the only statement is the one agent declaration with identifier `person`. The agent declaration also has a body, which is an array of property declarations. The first property declaration has a value of a numeric literal, whereas the second property declaration has a value of a boolean literal. Each node also has the `position` property holding the line number and character of the corresponding node in the source code, which is useful for providing the user a detailed description of potential errors. This above AST is a real example of the AgentLang parser's output, which is then passed to the runtime module for real-time AST evaluation.
+
+#### 3.1.4 Runtime
+The runtime module is responsible for traversing the input AST, evaluating it in real-time and producing the program's output. This technique is however specific to interpreters only. Interpreters depend on the implementation language, in this case TypeScript, that only recognizes the intentions of the AgentLang program and performs calculations of the AgentLang's program using its own data types, structures and mechanisms, whereas compilers transform the AST into machine instructions directly executable by the target CPU architecture. Therefore interpreters are in most cases slower than compilers.
+
+##### 3.1.4.1 Runtime Value
+AgentLang's runtime module uses an abstract interface called `RuntimeValue`, which represents a real value calculated from the AST. For instance, binary expressions contain many operands, operators and nested or parenthesised expressions. However, these binary expressions are only defined in the context of AST. When a binary expression in an AST is being evaluated by the runtime module, it is traversed, calculated and its result is a single instance of the `RuntimeValue` interface holding the resulting numeric value.
+
+##### 3.1.4.2 Environments
+Another concept used by the runtime module is the concept of environments. There are multiple environments in an AgentLang program. Firstly, there is a global environment containing all user-defined global variables as well as built-in functions provided by the core library. Then there is the local environment of each agent holding the agent's property values. Finally, there is the lambda environment, which holds the current value of the lambda parameter so that it can be accessed and used by the lambda value expression during calculations. Environments are nested into each other, creating a tree-like structure. A child environment can access all values from its ancestral enviromnets, but an environment does not have access to the values in the environments of their descendants.
+
+#### 3.1.5 Interpreter
 
 ## 4. Documentation
 
