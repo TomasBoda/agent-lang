@@ -44,8 +44,7 @@ Agent-based modeling is used in numerous scientific areas and systems. However, 
 4. diffusion
 
 #### 1.2.1 Flows
-To describe the idea behind flows, let's consider evacuation of people. The behaviour of a crowd in a sudden or unexpected dangerous situation often leads to panic and chaos. These situation usually arise during mass events such as concerts, sporting events and demonstrations, where there is high density of people on a certain area. In case of fire or other disasters of such nature, panicking people are obsessed by short-term personal interests uncontrolled by social and cultural constraints. To prevent uncontrolled behaviour and maximize the chances of successful evacuation, we need to design the venues and their escape exits in the best way possible. And this is a typical scenario suitable for agent-based modeling. In agent terms, collective panic behaviour is an emergent phenomenon that results from relatively complex individual behaviour and interactions between individuals, such as mutual excitation of a primordial instinct, chain reaction or social facilitaion.
-Based on prior historical observations, statistics and sociological studies, we can fairly accurately define the behaviour of a person in such situation and observe the reaction of masses during evacuation.
+To describe the idea behind flows, let's consider evacuation of people. The behaviour of a crowd in a sudden or unexpected dangerous situation often leads to panic and chaos. These situation usually arise during mass events such as concerts, sporting events and demonstrations, where there is high density of people on a certain area. In case of fire or other disasters of such nature, panicking people are obsessed by short-term personal interests uncontrolled by social and cultural constraints. To prevent uncontrolled behaviour and maximize the chances of successful evacuation, we need to design venues and their escape exits in the best way possible. And this is a typical scenario suitable for agent-based modeling. In agent terms, collective panic behaviour is an emergent phenomenon that results from relatively complex individual behaviour and interactions between individuals, such as mutual excitation of a primordial instinct, chain reaction or social facilitaion. Based on prior historical observations, statistics and sociological studies, we can fairly accurately define the behaviour of a person in such situations and observe the reaction of masses during evacuation.
 
 #### 1.2.2 Markets
 
@@ -376,21 +375,133 @@ The `close_person` property attempts to find an agent that is the closest to the
 A problem with null values, however, is that we cannot use it in other properties. More specifically, we cannot retrieve the agent's properties, since it does not hold an agent, but a Null value. That is why the `otherwise` expression exists in AgentLang, which tackles Null values, but will be explained later.
 
 ### 2.5 Expressions
-The following sections introduce all types of expressions AgentLang supports, from basic ones such as binary or relational expression to more complex and domain-specific expression such as the `otherwise` expression.
+The following sections introduce all supported expression in AgentLang, from basic ones such as binary or relational expressions to more complex and domain-specific expression such as the `otherwise` expression.
 
 #### 2.5.1 Binary Expressions
+Binary expression is the most basic expression in AgentLang. It consists of two numeric operands and one operator. The operator can be of type addition, subtraction, multiplication, division or modulo. These expressions can be arbitrarily nested and parenthesised.
+```
+agent data_instance 1 {
+    const add_expr = 2 + 3;
+    const sub_expr = 6 - 2;
+    const mul_expr = 12 * 4;
+    const div_expr = 8 / 3;
+    const mod_expr = 16 % 6;
+
+    const complex_expr = 2 + 3 * 4 - 8 / 14;
+    const parenth_expr = (2 + 3) * 4 - (12 + 2);
+}
+```
 
 #### 2.5.2 Unary Expressions
+There are two types of unary expressions, which are numeric and boolean unary expressions.
+
+##### 2.5.2.1 Numeric Unary Expression
+Numeric unary expression is used to convert a positive number to a negative number using the minus `-` operator. The operand can be either a plain number or an identifier holding a numeric value.
+```
+agent data_instance 1 {
+    const value = 12.6;
+    const neg_basic = -12.6;
+    const neg_ident = -value;
+}
+```
+
+##### 2.5.2.2 Boolean Unary Expression
+Boolean unary expression is used to negate a boolean value using the emphasis `!` operator. The operand can be either a plain boolean (`true` or `false`) or an identifier holding a boolean value.
+```
+agent data_instance 1 {
+    const value = false;
+    const neg_basic = !false;
+    const neg_ident = !value;
+}
+```
 
 #### 2.5.3 Logical Expressions
+Logical expressions are exressions operating on booleans and always return a boolean value as the result. They are special types of binary expressions which use operators `and` and `or` with boolean operands on both sides.
+```
+agent data_instace 1 {
+    const value_one = true and false;
+    const value_two = true or false;
+}
+```
+The first property `value_one` returns `false`, since not all operands are `true` and the second property `value_two` returns `true`, since at least one operand is `true`.
 
 #### 2.5.4 Relational Expressions
+Relational expressions are special types of binary expressions that operate on numeric or boolean operands but return boolean results. They use relational operands, such as `==`, `!=`, `>`, `>=`, `<` and `<=`. These operators are used to compare two numbers or booleans.
+
+The `==` and `!=` operators can be used with either numbers and booleans and they check for equality. If the two values are equal or not-equal, the result is `true`, otherwise `false`.
+```
+agent data_instance 1 {
+    const bool_1 = true;
+    const bool_2 = false;
+
+    const bool_expr_1 = bool_1 == bool_2;
+    const bool_expr_2 = bool_1 != bool_2;
+
+    const num_1 = 1.5;
+    const num_2 = 8.4;
+
+    const num_expr_1 = num_1 == num_2;
+    const num_expr_2 = num_1 != num_2;
+    const num_expr_3 = num_1 > num_2;
+    const num_expr_4 = num_1 >= num_2;
+    const num_expr_5 = num_1 < num_2;
+    const num_expr_6 = num_1 <= num_2;
+}
+```
 
 #### 2.5.5 Conditional Expressions
+Conditional expressions are used to control branch and control the calculation of property values. They decide between two options based on some condition. The condition is always a boolean expression and the results can be of any type.
+
+To use a conditional expression, we use the `if`, `then` and `else` keywords. The `if` keyword marks the start of a conditional expression. It is followed by a boolean expression denoting the condition upon which the structure decides. Then comes the `then` keyword followed by an expression representing the value to be used if the condition is met (is `true`). Finally comes the `else` keyword followed by an expression representing the value to be used if the condition is not met (is `false`).
+```
+define max_speed = 10;
+
+agent person 5 {
+    property speed: 5 = if speed >= max_speed then speed else speed + random(-1, 1);
+}
+```
+The above example controls the maximum value of `speed` using the `max_speed` global variable. If it overflows, it keeps the `max_speed` value, otherwise it is randomly incremented or decremented.
 
 #### 2.5.6 Otherwise Expressions
+Otherwise expression are very specific types of expression used to handle Null values. It is a binary expression with the operand `otherwise`. The left-hand side of the `otherwise` expression consists of any expression containing a value of type Agent Object. The right-hand side consists of any expression that does not contain a value of type AgentObject. When the `otherwise` expression is being evaluated, AgentLang checks whether the value of type Agent Object on the left-hand side is Null. If not, it evaluates the left-hand side expression and uses its value. On the other hand, if the value is Null, it instantly switches to the right-hand side of the expression and evaluates and uses it. Otherwise expressions serve as guards for null values, since sometimes we cannot tell if a value of type Agent Object is Null during runtime.
+```
+define visual_range = 60;
+
+agent person 120 {
+    property x = x + x_move;
+    property y = y + y_move;
+
+    property people = agents(person);
+
+    property in_proximity = filter(people => p => dist(p.x, p.y, x, y) <= distance);
+    property closest = min(in_proximity => p => dist(p.x, p.y, x, y));
+
+    property x_move = (closest.x - x) / 10 otherwise 0;
+    property y_move = (closest.y - y) / 10 otherwise 0;
+}
+```
+
+The above example finds all people in some visual proximity of the current person and select the closest person from the list. It then calculates the direction in which the current person should move to approach the closest person. However, we cannot be certain that we will find some people in proximity. If not, the Agent List array will be empty and the `closest` property will be therefore Null. That is why we used the `otherwise` keyword to ensure that if no such person is found, we will use values `0` for the movement properties.
 
 #### 2.5.7 Lambda Expressions
+Lambda expressions are specific types of expressions that cannot be used on their own. Their only use case is as parameters to lambda-specific built-in functions. They are rather a syntactial structure than an expression. They are used for traversing a list of agents and manipulating it. Use cases include filtering of agents, summing certain agent properties or finding a specific agent based on some condition.
+
+There are several built-in functions that take lambda expression as their parameter, some of which are `filter()`, `sum()`, `min()` and `max()`.
+
+To use a lambda expression, we start with an expression holding a value of type AgentList, followed by a lambda arrow `=>`. Then, we declare the lambda parameter name, which is any identifier we choose, such as `item` followed again by a lambda arrow `=>`. The final part of the lambda expression is an expression representing for instance a condition based on which to manipulate the agents.
+
+```
+define visual_range = 60;
+
+agent person 120 {
+    property x = x + random(-1, 1);
+    property y = y + random(-1, 1);
+
+    property people = agents(person);
+    property in_proximity = filter(people => p => dist(p.x, p.y, x, y) <= distance);
+}
+```
+The `filter()` function takes a lambda expression as a parameter. We use the `p` parameter to access each individual agent and their properties. Finally, the right-hand side of the lambda expression is used for filtering the agents based on their proximity to the current agent. The result of `in_proximity` property is a filtered array of agents of type `person`.
 
 ### 2.6 Core Library
 
