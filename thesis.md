@@ -892,6 +892,43 @@ The remaining evaluator methods handle specific types of nodes and return their 
 One interesting concept used by the runtime module is the concept of environments. There are multiple environments in an AgentLang program. Firstly, there is a global environment containing all user-defined global variables as well as built-in functions provided by the core library. Then there is the lambda environment, which holds the current value of the lambda parameter so that it can be accessed and used by the lambda value expression during calculations. Local agent environments are not needed, since agent property values are stored in the `previousOutput` variable, which serves as some kind of its own environment.
 
 #### 3.1.5 Interpreter
+The interpreter module is the last link in the chain. More specifically, it is the mother module that controls all of the aformentioned modules and handles their linking and cooperation. Moreover, it is the only public module that is intended to be used in external projects when implementing AgentLang interpreter. The interpreter module uses the `rxjs` library because of its extensive functionality over observables and subscriptions.
+
+The interpreter module contains a set of public control methods used for controlling the interpreting process. These include:
+- `start()` starts the interpreter
+- `pause()` pauses the interpreter
+- `resume()` resumes paused interpreter, so it will continue at the step it left off on
+- `reset()` resets the current step to 0 to start from the beginning
+- `step()` can be called when the interpreter is paused and will emit the output of the next step on each call
+
+Then there is the `get()` method, which the user subscribes to to retrieve the current output everytime it is emitted by the interpreter. It accepts two parameters, which is the source code and the configuration. The source code is a plain string containing the AgentLang program's source code. The configuration is an object defined as below.
+```ts
+export interface InterpreterConfiguration {
+  steps: number;
+  delay: number;
+  width: number;
+  height: number;
+}
+```
+The `steps` parameter defines the number of steps of the simulation, so the number of times the interpreter should emit output. The `delay` parameter defines delay in milliseconds between each emit of the output. Finally, the `width` and `height` parameters are used for the runtime module to initialise the global `width()` and `height()` methods, which may come in handy when using the visualisation tool.
+
+The interpreter's initialisation may look like this.
+```ts
+const sourceCode = "agent person 10 { property x = random(0, width()); property y = random(0, height()); }"
+const config: InterpreterConfiguration = {
+  steps: 10,
+  delay: 500,
+  width: 400,
+  height: 400
+};
+
+interprete.get(sourceCode, config).subscribe((ooutput: InterpreterOutput) => {
+  console.log(output);
+});
+
+interpreter.start();
+```
+After calling `interpreter.start()`, the interpreter subscription will start emitting the output 10 times with the delay of 500 milliseconds.
 
 ## 4. Documentation
 
