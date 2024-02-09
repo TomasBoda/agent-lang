@@ -8,8 +8,7 @@ Charles University in Prague, Czech Republic
 **Supervisor**: Tomáš Petříček
 
 ## TODO
-- introduce chapter called "Theoretical Background" which describes agent-based modelling as well as introduction to parsers and interpreters
-- introduce chapter called "Spreadsheet Interface" or "Web Interface"
+- introduce a section with known bugs and future improvements
 
 ## Abstract
 In this thesis, we develop a new programming language (AgentLang) designed exclusively for modeling agent-based simulations. Agent-based modeling refers to a simulation technique that analyses the dynamics of a simulation using the decisions of autonomous entities called agents and is becoming more and more popular, since these models are easier to understand than more complex mathematical models. The language provides constructs for defining agents and their decision-making logic, while maintaining high level of simplicity, making it simple to learn and use. The simulation operates in an incremental manner, allowing for evalutation and debugging of each step separately. Apart from the language itself, the project provides a web-based sandbox with a spreadsheet interface, through which it is possible to adjust agent parameters and values during runtime of the simulation. Although there are numerous agent-based tools available, this language together with the spreadsheet module aims to provide a new approach for modeling agent-based simulations and makes agent-based modeling more accessible to people of all scientific and non-scientific fields.
@@ -44,11 +43,10 @@ Furthermore, agent-based modeling is particularly well-suited for simulation dom
 Last but not least, agent-based models are flexible and extensible. We can easily incorporate new agents to the system or increase the quantity of existing agents. Modifying the model's behavior is as simple as fine-tuning the decision-making logic within the agent's blueprint, which may lead to a whole new beahviour of the whole system. This degree of flexibility and extensibility implies the usage of agent-based models in scenarios where the level of complexity of the simulation is either highly unpredictable or not known in advance, making it easy to fine-tune the simulation without the need of making too many adjustments.
 
 #### 1.2.3 Use Cases
-Agent-based modeling is used in numerous scientific areas and systems. However, its use cases can be classified into four main categories, where it is natural to opt for agent-based modeling. These categories are:
+Agent-based modeling is used in numerous scientific areas and systems. However, its use cases can be classified into three main categories, where it is natural to opt for agent-based modeling. These categories are:
 1. flows
 2. markets
 3. organizations
-4. diffusion
 
 ##### 1.2.3.1 Flows
 To describe the idea behind flows, let's consider evacuation of people. The behaviour of a crowd in a sudden or unexpected dangerous situation often leads to panic and chaos. These situation usually arise during mass events such as concerts, sporting events and demonstrations, where there is high density of people on a certain area. In case of fire or other disasters of such nature, panicking people are obsessed by short-term personal interests uncontrolled by social and cultural constraints.
@@ -67,8 +65,11 @@ The model is a fairly simple grid in the Cartesian plane, where a specific point
 All of the standalone entities, such as locations, buyers and sellers are represented using agents with defined set of rules and interaction logic, providing the model of the simulation as a whole, capable of capturing emergent phenomena, such as the relation of income inequality and income segregation in the context of the housing market.
 
 ##### 1.2.3.3 Organizations
+Another promising area of application for agent-based modeling is organisational simulation. Operational risk poses a constant threat to various sectors, such as financial institutions, stemming from potential issues such as inadequate business information systems, breaches in internal control, fraud or unforseen catastrophes, all of which can lead to unexpected financial losses. In banking, operational risk, as defined by the Basle Committee on Banking, encompasses breakdowns in internal controls and corporate governance, potentially resulting in financial losses due to errors, fraud or failure to perform in a timely manner or compromises to the bank's interests caused by staff members exceeding their authority or conducting business in an unethical or risky manner. This risk is increasingly recognized as the most prominent and significant challenge faced by banks.
 
-##### 1.2.3.4 Diffusion
+In contrast to market risks, opertional risks predominantly arise internally within organisations, lacking a straightforward mathematical or statistical correlation between individual risk factors and the magnitude and frequency of operational losses. The lack of historical data on operational losses and their causes further complicates risk assessment, as large losses occur infrequently, leaving many banks without a sufficient time series of relevant data. This leads to uncertainty about which factors are important arising from the absence of a direct relationship between the risk factors.
+
+Given all of these characteristics of operational risks within organisations, it is obviously difficult to quantify. Therefore, a bottom-up simulation to assess the probabilities of operational risks looks like a promising approach, since what is needed is a framework that includes the possibility of non-linear effects because of interactions among sub-units and to cascading events. Modeling the bank's agents, such as their workflow and risk factors that could potentially impact their activities and performance is the first step. Then, external factors, such as the bank's customers, markets and regulators are modelled to simulate the bank's environment. Using this approach, we can observe the emergent phenomena in form of cascading failures and analyse the operational risks of an organisation in a more straightforward way, without the knowledge of any direct relationships between failures and the bank's inner workings.
 
 ### 1.2 Interpreters
 The following section provides a brief look into interpreters and parsers and describe the concepts used in their implementation and inner workings.
@@ -964,5 +965,5 @@ After calling `interpreter.start()`, the interpreter subscription will start emi
 ## Conclusion
 
 ## Bibliography
-[1. Eric Bonabeau - Agent-based modeling: Methods and techniques for simulating human systems](https://www.pnas.org/doi/10.1073/pnas.082080899)
+[1. Eric Bonabeau - Agent-based modeling: Methods and techniques for simulating human systems](https://www.pnas.org/doi/10.1073/pnas.082080899) \
 [2. Marco Pangallo, Jean-Pierre Nadal, Annick Vignes = Residential income segregation: A behavioral model of the housing market](https://arxiv.org/pdf/1606.00424.pdf)
