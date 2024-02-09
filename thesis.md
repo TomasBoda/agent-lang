@@ -74,6 +74,37 @@ Given all of these characteristics of operational risks within organisations, it
 ### 1.2 Interpreters
 The following section provides a brief look into interpreters and parsers and describe the concepts used in their implementation and inner workings.
 
+#### 1.2.1 Comilers vs. Interpreters
+Compilers and interpreters are the fundamental components of programming languages. They are responsible for reading the source code of the target language and executing its instructions. They both work in a slightly different way, each boasting its own set of strengths and weaknesses.
+
+A compiler translates the source code of a program into machine instructions or an intermediate representation of the code before execution. The process of reading, analysing and transforming the source code involves several stages, including lexical analysis, semantical analysis, optimisation and code generation. Once compiled to machine code, the resulting executable can run independently of the original source code. Since compilers transform the source code to direct machine instructions, they tend to offer high speed and performance, however, they are more difficult to understand, implement and debug.
+
+In contrast, an interpreter processes the source code line by line during execution, translating and executing each instruction sequentially. Interpreters can also feature lexical and semantical analysis, but they do not produce an intermediate representation of the source code. They generate a semantical representation of the program's source code, which is then evaluated instruction by instruction during run-time. Therefore, interpreters usually tend to be slower than compilers, however, they provide flexibility and ease of debugging.
+
+#### 1.2.2 Workflow
+During the process of interpretation, the source code is fed through and transformed by several processors before finally being executed by the interpreter's runtime.
+
+Firstly, it is read by the lexer, which generates an array of tokens. A token is a single basic unit of the language, such as a keyword or a numeric literal. The lexer has a set of defined, language-specific rules for producing the tokens, such as recognizing and classifying reserved language keywords and special characters. This step is called the lexical analysis.
+
+The array of tokens is then passed to the parser, which is responsible for analysing sub-sequences of the tokens, validating their integrity and producing a semantic representation of the program. This representation is also called the abstract syntax tree (AST), since it is a tree-like structure holding the semantics of the program. It can be understood as an intermediate code representation, which is validated and ready to be evaluated by the runtime. This step is called the semantical analysis.
+
+Finally, the abstract syntax tree is passed to the runtime, which traverses the intermediate code instruction by instruction and executes the instructions in a sequential manner. The instructions are evaluated by the runtime and executed by the programming language in which the interpreter is written.
+
+#### 1.2.3 Parsers
+Parser is without doubt one of the most interesting parts of an interpreter. Its responsibility is to evaluate the stream of tokens coming from the lexer, validate these tokens and produce an intermediate code, also referred to as the abstract syntax tree.
+
+Parser is usually implemented as a pushdown automaton (PDA). This is because the syntax of the language can be defined by a set of syntactical rules called the syntax grammar. This automaton accepts the given grammar, therefore is able to validate the correctness of the input source code. The automaton is fed a stream of tokens from the lexer. The evaluation starts at the intitial state and based on the next token, it decided which state it goes to next. In case it comes across a token which cannot be pushed to a new state, since such state does not exist, it is redirected to the fail state. This situation is called a semantical error and in such case, the interpreter throws an exception.
+
+##### 1.2.3.1 Top-down vs. Bottom-up Parsing
+There are two techniques in parsing language grammars: top-down parsing and bottom-up parsing. In top-down parsing, the parsing starts from the root of the parse tree, which is the start symbol of the language grammar and proceeds towards the leaves of the parse tree, attempting to match the input token against the production rules of the grammar. This technique is relatively easy to implement, since it corresponds well to the way humans tend to think about parsing. In contrast, bottom-up parsing starts from the input string and proceeds by identifying sequences of terminals and non-terminals in the input string that match the right-hand side of some production rule in the grammar. These sequences are then replaced by the corresponding non-terminal symbol, eventually resulting in the entire input string being replaced by the start symbol of the grammar. The advantage of bottom-up parsing is that it can handle a wider class of grammars than top-down parsing, including left-recursive grammars and is in many cases more efficient than top-down parsing. However, it is more difficult to implement and understand conceptually.
+
+##### 1.2.3.2 Recursive Descent Parsing
+Recursive descent parsing is a popular top-down parsing technique and is implemented in a very straightforward way. Each non-terminal in the grammar corresponds to a function in the parser module. These methods call each other to parse different structures and parts of the input source code. When parsing the program, we call the `parseProgram` function, which further calls `parseVariableDeclaration` and `parseObjectDeclaration` functions, based on the next token in the stream. This goes all the way to the `parsePrimaryExpression` function, which parses low-level expressions, such as numeric literals or strings.
+
+The idea behind the implementation of such pushdown automaton is that the stack of the automaton is implemented using the call-stack of the language, in which the interpreter is implemented in. When the function calls nest into each other, they are stored onto the stack, preserving their state. We are pushing non-terminals onto the stack, processing them, producing parts of the abstract syntax tree and in case of correct input eventually ending up back in the initial state with an empty stack.
+
+The technique of recursive descent parsing is used in the implementation of the AgentLang's parser. This is due to the simplicity of the language's syntax grammar and is a good starting point for implementing a simple parser such as that of AgentLang.
+
 ## 2. AgentLang Programming Language
 The following sections provide an introduction to the AgentLang programming language and detailed description of its syntax and structure, data types, inner workings, standard library and core functionality.
 
