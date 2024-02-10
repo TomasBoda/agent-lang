@@ -109,14 +109,14 @@ The technique of recursive descent parsing is used in the implementation of the 
 The following sections provide an introduction to the AgentLang programming language and detailed description of its syntax and structure, data types, inner workings, standard library and core functionality.
 
 ### 2.1 Overview
-AgentLang is a programming language designed exclusively for modeling agent-based simulations. It is an interpreted programming language and its interpreter is written in TypeScript. Its syntax is very simple and straightforward, yet it may resemble modern general-purpose programming languages such as Python or JavaScript, establishing a balance between the ease of use for non-technical scientists and familiarity for developers.
+AgentLang is a programming language designed exclusively for modeling agent-based simulations. It is an interpreted programming language and its interpreter is written in TypeScript. Its syntax is very simple and straightforward, yet it may resemble modern general-purpose programming languages such as Python or JavaScript, establishing a nice balance between the ease of use for non-technical scientists and familiarity for developers.
 
-The structure of AgentLang is very natural too. The user defines one or multiple agents and their properties. An agent can be viewed as a class in an object-oriented programming language and a property can be understood as a member variable of this class. The output of the interpreter is an array of agents and the current values of their properties. This gives the developer the flexibility to analyse and interpret the output in any way they need. Moreover, the language supports global variables, which are constant values that can be reused among all agents. User defined functions with parameters are not supported. Each property has an inline value defined by an expression. Since AgentLang is an interpreted language, the program is evaluated in an incremental manner, agent by agent, property by property. Although this would imply that a property cannot be used in the definition of another property unless defined earlier, it is not so, since the interpreter has a built-in topological property sorting mechanism, which determines the order in which properties are evaluated at runtime (more on that later).
+The structure of AgentLang is very natural too. The user defines one or multiple agents and their properties. An agent can be viewed as a class in an object-oriented programming language and a property can be understood as a member variable of this class. The output of the interpreter is an array of agents and the current values of their properties. This gives the developer the flexibility to analyse and interpret the output in any way they need. Moreover, the language supports global variables, which are constant values that can be reused among all agents. User defined functions with parameters are not supported. Each agent property has an inline value defined by an expression. Since AgentLang is an interpreted language, the program is evaluated in an incremental manner, agent by agent, property by property. Although this would imply that a property cannot be used in the definition of another property unless defined earlier, it is not so, since the interpreter has a built-in topological property sorting mechanism, which determines the order in which properties are evaluated at runtime (more on that later).
 
-Apart from the source code, the AgentLang interpreter takes four additional configuration parameters, which are `steps`, `delay`, `width` and `height`. The `steps` parameter sets the number of steps the simulation should run. A step refers to one evaluation of the program. The `delay` parameter determines how often should the interpreter emit the ouput, more specifically, how long should it wait before evaluating the next step of the simulation. The `width` and `height` parameters are important for the interpreter to initialize the built-in `width()` and `height()` functions used in visualisation. To give an example, a configuration with `steps = 100` and `delay = 10` means that the simulation will run for 1 second and will emit 100 uniformly dsitributed outputs.
+Apart from the source code, the AgentLang interpreter takes four additional configuration parameters, which are `steps`, `delay`, `width` and `height`. The `steps` parameter sets the number of steps the simulation should run. A step refers to a single evaluation of the program. The `delay` parameter determines how often should the interpreter emit the ouput, more specifically, how long should it wait before evaluating the next step of the simulation. The `width` and `height` parameters are important for the interpreter to initialize the built-in `width()` and `height()` functions used in the simulation's visualisation. To give an example, a configuration with `steps = 100` and `delay = 10` means that the simulation will run for 1 second and will emit 100 uniformly dsitributed outputs.
 
 ### 2.2 Syntax Grammar
-Below is the complete overview of the AgentLang syntax grammar rules.
+To give a brief overview of the AgentLang's syntax, below are the production rules of the AgentLang's syntax grammar. Terminal symbols are encapsulated in double quotes and non-terminal symbols are pure identifiers written in snake case.
 ```
 program:
     declaration
@@ -238,7 +238,7 @@ otherwise_expression:
 ```
 
 ### 2.3 Declarations
-The following sections describe the three supported kinds of declarations, which are the declaration of an agents, properties and global variables.
+The top-level parts of the AgentLang language are declarations. They are used to declare agents, their properties as well as global variables.
 
 #### 2.3.1 Agents
 Agent is the main building block of the AgentLang simulation. It represents an agent model and its properties and is used for generating a set of agents for the simulation. Agents are always declared in the top-level program scope and they cannot be nested. Defining multiple agent models is also supported.
@@ -259,7 +259,7 @@ agent pedestrian 60 {
     ...
 }
 ```
-Note that the number of agents parameter does not have to be an explicit number. We can define a global variable with a numeric value and use this variable as the number of agents parameter.
+Note that the number of agents parameter does not have to be an explicit numeric literal. We can define a global variable with a numeric value and use this variable as the number of agents parameter.
 ```
 define car_count = 20;
 
@@ -272,20 +272,25 @@ More about global variables will be explained later in this section.
 After defining agents and their behaviour, AgentLang will generate the corresponding number of agents for each agent model and evaluate their properties during runtime.
 
 #### 2.3.2 Properties
-Properties are essential in defining the behaviour of an agent model. They can be understood as variables with a value defined based on an expression. Agents can have any number of properties, either independent or dependent on each other.
+Properties are essential in defining the behaviour of an agent model. They can be understood as variables with a value defined based on some inline expression. Agents can have any number of properties, either independent or dependent on each other.
 
-AgentLang supports two types of properties, which are `property` and `const`. While `property` is recalculated in each step of the simulation based on actual values, `const` is calculated only at the beginning of the simulation, holding a constant value throughout the entire course of the simulation.
+AgentLang supports two types of properties, which are `property` and `const`. While `property` is recalculated in each step of the simulation based on the most current values, `const` is calculated only at the beginning of the simulation, holding a constant value throughout the entire course of the simulation.
 
 ##### 2.3.2.1 Const
 Property of type `const` is a special kind of property, which holds a constant value during the entire simulation. It is calculated only once as the agent is generated.
 
-To define a `const`, use the `const` keyword followed by an identifier, the assignment symbol `=`, any expression and a semicolon `;` denoting the end of property declaration.
+To declare a `const` property, use the following grammar production rule:
+```
+property_declaration:
+    "const" identifier "=" expression ";"
+```
+Below is an example of a `const` declaration holding a numeric value.
 ```
 agent car 20 {
     const max_speed = 260;
 }
 ```
-Properties of type `const` are used for instance when generating random initial coordinates of agents, since they are calculated only once.
+Properties of type `const` are used for instance when generating random initial coordinates of agents, since they are calculated only once at the beginning of the simulation.
 ```
 agent person 10 {
     const x_spawn = random(100, 200);
@@ -294,20 +299,33 @@ agent person 10 {
 ```
 
 ##### 2.3.2.2 Property
-Property of type `property` is the most common kind of property. It is recalculated in each step of the simulation for every agent.
+Property of type `property` is the most commonly used type of property. It is recalculated in each step of the simulation for every agent, based on the most current values.
 
-To define a `property`, use the `property` keyword followed by an identifier, the assignment symbol `=`, any expression and a semicolon `;` denoting the end of property declaration.
+To declare a `property` property, use the following grammar production rule:
+```
+property_declaration:
+    "property" identifier "=" expression ";"
+```
+Below is an example of a `property` declaration that holds a random numeric value in each step of the simulation.
 ```
 agent car 20 {
     property current_speed = random(5, 10);
 }
 ```
-However, what if we want to set the property to some kind of initial value and use this property inside of itself to update its value? That is why AgentLang supports default property values.
+However, what if we want to set the property to some initial value and use this property inside of itself to update its value?
+```
+agent car 20 {
+    property x = x + 1;
+}
+```
+In the above example, it is not possible. The `x` property is incremented by 1 each step of the simulation, however, it is not set to any default value to start with. That is why AgentLang supports default property values.
 
-###### 2.3.2.2.1 Default Property Value
-Sometimes we need to initialize a property to some default value before being used and recalculated in the following steps, such as `x` and `y` spawn coordinates or car speed initialisation. Therefore, AgentLang supports default value initialisation.
-
-To define a `property` with a default value, we use the same syntax as basic property initialisation, however, we put a colon `:` after its identifier followed by an expression defining its initial value. This initial value is used only in the first step to initialise the property.
+To declare a `property` with a default value, we use the following production rule.
+```
+property_declaration:
+    "property" identifier ":" expression "=" expression ";"
+```
+The expression after the semicolon is used to initialise the `property` to some default value in the first step of the simulation. In each next step, the second expression is used to recalculate this value.
 ```
 agent point {
     property x: 15 = x + 1;
@@ -317,16 +335,10 @@ agent point {
 A better example would be the one earlier with the car's current speed. We want the car to accelarate, so we increment its speed by one.
 ```
 agent car {
-    property speed = speed + 1;
-}
-```
-However, how can the speed be incremented, when its value is not initialised anywhere?
-```
-agent car {
     property speed: 0 = speed + 1;
 }
 ```
-In this way, the speed is set to 0 in the first step and is incremented by 1 in each following step.
+In this way, the speed is set to 0 in the first step and is incremented by 1 in each following step, holding values 1, 2, 3, 4 and so on.
 
 However, this is not the only use case of default property values. Suppose an exaggerated example, where we have two properties, where each depends on the other.
 ```
@@ -335,11 +347,24 @@ agent entity 1 {
     property b = a + 2;
 }
 ```
+This example would throw an error, since there is a cycle in the property declarations. In order to fix this, we need to initialise a default value to one of the properties, which will be evaluated first, so that the other property can calculate its value based on the first property.
+```
+agent entity 1 {
+    property a = b + 1;
+    property b: 0 = a + 2;
+}
+```
+This topic concerns the topological sorting mechanism implemented in the AgentLang's interpreter, which will be explained to greater detail in the later sections.
 
 #### 2.3.3 Global Variables
 Apart from local agent property declarations, AgentLang supports the declaration of global variables which can be reused among all agent types as constant values. Global variables are always declared in the top-level program scope and the best practice is to declare them before all agent declarations.
 
-To declare a global variable, use the `define` keyword followed by its identifier, the assignment symbol `=` followed by an expression defining its initial value and finally the semicolon `;` denoting the end of declaration.
+To declare a global variable, we use the following production rule.
+```
+define_declaration:
+    "define" identifier "=" expression ";"
+```
+Below is an example of usage of the global variable declaration.
 ```
 define person_count = 120;
 define default_speed = 5;
@@ -352,37 +377,42 @@ agent car 10 {
     const speed = default_speed * 3;
 }
 ```
+Note that global variables cannot contain any identifiers or function calls in their definition. They are plain constant values which can only hold numeric or boolean literals.
 
 ### 2.4 Data Types
 The following sections describe data types that AgentLang supports.
 
-#### 2.4.1 Number
-Number is one of the two primitive data types in AgentLang. A number represents either an integer or a decimal number. Decimal numbers can have any number of decimal points, however, they are always rounded to two decimal places in the output of the simulation.
+#### 2.4.1 Numeric Literal
+Numeric literal is one of the two primitive data types in AgentLang. A numeric literal represents either an integer or a decimal number. Decimal numbers can have any number of decimal points, however, they are always rounded to two decimal places in the output of the simulation.
 
-Numbers can be used in many ways, either as standalone values, or in any numeric expression, such as binary or unary or as parameters to function calls.
+Numeric literals can be used in many ways, either as raw numeric values, or in any numeric expression, such as binary or unary expressions or as parameters to function calls.
 ```
 agent data_instance 10 {
-    const decimal_value = 12.8;
     const integer_value = 3;
+    const decimal_value = 12.8;
     const binary_expression = 6.5 * 2 / integer_value;
+    const random_value = random(10, 20);
 }
 ```
 
-#### 2.4.2 Boolean
-Boolean is the second of the two primitive data types in AgentLang. It represents a binary value, which can either be `true` or `false`.
+#### 2.4.2 Boolean Literal
+Boolean literal is the second of the two primitive data types in AgentLang. It represents a binary value, which can either be `true` or `false`.
 
-Booleans can be expressed either explicitely, using the `true` or `false` keywords, or they can result from other types of expression, such as the relational expression (more on relational expression later).
+Booleans can be expressed either explicitely, using the `true` or `false` keywords, or they can be the result of some expression, such as the relational expression (more on relational expression later).
 ```
 agent data_instance 10 {
     const is_active = false;
     const is_first = index() == 0;
+
+    property temperature: 10 = temperature + random(-3, 3);
+    const is_cold = temperature <= 9;
 }
 ```
 
 #### 2.4.3 Agent List
-Agent List is a special type of array that contains agent objects. Moreover, it is the only type of array AgentLang supports. This array cannot be defined explicitely, but results from various built-in functions.
+Agent List is a special type of array that contains agent instances. Moreover, it is the only type of array AgentLang supports. This array cannot be defined explicitely, but results from various built-in function calls.
 
-The easiest way to get an array of agents is to use the `agents()` method.
+The easiest way to get an array of agents is to use the `agents()` method, which returns the current array of agent instances of some type.
 ```
 agent prey 10 {
 
@@ -392,14 +422,14 @@ agent predator 5 {
     property targets = agents(prey);
 }
 ```
-The `targets` property holds an array of agents of type `prey` with their most recent values (since it is a `property`).
+The `targets` property holds an array of agent instances of type `prey` with their most recent values.
 
-Agent List, however, cannot be indexed. It can only be used as input to other build-in methods, which will be explained later. Also, there are more built-in functions returning an array of agents, however, they will be discussed in later sections.
+Agent List, however, cannot be indexed. It can only be used as input to other build-in functions, which will be explained later. Also, there are more built-in functions returning an array of agents, however, they will be discussed in later sections.
 
 #### 2.4.4 Agent Object
-Agent Object represents one specific agent of the simulation and its properties. It can be used to retrieve the agent's property values and use them in the current agent's body.
+Agent Object represents one specific agent instance and its properties. It can be used to retrieve the agent's property values and use them in the current agent.
 
-Agent Object can be retrieved only using specific built-in functions, such as `min()`.
+Agent Object can be retrieved only by using specific built-in function calls, such as `min()`.
 ```
 agent person 10 {
     property x = ...;
@@ -408,7 +438,16 @@ agent person 10 {
     property closest_person = min(agents(person) => p => dist(p.x, p.y, x, y));
 }
 ```
-The above example uses a lambda expression to retrieve an agent of type `person` which is closest to the current person. The structure of lambda expression and other complex expressions and techniques will be explained in later sections.
+The above example uses a lambda expression to retrieve an agent of type `person` which is closest to the current person. We can now use the `closest_person` property to retrieve the agent's property values.
+```
+agent person 10 {
+    const is_married = prob(0.5);
+    property closest_person = ...;
+
+    property is_closest_person_married = closest_person.is_married;
+}
+```
+The structure of lambda expressions and other complex expressions and techniques will be explained in later sections.
 
 #### 2.4.5 Null
 Null is a special type of value that represents an undefined or missing value. It is tightly bound to the Agent Object data type. Note the following example.
@@ -423,12 +462,12 @@ agent person 10 {
     property close_person = min(close_people => c => dist(c.x, c.y, x, y));
 }
 ```
-The `close_person` property attempts to find an agent that is the closest to the current agent, but is also in the visual range of 65. If there are no agents in this visual range, the `close_person` searches an empty array and cannot retrieve a specific agent. Therefore, it holds a Null value.
+The `close_person` property attempts to find an agent that is the closest to the current agent, but is also in the visual range of 65. If there are no agents in this visual range, the `close_person` searches an empty array and cannot retrieve a specific agent instance. Therefore, it holds a Null value.
 
-A problem with null values, however, is that we cannot use it in other properties. More specifically, we cannot retrieve the agent's properties, since it does not hold an agent, but a Null value. That is why the `otherwise` expression exists in AgentLang, which tackles Null values, but will be explained later.
+A problem with Null values, however, is that we cannot use it in other properties. More specifically, we cannot retrieve the agent's properties, since it does not hold an agent instance, but a Null value. That is why the `otherwise` expression exists in AgentLang, which tackles Null values, but it will be discussed in later sections.
 
 ### 2.5 Expressions
-The following sections introduce all supported expression in AgentLang, from basic ones such as binary or relational expressions to more complex and domain-specific expression such as the `otherwise` expression.
+The following sections introduce all supported expression in AgentLang, from basic ones such as binary or relational expressions to more complex and language-specific expression such as the `otherwise` expression.
 
 #### 2.5.1 Binary Expressions
 Binary expression is the most basic expression in AgentLang. It consists of two numeric operands and one operator. The operator can be of type addition, subtraction, multiplication, division or modulo. These expressions can be arbitrarily nested and parenthesised.
@@ -995,6 +1034,18 @@ After calling `interpreter.start()`, the interpreter subscription will start emi
 ### 5.2 Topological Sort of Properties
 
 ## 5. Examples
+- epidemic
+- bird flocking
+- forest fire
+- snowfall
+
+## 6. Limitations & Future Improvements
+
+## 6.1 Known Bugs
+
+## 6.2 Limitations
+
+## 6.3 Future Improvements
 
 ## Conclusion
 
