@@ -1020,12 +1020,18 @@ interpreter.start();
 After calling `interpreter.start()`, the interpreter subscription will start emitting the output 10 times with the delay of 500 milliseconds.
 
 ## 4. Web Interface
+Apart from the AgentLang's language interpreter, the project features a web-based interface for trying out AgentLang in practice. It consists of a code editor, visualisation view and a spreadsheet interface for manipulating agent property values during runtime.
 
-### 4.1 Code Editor
+The web interface is a multi-page web application built in TypeScript on top of the Next.js framework. It consists of a landing page, sandbox page and a documentation page.
 
-### 4.2 Spreadsheet Interface
+### 4.1 Code Sandbox
+<img src="./assets/images/web-sandbox-page.png" width="400">
 
-### 4.3 Visualisation
+#### 4.1.1 Code Editor
+
+#### 4.1.2 Spreadsheet Interface
+
+#### 4.1.3 Visualisation
 
 ## 5. Interesting Concepts
 
