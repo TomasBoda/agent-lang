@@ -1025,7 +1025,7 @@ Apart from the AgentLang's language interpreter, the project features a web-base
 The web interface is a multi-page web application built in TypeScript on top of the Next.js framework. It consists of a landing page, sandbox page and a documentation page.
 
 ### 4.1 Code Sandbox
-<img src="./assets/images/web-sandbox-page.png" width="400">
+<img src="./assets/images/web-sandbox-page.png" width="700">
 
 #### 4.1.1 Code Editor
 
