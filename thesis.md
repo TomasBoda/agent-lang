@@ -1056,6 +1056,9 @@ Moreover, the user can also update the property's value in a specific agent inst
 <img src="./assets/images/spreadsheet-value-update.png" width="700">
 
 #### 4.1.3 Visualisation
+The visualisation view contains a panel with a real-time 2D simulation visualisation capabilities. During the run-time of the simulation, agents are displayed in the visualisation panel based on their `x` and `y` property values.
+
+<img src="./assets/images/visualisation.png" width="700">
 
 ## 5. Interesting Concepts
 
@@ -1063,19 +1066,19 @@ Moreover, the user can also update the property's value in a specific agent inst
 
 ### 5.2 Topological Sort of Properties
 
-## 5. Examples
+## 6. Examples
 - epidemic
 - bird flocking
 - forest fire
 - snowfall'
 
-## 6. Limitations & Future Improvements
+## 7. Limitations & Future Improvements
 
-## 6.1 Known Bugs
+## 7.1 Known Bugs
 
-## 6.2 Limitations
+## 7.2 Limitations
 
-## 6.3 Future Improvements
+## 7.3 Future Improvements
 
 ## Conclusion
 
