@@ -1041,6 +1041,19 @@ The most recent code updates are saved automatically on every keypress without t
 After modeling the simulation, the user can start the simulation using the `start` button in the control panel.
 
 #### 4.1.2 Spreadsheet Interface
+The spreadsheet interface is initialised and filled with data as soon as the user starts the simulation.
+
+<img src="./assets/images/spreadsheet-interface.png" width="700">
+
+The spreadsheet interface contains one table for each agent model. The table contains columns representing agent properties and rows representing individual agent instances. Table cells are current values of the agent's properties and the tables are reclaculated and provided with new data in each step of the simulation.
+
+The main feature of the spreadsheet interface is the real-time update of the agents' properties. To update the expression of a property, the simulation must be paused and the user needs to click on the property name located in the table header. A small code editor with the given property is displayed and the user can update and save the property's expression.
+
+<img src="./assets/images/spreadsheet-property-update.png" width="700">
+
+Moreover, the user can also update the property's value in a specific agent instance. To update a specific property value, click on the given cell in the table. An input field will appear and the user can input and save the new property value.
+
+<img src="./assets/images/spreadsheet-value-update.png" width="700">
 
 #### 4.1.3 Visualisation
 
