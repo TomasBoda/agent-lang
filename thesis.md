@@ -1025,9 +1025,20 @@ Apart from the AgentLang's language interpreter, the project features a web-base
 The web interface is a multi-page web application built in TypeScript on top of the Next.js framework. It consists of a landing page, sandbox page and a documentation page.
 
 ### 4.1 Code Sandbox
+The code sandbox is the main page of the AgentLang web interface. It is a place where the user can create projects, model simulations using the AgentLang language, run the simulations and see their results in the visualisation view and the spreadsheet interface.
+
 <img src="./assets/images/web-sandbox-page.png" width="700">
 
+On the left-hand side of the window, there is a vertical scrollable list of all user projects. The user can create new projects, edit existing projects or remove existing projects. After clicking on any of the projects, the project code and the simulation configuration is loaded in the code editor on the right-hand side.
+
+On the top-right side of the window, there is a control panel with the current project's name, two input fields for updating the `steps` and `delay` parameters and a set of buttons used for handling the start, stop, pause, resume and reset of the current simulation.
+
 #### 4.1.1 Code Editor
+The code editor is a place where the user inputs the AgentLang code. It is used to model the simulation. The code editor features basic syntax highlighting and line numbering. However, it does not support code completion and code suggestions.
+
+The most recent code updates are saved automatically on every keypress without the need to press the `save` button located in the control panel. The `save` button is primarily used for saving the updated simulation name and the `steps` and `delay` parameters.
+
+After modeling the simulation, the user can start the simulation using the `start` button in the control panel.
 
 #### 4.1.2 Spreadsheet Interface
 
@@ -1043,7 +1054,7 @@ The web interface is a multi-page web application built in TypeScript on top of 
 - epidemic
 - bird flocking
 - forest fire
-- snowfall
+- snowfall'
 
 ## 6. Limitations & Future Improvements
 
