@@ -8,7 +8,9 @@ Charles University in Prague, Czech Republic
 **Supervisor**: Tomáš Petříček
 
 ## TODO
-- introduce a section with known bugs and future improvements
+- add example program to introduction
+- add closing paragraph to introduction
+- add bullet points into introduction depicting the most important concepts that AgentLang provides
 
 ## Abstract
 In this thesis, we develop a new programming language (AgentLang) designed exclusively for modeling agent-based simulations. Agent-based modeling refers to a simulation technique that analyses the dynamics of a simulation using the decisions of autonomous entities called agents and is becoming more and more popular, since these models are easier to understand than more complex mathematical models. The language provides constructs for defining agents and their decision-making logic, while maintaining high level of syntax and semantic simplicity, making it simple to learn and use. The simulation operates in an incremental manner, allowing for evalutation and debugging of each step separately. Apart from the language itself, the project provides a web-based sandbox with a spreadsheet interface, through which it is possible to adjust agent parameters and values during runtime of the simulation. Although there are numerous agent-based tools available, this language together with the spreadsheet interface aims to provide a new approach for modeling agent-based simulations and makes agent-based modeling more accessible to people of all scientific and non-scientific fields.
@@ -20,18 +22,34 @@ In the realm of many scientific fields, the importance of simulations and predic
 
 Agent-based models are built on top of agents, which represent the fundamental units of the given scenario, such as people in an epidemic or birds in a flock. To build such models, there is a need for tools or languages that provide constructs for representing agents, their properties and their decision-making logic. Such tools already exist and are widely used to model agent-based simulations, such as NetLogo or AgentScript. These tools are powerful and can handle large amount of agents, however, with their performance also comes the complexity of usage and inaccessiblity to people with little technical knowledge. They are many times difficult to learn, since they are based on modern programming languages, restricting the use case to developers only. And since the demand for agent-based models can be seen in non-technical scientific fields such as epidemiology or sociology, there is a need for simpler tools and languages.
 
-AgentLang aims to provide a new approach to modeling agent-based simulations. This is on one hand due to the simplicity of the language itself, since it features very simple syntax and only the necessary constructs for modeling almost any simulation. On the other hand, the language is integrated into a specialised web-based interface, which offers a code editor, a visualisation module and last but not least, a spreadsheet interface with runtime value editing capabilities, which allows the users to fine-tune the simulation in real-time. These above features of the AgentLang project provide all the necessary tools to model agent-based simulations and get a hands-on experience with the language itself.
+AgentLang aims to provide a new approach to modeling agent-based simulations. This is on one hand due to the simplicity of the language itself, since it features very simple syntax and only the necessary constructs for modeling almost any simulation. On the other hand, the language is integrated into a specialised web-based interface, which offers a code editor, a visualisation module and most importantly, a spreadsheet interface with runtime value editing capabilities, which allows the users to fine-tune the simulation in real-time. These above features of the AgentLang project provide all the necessary tools to model agent-based simulations and get a hands-on experience with the language itself.
+
+The structure of AgentLang is very straightforward. We define standalone agent models and for each model, we define its behaviour using a set of properties.
+```
+agent snowflake 500 {
+    const speed = random(10, 20);
+
+    property x: random(0, width()) = x;
+    property y: random(0, height()) = (y + speed) % height();
+}
+```
+The above simple example generates a set of snowflakes with random falling speed and let them fall on the ground by incrementing their vertical coordinates by their speed.
+
+In conclusion, the main intention behind the creation of the AgentLang suite is to make agent-based modeling available to all scientific domains, regardless of their technical background, allowing for a very shallow learning curve and usability using the following features:
+- simplistic language syntax designed for easy conversion to the spreadsheet representation
+- spreadsheet interface for almost no-code modeling
+- built-in visualisation module for better understanding of the simulation
 
 ## 1. Theoretical Background
-Before diving into the AgentLang's itself, it's important to introduce and briefly explain the theoretical background behind the most important concepts used in AgentLang. The following sections aim to provide an introduction to agent-based modelling as well as interpreters and parsers.
+Before diving into the AgentLang's itself, it's important to introduce and briefly explain the theoretical background behind the most important concepts used in AgentLang. The following sections aim to provide an introduction to agent-based modeling as well as the inner workings of interpreters and parsers.
 
 ### 1.1 Agent-based Modeling
 Agent-based modeling is the primary domain in which AgentLang is intended to be used. Thus it is necessary to understand the reasons behind it's emergence and increasing popularity in recent years and to demonstrate its power and significance on several use cases and real-world scenarios.
 
 #### 1.2.1 Introduction
-Agent-based modeling is a simulation technique used in many scientific fields to model and understand complex simulations. In agent-based modeling, a system is modelled using a set of autonomous entities called agents. An agent represents a fundamental meaningful unit of a system, such as a person in an epidemic or a bird in a flock. Each agent individually asseses the current situation, both itself as well as other agents and makes decisions based on a set of defined rules.
+Agent-based modeling is a simulation technique used in many scientific fields to model and understand complex simulations. In agent-based modeling, a system is modeled using a set of autonomous entities called agents. An agent represents a fundamental meaningful unit of a system, such as a person in an epidemic or a bird in a flock. Each agent individually asseses the current situation, both itself as well as other agents and makes decisions based on a set of defined rules.
 
-It's important to mention that agent-based modeling is more of a mindset than a technology. The main idea behind it is to describe a system from the perspective of its constituent units. If we can assess and understand the behaviour of a fundamental unit of the system, we can model a blueprint or structure of this unit, generate a set of these units with randomised parameters and let their behaviour and interaction among themselves determine the outcome of the simulation. The advantage of such model is its simplicity in terms of implementation and understanding. Even a simple agent-based model can portray complex behavioral patterns and provide insights into the dynamics of the system that it emulates.
+It's important to mention that agent-based modeling is more of a mindset than a technology. The main idea behind it is to describe a system from the perspective of its constituent units. If we can assess and understand the behaviour of a fundamental unit of the system, we can define the model or structure of this unit, generate a set of these units with randomised parameters and let their behaviour and interaction among themselves determine the outcome of the simulation. The advantage of such model is its simplicity in terms of implementation and understanding. Even a simple agent-based model can portray complex behavioral patterns and provide insights into the dynamics of the system that it emulates.
 
 #### 1.2.2 Benefits of Agent-based Models
 Agent-based modeling offers numerous advantages when compared to other mathematical models and simulation techniques.
@@ -40,7 +58,7 @@ First and foremost, the approach of agent-based modelling allows us to uncover n
 
 Furthermore, agent-based modeling is particularly well-suited for simulation domains involving individual behavioral entity types and their mutual interactions. This is especially true in scenarios requiring the analysis of human interaction, understanding principles behind bird flocking, or predicting traffic jam occurrences on certain city roads. These situations pose challenges for other mathematical models, which may not explicitly consider the fundamental unit of the system as a whole.
 
-Last but not least, agent-based models are flexible and extensible. We can easily incorporate new agents to the system or increase the quantity of existing agents. Modifying the model's behavior is as simple as fine-tuning the decision-making logic within the agent's blueprint, which may lead to a whole new beahviour of the whole system. This degree of flexibility and extensibility implies the usage of agent-based models in scenarios where the level of complexity of the simulation is either highly unpredictable or not known in advance, making it easy to fine-tune the simulation without the need of making too many adjustments.
+Last but not least, agent-based models are flexible and extensible. We can easily incorporate new agents to the system or increase the quantity of existing agents. Modifying the model's behavior is as simple as fine-tuning the decision-making logic within the agent's model, which may lead to a whole new beahviour of the whole system. This degree of flexibility and extensibility implies the usage of agent-based models in scenarios where the level of complexity of the simulation is either highly unpredictable or unknown in advance, making it easy to fine-tune the simulation without the need of making too many adjustments.
 
 #### 1.2.3 Use Cases
 Agent-based modeling is used in numerous scientific areas and systems. Let's dive deeper into some of the major classifications suitable for the application of agent-based models, which are:
@@ -74,176 +92,170 @@ Given all of these characteristics of operational risks within organisations, it
 ### 1.2 Interpreters
 The following section provides a brief look into interpreters and parsers and describe the concepts used in their implementation and inner workings.
 
-#### 1.2.1 Comilers vs. Interpreters
+#### 1.2.1 Compilers vs. Interpreters
 Compilers and interpreters are the fundamental components of programming languages. They are responsible for reading the source code of the target language and executing its instructions. They both work in a slightly different way, each boasting its own set of strengths and weaknesses.
 
-A compiler translates the source code of a program into machine instructions or an intermediate representation of the code before execution. The process of reading, analysing and transforming the source code involves several stages, including lexical analysis, semantical analysis, optimisation and code generation. Once compiled to machine code, the resulting executable can run independently of the original source code. Since compilers transform the source code to direct machine instructions, they tend to offer high speed and performance, however, they are more difficult to understand, implement and debug.
+A compiler translates the source code of a program into machine instructions or an intermediate representation of the code before execution. The process of reading, analysing and transforming the source code involves several stages, including lexical analysis, semantical analysis, optimisations and code generation. Once compiled to machine code, the resulting executable can run independently of the original source code. Since compilers transform the source code to direct machine instructions, they tend to offer high speed and performance, however, they are more difficult to understand, implement and debug.
 
-In contrast, an interpreter processes the source code line by line during execution, translating and executing each instruction sequentially. Interpreters can also feature lexical and semantical analysis, but they do not produce an intermediate representation of the source code. They generate a semantical representation of the program's source code, which is then evaluated instruction by instruction during run-time. Therefore, interpreters usually tend to be slower than compilers, however, they provide flexibility and ease of debugging.
+In contrast, an interpreter processes the source code line by line during execution, translating and executing each instruction sequentially. Interpreters can also feature lexical and semantical analysis, but they do not produce an intermediate representation of the source code. They generate a semantical representation of the program's source code, which is then evaluated instruction by instruction during run-time. Therefore, interpreters usually tend to be slower than compilers. However, they provide higher flexibility and ease of debugging.
 
 #### 1.2.2 Workflow
-During the process of interpretation, the source code is fed through and transformed by several processors before finally being executed by the interpreter's runtime.
+During the process of interpretation, the source code is fed through and transformed by several processors before finally being executed by the interpreter's runtime module.
 
-Firstly, it is read by the lexer, which generates an array of tokens. A token is a single basic unit of the language, such as a keyword or a numeric literal. The lexer has a set of defined, language-specific rules for producing the tokens, such as recognizing and classifying reserved language keywords and special characters. This step is called the lexical analysis.
+Firstly, it is read by the lexer, which generates an array of tokens. A token is a single basic unit of the language, such as a keyword or a numeric literal. The lexer has a set of defined, language-specific rules for producing the tokens, such as recognizing and classifying reserved language keywords or special characters. This step is called the lexical analysis.
 
 The array of tokens is then passed to the parser, which is responsible for analysing sub-sequences of the tokens, validating their integrity and producing a semantic representation of the program. This representation is also called the abstract syntax tree (AST), since it is a tree-like structure holding the semantics of the program. It can be understood as an intermediate code representation, which is validated and ready to be evaluated by the runtime. This step is called the semantical analysis.
 
-Finally, the abstract syntax tree is passed to the runtime, which traverses the intermediate code instruction by instruction and executes the instructions in a sequential manner. The instructions are evaluated by the runtime and executed by the programming language in which the interpreter is written.
+Finally, the abstract syntax tree is passed to the runtime, which traverses the intermediate code instruction by instruction and executes the instructions in a sequential manner. The instructions are evaluated by the runtime module and executed by the programming language in which the interpreter is written.
 
 #### 1.2.3 Parsers
-Parser is without doubt one of the most interesting parts of an interpreter. Its responsibility is to evaluate the stream of tokens coming from the lexer, validate these tokens and produce an intermediate code, also referred to as the abstract syntax tree.
+Parser is without doubt one of the most interesting parts of an interpreter. Its responsibility is to evaluate the stream of tokens coming from the lexer, validate these tokens and produce an intermediate code representation, also referred to as the abstract syntax tree.
 
-Parser is usually implemented as a pushdown automaton (PDA). This is because the syntax of the language can be defined by a set of syntactical rules called the syntax grammar. This automaton accepts the given grammar, therefore is able to validate the correctness of the input source code. The automaton is fed a stream of tokens from the lexer. The evaluation starts at the intitial state and based on the next token, it decided which state it goes to next. In case it comes across a token which cannot be pushed to a new state, since such state does not exist, it is redirected to the fail state. This situation is called a semantical error and in such case, the interpreter throws an exception.
+Parser is usually implemented as a pushdown automaton (PDA). This is because the syntax of the language can be defined by a set of syntactical rules called the syntax grammar. This automaton accepts the given grammar, therefore is able to validate the correctness of the input source code. The automaton is fed a stream of tokens from the lexer. The evaluation starts at the intitial state and based on the next token, it decides which state it goes to next. In case it comes across a token which cannot be pushed to a new state, since such state does not exist, it is redirected to the fallback state. This scenario is called a semantical error and in such case, the interpreter throws an exception.
 
 ##### 1.2.3.1 Top-down vs. Bottom-up Parsing
-There are two techniques in parsing language grammars: top-down parsing and bottom-up parsing. In top-down parsing, the parsing starts from the root of the parse tree, which is the start symbol of the language grammar and proceeds towards the leaves of the parse tree, attempting to match the input token against the production rules of the grammar. This technique is relatively easy to implement, since it corresponds well to the way humans tend to think about parsing. In contrast, bottom-up parsing starts from the input string and proceeds by identifying sequences of terminals and non-terminals in the input string that match the right-hand side of some production rule in the grammar. These sequences are then replaced by the corresponding non-terminal symbol, eventually resulting in the entire input string being replaced by the start symbol of the grammar. The advantage of bottom-up parsing is that it can handle a wider class of grammars than top-down parsing, including left-recursive grammars and is in many cases more efficient than top-down parsing. However, it is more difficult to implement and understand conceptually.
+There are two techniques in parsing language grammars: top-down parsing and bottom-up parsing.
+
+In top-down parsing, the parsing starts from the root of the parse tree, which is the start symbol of the language grammar and proceeds towards the leaves of the parse tree, attempting to match the input token against the production rules of the grammar. This technique is relatively easy to implement, since it corresponds well to the way humans tend to think about parsing.
+
+In contrast, bottom-up parsing starts from the input string and proceeds by identifying sequences of terminals and non-terminals in the input string that match the right-hand side of some production rule in the grammar. These sequences are then replaced by the corresponding non-terminal symbol, eventually resulting in the entire input string being replaced by the start symbol of the grammar. The advantage of bottom-up parsing is that it can handle a wider class of grammars than top-down parsing, including left-recursive grammars and is in many cases more efficient than top-down parsing. However, it is more difficult to implement and understand conceptually.
 
 ##### 1.2.3.2 Recursive Descent Parsing
-Recursive descent parsing is a popular top-down parsing technique and is implemented in a very straightforward way. Each non-terminal in the grammar corresponds to a function in the parser module. These methods call each other to parse different structures and parts of the input source code. When parsing the program, we call the `parseProgram` function, which further calls `parseVariableDeclaration` and `parseObjectDeclaration` functions, based on the next token in the stream. This goes all the way to the `parsePrimaryExpression` function, which parses low-level expressions, such as numeric literals or strings.
+Recursive descent parsing is a popular top-down parsing technique and is implemented in a very straightforward way. Each non-terminal in the grammar corresponds to a function in the parser module. These functions call each other to parse different structures and parts of the input source code. When parsing the program, we call the `parseProgram` function, which further calls `parseVariableDeclaration` and `parseObjectDeclaration` functions, based on the next token in the stream. This goes all the way to the `parsePrimaryExpression` function, which parses low-level expressions, such as numeric or string literals.
 
 The idea behind the implementation of such pushdown automaton is that the stack of the automaton is implemented using the call-stack of the language, in which the interpreter is implemented in. When the function calls nest into each other, they are stored onto the stack, preserving their state. We are pushing non-terminals onto the stack, processing them, producing parts of the abstract syntax tree and in case of correct input eventually ending up back in the initial state with an empty stack.
 
 The technique of recursive descent parsing is used in the implementation of the AgentLang's parser. This is due to the simplicity of the language's syntax grammar and is a good starting point for implementing a simple parser such as that of AgentLang.
 
 ## 2. AgentLang Programming Language
-The following sections provide an introduction to the AgentLang programming language and detailed description of its syntax and structure, data types, inner workings, standard library and core functionality.
+The following sections provide an introduction to the AgentLang programming language and detailed specification of its syntax and structure, data types, inner workings, standard library and core functionality.
 
 ### 2.1 Overview
-AgentLang is a programming language designed exclusively for modeling agent-based simulations. It is an interpreted programming language and its interpreter is written in TypeScript. Its syntax is very simple and straightforward, yet it may resemble modern general-purpose programming languages such as Python or JavaScript, establishing a nice balance between the ease of use for non-technical scientists and familiarity for developers.
+AgentLang is a programming language designed exclusively for modeling agent-based simulations. It is an interpreted programming language and its interpreter is written in TypeScript. Its syntax is very simple and straightforward, yet it may resemble modern general-purpose programming languages such as Python or JavaScript, establishing a nice balance between the ease of use for non-technical scientists as well as familiarity for developers.
 
 The structure of AgentLang is very natural too. The user defines one or multiple agents and their properties. An agent can be viewed as a class in an object-oriented programming language and a property can be understood as a member variable of this class. The output of the interpreter is an array of agents and the current values of their properties. This gives the developer the flexibility to analyse and interpret the output in any way they need. Moreover, the language supports global variables, which are constant values that can be reused among all agents. User defined functions with parameters are not supported. Each agent property has an inline value defined by an expression. Since AgentLang is an interpreted language, the program is evaluated in an incremental manner, agent by agent, property by property. Although this would imply that a property cannot be used in the definition of another property unless defined earlier, it is not so, since the interpreter has a built-in topological property sorting mechanism, which determines the order in which properties are evaluated at runtime (more on that later).
 
-Apart from the source code, the AgentLang interpreter takes four additional configuration parameters, which are `steps`, `delay`, `width` and `height`. The `steps` parameter sets the number of steps the simulation should run. A step refers to a single evaluation of the program. The `delay` parameter determines how often should the interpreter emit the ouput, more specifically, how long should it wait before evaluating the next step of the simulation. The `width` and `height` parameters are important for the interpreter to initialize the built-in `width()` and `height()` functions used in the simulation's visualisation. To give an example, a configuration with `steps = 100` and `delay = 10` means that the simulation will run for 1 second and will emit 100 uniformly dsitributed outputs.
+Apart from the source code, the AgentLang interpreter takes four additional configuration parameters, which are `steps`, `delay`, `width` and `height`. The `steps` parameter sets the number of steps the simulation should run. A step refers to a single evaluation of the program. The `delay` parameter determines how often the interpreter should emit the output, more specifically, how long it should wait before evaluating the next step of the simulation. The `width` and `height` parameters are important for the interpreter to initialize the built-in `width()` and `height()` functions used in the simulation's visualisation. To give an example, a configuration with `steps = 100` and `delay = 10` means that the simulation will run for 1 second and will emit 100 uniformly dsitributed outputs.
 
 ### 2.2 Syntax Grammar
 To give a brief overview of the AgentLang's syntax, below are the production rules of the AgentLang's syntax grammar. Terminal symbols are encapsulated in double quotes and non-terminal symbols are pure identifiers written in snake case.
 ```
 program:
-    declaration
-    declaration program
+    | declaration
+    | declaration program
 
 declaration:
-    define_declaration
-    agent_declaration
+    | define_declaration
+    | agent_declaration
 
 define_declaration:
-    "define" identifier "=" define_value ";"
+    | "define" identifier "=" define_value ";"
 
 define_value:
-    numeric_literal
-    boolean_literal
+    | numeric_literal
+    | boolean_literal
 
 agent_declaration:
-    "agent" identifier agent_count "{" "}"
-    "agent" identifier agent_count "{" agent_body "}"
+    | "agent" identifier agent_count "{" "}"
+    | "agent" identifier agent_count "{" agent_body "}"
 
 agent_count:
-    numeric_literal
-    identifier
+    | numeric_literal
+    | identifier
 
 agent_body:
-    property_declaration
-    property_declaration agent_body
+    | property_declaration
+    | property_declaration agent_body
 
 property_declaration:
-    "property" identifier "=" expression ";"
-    "property" identifier ":" expression "=" expression ";"
-    "const" identifier "=" expression ";"
+    | "property" identifier "=" expression ";"
+    | "property" identifier ":" expression "=" expression ";"
+    | "const" identifier "=" expression ";"
 
 expression:
-    "(" expression ")"
-    identifier
-    numeric_literal
-    boolean_literal
-    function_call
-    conditional_expression
-    relational_expression
-    binary_expression
-    unary_expression
-    logical_expression
-    lambda_expression
-    otherwise_expression
+    | "(" expression ")"
+    | identifier
+    | numeric_literal
+    | boolean_literal
+    | function_call
+    | conditional_expression
+    | relational_expression
+    | binary_expression
+    | unary_expression
+    | logical_expression
+    | lambda_expression
+    | otherwise_expression
 
 identifier:
-    "[a-zA-Z\_]+"
+    | "[a-zA-Z\_]+"
 
 numeric_literal:
-    "([0-9]+)|([0-9]+.[0-9]+)"
+    | "([0-9]+)|([0-9]+.[0-9]+)"
 
-boolean_literal:
-    "true"
-    "false"
+boolean_literal: "true" | "false"
 
 function_call:
-    identifier "(" ")"
-    identifier "(" argument_list ")"
+    | identifier "(" ")"
+    | identifier "(" argument_list ")"
 
 argument_list:
-    argument
-    argument "," argument_list
+    | argument
+    | argument "," argument_list
 
 argument:
-    expression
+    | expression
 
 conditional_expression:
-    "if" expression "then" expression "else" expression
+    | "if" expression "then" expression "else" expression
 
 relational_expression:
-    expression relational_operator expression
+    | expression relational_operator expression
 
-relational_operator:
-    "=="
-    ">="
-    "<="
-    ">"
-    "<"
+relational_operator: "==" | ">=" | "<=" | ">" | "<"
 
 binary_expression:
-    expression binary_operator expression
+    | expression binary_operator expression
 
-binary_operator:
-    "+"
-    "-"
-    "*"
-    "/"
-    "%"
+binary_operator: "+" | "-" | "*" | "/" | "%"
 
 unary_expression:
-    unary_operator identifier
-    numeric_unary_operator numeric_literal
-    boolean_unary_operator boolean_literal
+    | unary_operator identifier
+    | numeric_unary_operator numeric_literal
+    | boolean_unary_operator boolean_literal
 
 unary_operator:
-    boolean_unary_operator
-    numeric_unary_operator
+    | boolean_unary_operator
+    | numeric_unary_operator
 
-boolean_unary_operator:
-    "!"
+boolean_unary_operator: "!"
 
-numeric_unary_operator:
-    "-"
+numeric_unary_operator: "-"
 
 logical_expression:
-    expression logical_operator expression
+    | expression logical_operator expression
 
-logical_operator:
-    "and"
-    "or"
+logical_operator: "and" | "or"
 
 lambda_expression:
-    expression "=>" identifier "=>" expression
+    | expression "=>" identifier "=>" expression
 
 otherwise_expression:
-    expression "otherwise" expression
+    | expression "otherwise" expression
 ```
 
 ### 2.3 Declarations
-The top-level parts of the AgentLang language are declarations. They are used to declare agents, their properties as well as global variables.
+Declarations are the top-level constructs of the AgentLang language. They are used to declare agents, their properties and global variables.
 
 #### 2.3.1 Agents
 Agent is the main building block of the AgentLang simulation. It represents an agent model and its properties and is used for generating a set of agents for the simulation. Agents are always declared in the top-level program scope and they cannot be nested. Defining multiple agent models is also supported.
 
-To declare an agent, use the `agent` keyword followed by its identifier, number of agents to generate and the agent body enclosed in curly braces. Below is an example of an agent declaration.
+To declare an `agent`, we use the following production rule:
+```
+agent_declaration:
+    | "agent" identifier agent_count "{" "}"
+    | "agent" identifier agent_count "{" agent_body "}"
+```
+Below is an example of an `agent` declaration.
 ```
 agent car 20 {
     ...
@@ -277,7 +289,7 @@ Properties are essential in defining the behaviour of an agent model. They can b
 AgentLang supports two types of properties, which are `property` and `const`. While `property` is recalculated in each step of the simulation based on the most current values, `const` is calculated only at the beginning of the simulation, holding a constant value throughout the entire course of the simulation.
 
 ##### 2.3.2.1 Const
-Property of type `const` is a special kind of property, which holds a constant value during the entire simulation. It is calculated only once as the agent is generated.
+Property of type `const` is a special kind of property, which holds a constant value during the entire run-time simulation. It is calculated only once as the agent is generated.
 
 To declare a `const` property, use the following grammar production rule:
 ```
@@ -290,7 +302,7 @@ agent car 20 {
     const max_speed = 260;
 }
 ```
-Properties of type `const` are used for instance when generating random initial coordinates of agents, since they are calculated only once at the beginning of the simulation.
+Properties of type `const` are used in cases when we need to for instance generate random initial coordinates of agents, since they are calculated only once at the beginning of the simulation.
 ```
 agent person 10 {
     const x_spawn = random(100, 200);
@@ -299,7 +311,7 @@ agent person 10 {
 ```
 
 ##### 2.3.2.2 Property
-Property of type `property` is the most commonly used type of property. It is recalculated in each step of the simulation for every agent, based on the most current values.
+Property of type `property` is the most commonly used type of property in AgentLang. It is recalculated in each step of the simulation for every agent, based on the most current values.
 
 To declare a `property` property, use the following grammar production rule:
 ```
@@ -347,17 +359,17 @@ agent entity 1 {
     property b = a + 2;
 }
 ```
-This example would throw an error, since there is a cycle in the property declarations. In order to fix this, we need to initialise a default value to one of the properties, which will be evaluated first, so that the other property can calculate its value based on the first property.
+This example would throw an error, since there is a cycle in the property declarations. In order to fix this, we need to assign a default value to one of the properties, which will be evaluated first, so that the other property can calculate its value based on the first property.
 ```
 agent entity 1 {
     property a = b + 1;
     property b: 0 = a + 2;
 }
 ```
-This topic concerns the topological sorting mechanism implemented in the AgentLang's interpreter, which will be explained to greater detail in the later sections.
+The above example would work, since at least one of the cyclic properties is assigned a default initial value. This topic, however, concerns the topological sorting mechanism implemented in the AgentLang's interpreter, which will be explained later in the thesis.
 
 #### 2.3.3 Global Variables
-Apart from local agent property declarations, AgentLang supports the declaration of global variables which can be reused among all agent types as constant values. Global variables are always declared in the top-level program scope and the best practice is to declare them before all agent declarations.
+Apart from local agent property declarations, AgentLang supports the declaration of global variables which can be reused among all agent models as constant values. Global variables are always declared in the top-level program scope and the best practice is to declare them before all agent declarations.
 
 To declare a global variable, we use the following production rule.
 ```
@@ -380,10 +392,12 @@ agent car 10 {
 Note that global variables cannot contain any identifiers or function calls in their definition. They are plain constant values which can only hold numeric or boolean literals.
 
 ### 2.4 Data Types
-The following sections describe data types that AgentLang supports.
+The following sections describe supported data types in the AgentLang programming language.
 
 #### 2.4.1 Numeric Literal
 Numeric literal is one of the two primitive data types in AgentLang. A numeric literal represents either an integer or a decimal number. Decimal numbers can have any number of decimal points, however, they are always rounded to two decimal places in the output of the simulation.
+
+TODO: fix two decimal points in the implementation
 
 Numeric literals can be used in many ways, either as raw numeric values, or in any numeric expression, such as binary or unary expressions or as parameters to function calls.
 ```
@@ -409,13 +423,13 @@ agent data_instance 10 {
 }
 ```
 
-#### 2.4.3 Agent List
-Agent List is a special type of array that contains agent instances. Moreover, it is the only type of array AgentLang supports. This array cannot be defined explicitely, but results from various built-in function calls.
+#### 2.4.3 AgentList
+AgentList is a special type of array that holds agent instances. Moreover, it is the only type of array AgentLang supports. This array cannot be defined explicitely, but results from various built-in function calls.
 
-The easiest way to get an array of agents is to use the `agents()` method, which returns the current array of agent instances of some type.
+The easiest way to retrieve an array of agents is to use the `agents()` function, which returns the current array of agent instances of some type.
 ```
 agent prey 10 {
-
+    ...
 }
 
 agent predator 5 {
@@ -424,12 +438,12 @@ agent predator 5 {
 ```
 The `targets` property holds an array of agent instances of type `prey` with their most recent values.
 
-Agent List, however, cannot be indexed. It can only be used as input to other build-in functions, which will be explained later. Also, there are more built-in functions returning an array of agents, however, they will be discussed in later sections.
+AgentList, however, cannot be indexed. It can only be used as input to other build-in functions, which will be explained in later sections. Also, there are more built-in functions returning an array of agents, however, they will be discussed in later sections.
 
-#### 2.4.4 Agent Object
-Agent Object represents one specific agent instance and its properties. It can be used to retrieve the agent's property values and use them in the current agent.
+#### 2.4.4 AgentObject
+AgentObject represents one specific agent instance and its properties. It can be used to retrieve an agent's property values and use them in the current agent.
 
-Agent Object can be retrieved only by using specific built-in function calls, such as `min()`.
+AgentObject can be retrieved only by using specific built-in function calls, such as `min()`.
 ```
 agent person 10 {
     property x = ...;
@@ -450,7 +464,7 @@ agent person 10 {
 The structure of lambda expressions and other complex expressions and techniques will be explained in later sections.
 
 #### 2.4.5 Null
-Null is a special type of value that represents an undefined or missing value. It is tightly bound to the Agent Object data type. Note the following example.
+Null is a special type of data tyoe that represents an undefined or missing value. It is tightly bound to the AgentObject data type. Note the following example.
 ```
 define visual_range = 65;
 
@@ -462,12 +476,12 @@ agent person 10 {
     property close_person = min(close_people => c => dist(c.x, c.y, x, y));
 }
 ```
-The `close_person` property attempts to find an agent that is the closest to the current agent, but is also in the visual range of 65. If there are no agents in this visual range, the `close_person` searches an empty array and cannot retrieve a specific agent instance. Therefore, it holds a Null value.
+The `close_person` property attempts to find an agent that is the closest to the current agent, but is also in the visual range of 65. If there are no agents in this visual range, the `close_person` searches an empty array and cannot retrieve a specific agent instance. Therefore, it is assigned a Null value.
 
-A problem with Null values, however, is that we cannot use it in other properties. More specifically, we cannot retrieve the agent's properties, since it does not hold an agent instance, but a Null value. That is why the `otherwise` expression exists in AgentLang, which tackles Null values, but it will be discussed in later sections.
+A problem with Null values, however, is that we cannot use it in other properties. More specifically, we cannot retrieve the agent's properties, since it does not hold any agent instance, rather a Null value. That is why the `otherwise` expression exists in AgentLang, which tackles Null values, but it will be discussed in later sections.
 
 ### 2.5 Expressions
-The following sections introduce all supported expression in AgentLang, from basic ones such as binary or relational expressions to more complex and language-specific expression such as the `otherwise` expression.
+The following sections introduce all supported expressions in AgentLang, from basic ones such as binary or relational expressions to more complex and language-specific expressions such as the `otherwise` expression.
 
 #### 2.5.1 Binary Expressions
 Binary expression is the most basic expression in AgentLang. It consists of two numeric operands and one operator. The operator can be of type addition, subtraction, multiplication, division or modulo. These expressions can be arbitrarily nested and parenthesised.
@@ -488,7 +502,7 @@ agent data_instance 1 {
 There are two types of unary expressions, which are numeric and boolean unary expressions.
 
 ##### 2.5.2.1 Numeric Unary Expression
-Numeric unary expression is used to convert a positive number to a negative number using the minus `-` operator. The operand can be either a plain number or an identifier holding a numeric value.
+Numeric unary expression is used to convert a positive number to a negative number using the minus `-` operator. The operand can either be a plain numeric literal or an identifier holding a numeric value.
 ```
 agent data_instance 1 {
     const value = 12.6;
@@ -498,7 +512,7 @@ agent data_instance 1 {
 ```
 
 ##### 2.5.2.2 Boolean Unary Expression
-Boolean unary expression is used to negate a boolean value using the emphasis `!` operator. The operand can be either a plain boolean (`true` or `false`) or an identifier holding a boolean value.
+Boolean unary expression is used to negate a boolean value using the emphasis `!` operator. The operand can either be a plain boolean literal (`true` or `false`) or an identifier holding a boolean value.
 ```
 agent data_instance 1 {
     const value = false;
@@ -508,7 +522,7 @@ agent data_instance 1 {
 ```
 
 #### 2.5.3 Logical Expressions
-Logical expressions are exressions operating on booleans and always return a boolean value as the result. They are special types of binary expressions which use operators `and` and `or` with boolean operands on both sides.
+Logical expressions are expressions operating on boolean literals and always return a boolean value as the result. They are special types of binary expressions which use the operators `and` and `or` with boolean operands on both sides.
 ```
 agent data_instace 1 {
     const value_one = true and false;
@@ -518,9 +532,9 @@ agent data_instace 1 {
 The first property `value_one` returns `false`, since not all operands are `true` and the second property `value_two` returns `true`, since at least one operand is `true`.
 
 #### 2.5.4 Relational Expressions
-Relational expressions are special types of binary expressions that operate on numeric or boolean operands but return boolean results. They use relational operands, such as `==`, `!=`, `>`, `>=`, `<` and `<=`. These operators are used to compare two numbers or booleans.
+Relational expressions are special types of binary expressions that operate on numeric or boolean operands but always return boolean results. They use relational operands, such as `==`, `!=`, `>`, `>=`, `<` and `<=`. These operators are used to compare two numeric or boolean literals.
 
-The `==` and `!=` operators can be used with either numbers and booleans and they check for equality. If the two values are equal or not-equal, the result is `true`, otherwise `false`.
+The `==` and `!=` operators can be used with either numbers and booleans, since they check for value equality. If the two values are equal or not-equal, the result is `true`, otherwise `false`.
 ```
 agent data_instance 1 {
     const bool_1 = true;
@@ -542,9 +556,14 @@ agent data_instance 1 {
 ```
 
 #### 2.5.5 Conditional Expressions
-Conditional expressions are used to control branch and control the calculation of property values. They decide between two options based on some condition. The condition is always a boolean expression and the results can be of any type.
+Conditional expressions are used to control the calculation of property values. They decide between two options based on some condition. The condition is always a boolean expression and the results can be of any type, based on the datatype of the given property.
 
-To use a conditional expression, we use the `if`, `then` and `else` keywords. The `if` keyword marks the start of a conditional expression. It is followed by a boolean expression denoting the condition upon which the structure decides. Then comes the `then` keyword followed by an expression representing the value to be used if the condition is met (is `true`). Finally comes the `else` keyword followed by an expression representing the value to be used if the condition is not met (is `false`).
+We use the following production rule for defining a conditional expression:
+```
+conditional_expression:
+    | "if" expression "then" expression "else" expression
+```
+The `if` keyword marks the start of a conditional expression. It is followed by a boolean expression denoting the condition upon which the structure decides. Then comes the `then` keyword followed by an expression representing the value to be used if the condition is met (is `true`). Finally comes the `else` keyword followed by an expression representing the value to be used if the condition is not met (is `false`).
 ```
 define max_speed = 10;
 
@@ -555,7 +574,7 @@ agent person 5 {
 The above example controls the maximum value of `speed` using the `max_speed` global variable. If it overflows, it keeps the `max_speed` value, otherwise it is randomly incremented or decremented.
 
 #### 2.5.6 Otherwise Expressions
-Otherwise expression are very specific types of expression used to handle Null values. It is a binary expression with the operand `otherwise`. The left-hand side of the `otherwise` expression consists of any expression containing a value of type Agent Object. The right-hand side consists of any expression that does not contain a value of type AgentObject. When the `otherwise` expression is being evaluated, AgentLang checks whether the value of type Agent Object on the left-hand side is Null. If not, it evaluates the left-hand side expression and uses its value. On the other hand, if the value is Null, it instantly switches to the right-hand side of the expression and evaluates and uses it. Otherwise expressions serve as guards for null values, since sometimes we cannot tell if a value of type Agent Object is Null during runtime.
+Otherwise expression is a very specific type of expression used to tackle issues with Null values. It is a binary expression with the `otherwise` operator. The left-hand side of the `otherwise` expression consists of any expression containing a value of type AgentObject. The right-hand side consists of any expression that does not contain a value of type AgentObject. When the `otherwise` expression is being evaluated, AgentLang checks whether the value of type AgentObject on the left-hand side is Null. If not, it evaluates the left-hand side expression and uses its value. On the other hand, if the value is Null, it instantly switches to the right-hand side of the expression, evaluates it and uses it. Otherwise expressions serve as guards for Null values, for sometimes we cannot tell if a value of type AgentObject is Null during runtime.
 ```
 define visual_range = 60;
 
@@ -572,16 +591,19 @@ agent person 120 {
     property y_move = (closest.y - y) / 10 otherwise 0;
 }
 ```
-
-The above example finds all people in some visual proximity of the current person and select the closest person from the list. It then calculates the direction in which the current person should move to approach the closest person. However, we cannot be certain that we will find some people in proximity. If not, the Agent List array will be empty and the `closest` property will be therefore Null. That is why we used the `otherwise` keyword to ensure that if no such person is found, we will use values `0` for the movement properties.
+The above example finds all people in some visual proximity of the current person and selects the closest person from the list. It then calculates the direction in which the current person should move to approach the closest person. However, we cannot be certain that we will find any people in the given proximity. If not, the AgentList array will be empty and the `closest` property will therefore be Null. That is why we used the `otherwise` keyword to ensure that if no such person is found, we will use values `0` for the movement properties.
 
 #### 2.5.7 Lambda Expressions
-Lambda expressions are specific types of expressions that cannot be used on their own. Their only use case is as parameters to lambda-specific built-in functions. They are rather a syntactial structure than an expression. They are used for traversing a list of agents and manipulating it. Use cases include filtering of agents, summing certain agent properties or finding a specific agent based on some condition.
+Lambda expressions are specific types of expressions that cannot be used on their own. Their only use case is as parameters to lambda-specific built-in functions. They are rather a syntactial structure than an expression and they are used for traversing a list of agents and manipulating it in some way. Use cases include filtering of agents, summing certain agent properties or finding a specific agent based on some condition.
 
 There are several built-in functions that take lambda expression as their parameter, some of which are `filter()`, `sum()`, `min()` and `max()`.
 
-To use a lambda expression, we start with an expression holding a value of type AgentList, followed by a lambda arrow `=>`. Then, we declare the lambda parameter name, which is any identifier we choose, such as `item` followed again by a lambda arrow `=>`. The final part of the lambda expression is an expression representing for instance a condition based on which to manipulate the agents.
-
+To define a lambda expression, we use the following production rule:
+```
+lambda_expression:
+    | expression "=>" identifier "=>" expression
+```
+We start with an expression holding a value of type AgentList, followed by a lambda arrow `=>`. Then, we declare the lambda parameter name, which is any identifier we choose, such as `item` followed again by a lambda arrow `=>`. The final part of the lambda expression is an expression representing for instance a condition based on which to manipulate the agents.
 ```
 define visual_range = 60;
 
