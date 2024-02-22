@@ -7,11 +7,6 @@ Charles University in Prague, Czech Republic
 **Department**: Department of Distributed and Dependable Systems \
 **Supervisor**: Tomáš Petříček
 
-## TODO
-- add example program to introduction
-- add closing paragraph to introduction
-- add bullet points into introduction depicting the most important concepts that AgentLang provides
-
 ## Abstract
 In this thesis, we develop a new programming language (AgentLang) designed exclusively for modeling agent-based simulations. Agent-based modeling refers to a simulation technique that analyses the dynamics of a simulation using the decisions of autonomous entities called agents and is becoming more and more popular, since these models are easier to understand than more complex mathematical models. The language provides constructs for defining agents and their decision-making logic, while maintaining high level of syntax and semantic simplicity, making it simple to learn and use. The simulation operates in an incremental manner, allowing for evalutation and debugging of each step separately. Apart from the language itself, the project provides a web-based sandbox with a spreadsheet interface, through which it is possible to adjust agent parameters and values during runtime of the simulation. Although there are numerous agent-based tools available, this language together with the spreadsheet interface aims to provide a new approach for modeling agent-based simulations and makes agent-based modeling more accessible to people of all scientific and non-scientific fields.
 
@@ -35,7 +30,7 @@ agent snowflake 500 {
 ```
 The above simple example generates a set of snowflakes with random falling speed and let them fall on the ground by incrementing their vertical coordinates by their speed.
 
-In conclusion, the main intention behind the creation of the AgentLang suite is to make agent-based modeling available to all scientific domains, regardless of their technical background, allowing for a very shallow learning curve and usability using the following features:
+In conclusion, the main intention behind the creation of the AgentLang suite is to make agent-based modeling available to all scientific domains, regardless of their technical background, allowing for a very shallow learning curve and usability using the following benefits:
 - simplistic language syntax designed for easy conversion to the spreadsheet representation
 - spreadsheet interface for almost no-code modeling
 - built-in visualisation module for better understanding of the simulation
@@ -481,10 +476,10 @@ The `close_person` property attempts to find an agent that is the closest to the
 A problem with Null values, however, is that we cannot use it in other properties. More specifically, we cannot retrieve the agent's properties, since it does not hold any agent instance, rather a Null value. That is why the `otherwise` expression exists in AgentLang, which tackles Null values, but it will be discussed in later sections.
 
 ### 2.5 Expressions
-The following sections introduce all supported expressions in AgentLang, from basic ones such as binary or relational expressions to more complex and language-specific expressions such as the `otherwise` expression.
+The following sections introduce and showcase all expression types supported by AgentLang, from the most basic ones such as binary or relational expressions to more complex, language-specific expressions such as the `otherwise` expression.
 
 #### 2.5.1 Binary Expressions
-Binary expression is the most basic expression in AgentLang. It consists of two numeric operands and one operator. The operator can be of type addition, subtraction, multiplication, division or modulo. These expressions can be arbitrarily nested and parenthesised.
+Binary expression is the most basic expression in AgentLang. It consists of two numeric operands and one binary operator. The operator can be of type addition, subtraction, multiplication, division or modulo. These expressions can be arbitrarily nested and parenthesised.
 ```
 agent data_instance 1 {
     const add_expr = 2 + 3;
@@ -499,7 +494,7 @@ agent data_instance 1 {
 ```
 
 #### 2.5.2 Unary Expressions
-There are two types of unary expressions, which are numeric and boolean unary expressions.
+Unary expressions consist of one numeric or boolean operand together with a unary operator. There are two unary operators, one for numeric unary expressions and the other for boolean unary expressions.
 
 ##### 2.5.2.1 Numeric Unary Expression
 Numeric unary expression is used to convert a positive number to a negative number using the minus `-` operator. The operand can either be a plain numeric literal or an identifier holding a numeric value.
@@ -522,19 +517,20 @@ agent data_instance 1 {
 ```
 
 #### 2.5.3 Logical Expressions
-Logical expressions are expressions operating on boolean literals and always return a boolean value as the result. They are special types of binary expressions which use the operators `and` and `or` with boolean operands on both sides.
+Logical expressions are expressions operating on boolean literals and always return a boolean value as the result. They are special types of binary expressions which use the `and` and `or` operators together with two boolean operands on both sides.
 ```
 agent data_instace 1 {
-    const value_one = true and false;
-    const value_two = true or false;
+    const bool_value = false;
+
+    const log_expr_and = true and bool_value;
+    const log_expr_or = true or bool_value;
 }
 ```
-The first property `value_one` returns `false`, since not all operands are `true` and the second property `value_two` returns `true`, since at least one operand is `true`.
 
 #### 2.5.4 Relational Expressions
-Relational expressions are special types of binary expressions that operate on numeric or boolean operands but always return boolean results. They use relational operands, such as `==`, `!=`, `>`, `>=`, `<` and `<=`. These operators are used to compare two numeric or boolean literals.
+Relational expressions are special types of binary expressions that operate on numeric or boolean operands and always return boolean results. They use relational operators, such as `==`, `!=`, `>`, `>=`, `<` and `<=`.
 
-The `==` and `!=` operators can be used with either numbers and booleans, since they check for value equality. If the two values are equal or not-equal, the result is `true`, otherwise `false`.
+The `==` and `!=` operators can be used with either numbers and booleans, since they check for value equality. The rest of the relational operators operate on numeric values.
 ```
 agent data_instance 1 {
     const bool_1 = true;
@@ -556,7 +552,7 @@ agent data_instance 1 {
 ```
 
 #### 2.5.5 Conditional Expressions
-Conditional expressions are used to control the calculation of property values. They decide between two options based on some condition. The condition is always a boolean expression and the results can be of any type, based on the datatype of the given property.
+Conditional expressions are used to control the branching of property values. They decide between two alternatives based on some condition. The condition is always a boolean expression and the results can be of any type, based on the data type of the given property.
 
 We use the following production rule for defining a conditional expression:
 ```
@@ -574,7 +570,11 @@ agent person 5 {
 The above example controls the maximum value of `speed` using the `max_speed` global variable. If it overflows, it keeps the `max_speed` value, otherwise it is randomly incremented or decremented.
 
 #### 2.5.6 Otherwise Expressions
-Otherwise expression is a very specific type of expression used to tackle issues with Null values. It is a binary expression with the `otherwise` operator. The left-hand side of the `otherwise` expression consists of any expression containing a value of type AgentObject. The right-hand side consists of any expression that does not contain a value of type AgentObject. When the `otherwise` expression is being evaluated, AgentLang checks whether the value of type AgentObject on the left-hand side is Null. If not, it evaluates the left-hand side expression and uses its value. On the other hand, if the value is Null, it instantly switches to the right-hand side of the expression, evaluates it and uses it. Otherwise expressions serve as guards for Null values, for sometimes we cannot tell if a value of type AgentObject is Null during runtime.
+Otherwise expression is a language-specific type of expression used to handle issues with Null values. It is a binary expression that uses the `otherwise` operator between the two operands.
+
+The left-hand side of the `otherwise` expression consists of any expression containing a value of type AgentObject. The right-hand side consists of any expression that does not contain a value of type AgentObject. When the `otherwise` expression is being evaluated, AgentLang checks whether the value of type AgentObject on the left-hand side is Null. If not, it evaluates the left-hand side expression. On the other hand, if the value is Null, it instantly switches to the right-hand side of the expression, evaluates it and uses it.
+
+Otherwise expressions serve as guards for Null values, for we cannot tell if a value of type AgentObject is Null during static code analysis.
 ```
 define visual_range = 60;
 
@@ -591,10 +591,10 @@ agent person 120 {
     property y_move = (closest.y - y) / 10 otherwise 0;
 }
 ```
-The above example finds all people in some visual proximity of the current person and selects the closest person from the list. It then calculates the direction in which the current person should move to approach the closest person. However, we cannot be certain that we will find any people in the given proximity. If not, the AgentList array will be empty and the `closest` property will therefore be Null. That is why we used the `otherwise` keyword to ensure that if no such person is found, we will use values `0` for the movement properties.
+The above example finds all people in some visual proximity to the current person and selects the closest person from the list. It then calculates the direction in which the current person should move in order to approach the closest person. However, we cannot be certain that we will find any people in the given proximity. If that's the case, the AgentList array will be empty and the `closest` property will therefore result in a Null value. That is why we used the `otherwise` operator to ensure that if no such person is found, we will use values `0` for the movement properties.
 
 #### 2.5.7 Lambda Expressions
-Lambda expressions are specific types of expressions that cannot be used on their own. Their only use case is as parameters to lambda-specific built-in functions. They are rather a syntactial structure than an expression and they are used for traversing a list of agents and manipulating it in some way. Use cases include filtering of agents, summing certain agent properties or finding a specific agent based on some condition.
+While being classified as expression, Lambda expression is rather a syntactical structure that an expression. It cannot be used on its own, but only as parameters to lambda-specific built-in functions. They are mainly used for traversing a arrays of agent instances and manipulating it in some way. Use cases include filtering of agents, summing certain agent properties or finding a specific agent based on some condition.
 
 There are several built-in functions that take lambda expression as their parameter, some of which are `filter()`, `sum()`, `min()` and `max()`.
 
@@ -603,7 +603,7 @@ To define a lambda expression, we use the following production rule:
 lambda_expression:
     | expression "=>" identifier "=>" expression
 ```
-We start with an expression holding a value of type AgentList, followed by a lambda arrow `=>`. Then, we declare the lambda parameter name, which is any identifier we choose, such as `item` followed again by a lambda arrow `=>`. The final part of the lambda expression is an expression representing for instance a condition based on which to manipulate the agents.
+We start with an expression holding a value of type AgentList, followed by a Lambda arrow `=>`. Then, we declare the Lambda parameter name, which is any identifier we choose, such as `item` followed again by a lambda arrow `=>`. This parameter is used to access each agent instance in the array, one by one. The final part of the Lambda expression is an expression representing for instance a condition based on which to manipulate the agent instances.
 ```
 define visual_range = 60;
 
@@ -615,13 +615,12 @@ agent person 120 {
     property in_proximity = filter(people => p => dist(p.x, p.y, x, y) <= distance);
 }
 ```
-The `filter()` function takes a lambda expression as a parameter. We use the `p` parameter to access each individual agent and their properties. Finally, the right-hand side of the lambda expression is used for filtering the agents based on their proximity to the current agent. The result of `in_proximity` property is a filtered array of agents of type `person`.
+The `filter()` function takes a Lambda expression as a parameter. We use the `p` parameter to access each individual agent instance and their properties. Finally, the right-hand side of the lambda expression is used for filtering the agent arrat based on the proximity of each agent instance to the current agent. The result of `in_proximity` property is a filtered array of agents of type `person`.
 
 ### 2.6 Core Library
-The AgentLang core library consists of built-in functions necessary for agent manipulation and mathematical calculations. Below is the complete list of built-in functions and their usage.
+The AgentLang's core library consists of several built-in functions necessary for agent manipulation and mathematical calculations. Below is the complete list of built-in functions and their usage.
 
 #### 2.6.1 Mathematical Functions
-
 The `sqrt(number): number` function is used to calculate the square root of a numeric value.
 
 The `abs(number): number` function is used to calculate the absolute value of a numeric value.
@@ -643,7 +642,6 @@ The `atan(number): number` function is used to return the arc tangent value of a
 The `pi(): number` function is used to return the value of Pi (3.14...).
 
 #### 2.6.2 Agent Manipulation Functions
-
 The `filter(lambda): AgentList` function takes a lambda argument with a boolean expression as its value and returns a filtered list of agents based on this value.
 
 The `sum(lambda): number` function takes a lambda argument with a numeric expression as its value and returns a sum of these values (from all agents).
@@ -653,7 +651,6 @@ The `min(lambda): AgentObject` function takes a lambda argument with a numeric e
 The `max(lambda): AgentObject` function takes a lambda argument with a numeric expression as its value and returns an agent object with the maximum corresponding value.
 
 #### 2.6.3 Utility Functions
-
 The `agents(identifier): AgentList` function returns the list of all agents of the provided type.
 
 The `count(identifier): number` function takes an agent identifier as a parameter and returns the number of agents of this type present in the simulation.
@@ -665,7 +662,6 @@ The `prob(number): boolean` function takes a decimal numeric value between 0 and
 The `dist(number, number, number, number): number` function is used to calculate the distance betweem two points in a two-dimensional space. The parameters represent `x1`, `y1`, `x2` and `y2` values.
 
 #### 2.6.4 Special Functions
-
 The `width(): number` function returns the current width of the visualisation grid, which was provided in the interpreter's configuration.
 
 The `height(): number` function returns the current height of the visualisation grid, which was provided in the interpreter's configuration.
@@ -674,18 +670,21 @@ The `index(): number` function returns the numeric index of the current agent, s
 
 The `step(): number` function returns the current step, starting from 0.
 
-## 3. Implementation
-The following sections describe the basics about the AgentLang interpreter's implementation and point out the most important or interesting parts of its architecture and functioning.
+## 3. Interpreter API
+The following sections describe the public API of the AgentLang interpreter.
 
-### 3.1 Overview and Architecture
-The AgentLang's interpreter is written in TypeScript. The choice of this specific language resulted from various reasons. First and foremost, we needed good compatibility and integrability with the web-based interface, which is the primary environment where AgentLang is used. Furthemore, there was no strong need for high performance, since AgentLang is intended mainly for simple simulations as a proof of concept of the language itself. Since modern web applications are written mainly in JavaScript frameowks and we opted for the TypeScript-based Next.js framework for the web interface, TypeScript felt like a solid choice and a common ground for this project.
+## 4. Implementation
+The following sections describe the basics about the AgentLang interpreter's implementation and point out the most important and interesting parts of its architecture and functioning.
 
-The interpreter itself follows an architecture resembling a pipeline architectural style. It consists of five main parts, which are symbolizer, lexer, parser, runtime and intepreter. The AgentLang source code is passed to the symbolizer, which splits the source code into individual symbols and their positions. These are forwarded to the lexer, which tranforms the input symbols into tokens. Tokens represent low-level units of the program, such as keywords, language-specific symbols, identifiers, numbers etc. This step is called lexical analysis. Tokens are then passed to the parser, whose main function is to analyze these tokens and their order, validate them and generate a tree-like structure representing the semantics of the program. This step is called semantic analysis and it produces a so called abstract syntax tree (henceforth referred to as AST) holding the entire structure of the program. If the program is without any lexical or semantical errors, the AST is passed to the runtime module, which is responsible for traversing the structure, interpreting it in real-time and producing the program's output. All of these four modules are controlled by the interpreter module, which takes source code as its input, runs it through the four aforementioned modules and provides the result of the program.
+### 4.1 Overview and Architecture
+The AgentLang's interpreter is written in TypeScript. The choice of this specific language resulted from various reasons. First and foremost, we needed good compatibility and integrability with the web-based interface, which is the primary environment where AgentLang is intended to be used. Furthemore, there was no primary need for high performance, since AgentLang is intended mainly for simple simulations, as a proof of concept of the language itself. Since modern web applications are written mainly in JavaScript frameworks and we opted for the TypeScript-based Next.js framework for the web interface, TypeScript felt like a natural choice and and common ground for this project.
 
-#### 3.1.1 Symbolizer
-Symbolizer is a very simple module responsible for one task only - to convert the source code to individual symbols and produce metadata for each symbol, such as its position in the source code. Although it can be a part of the lexer module itself, we decided to put it to a standalone module for better modularity and code readability.
+The interpreter itself follows an architecture resembling a pipeline architectural style. It consists of five main parts, which are symbolizer, lexer, parser, runtime and intepreter. The AgentLang source code is passed to the symbolizer, which splits the source code into individual symbols, each holding information about their positions in the source code. These are then forwarded to the lexer, which tranforms the input symbols into tokens. Tokens represent low-level units of the program, such as keywords, language-specific symbols, identifiers, numbers etc. This step is called lexical analysis. Tokens are then passed to the parser, whose main function is to analyze these tokens and their order, validate them and generate a tree-like structure representing the semantics of the program. This step is called semantic analysis and it produces a so called abstract syntax tree (henceforth referred to as AST) holding the entire structure of the program. If the program is without any lexical or semantical errors, the AST is passed to the runtime module, which is responsible for traversing the AST structure, interpreting it in real-time and producing the program's output. All of these four modules are controlled by the interpreter module, which takes source code as its input, runs it through the four aforementioned modules and outputs the results of the program.
 
-The main and only method in the symbolizer module is `symbolize()`, which produces an array of symbols.
+#### 4.1.1 Symbolizer
+Symbolizer is a very simple module responsible for one task only - to convert the source code to individual symbols and produce metadata for each symbol, such as its position in the source code. Although it can be part of the lexer module itself, we decided to put it to a standalone module for better modularity and code readability.
+
+The primary and only method in the symbolizer module is `symbolize()`, which reads the source code character by character and produces an array of symbols.
 ```ts
 public symbolize(): Symbol[] {
   const symbols: Symbol[] = [];
@@ -706,8 +705,8 @@ export interface Position {
 }
 ```
 
-#### 3.1.2 Lexer
-As opposed to the symbolizer module, lexer performs a slightly more complicated task. The lexer module contains syntax-specific logic for correctly producing tokens supported by the language. It groups together symbols sequentially and produces corresponding tokens with correct types. For instance, it distinguishes user-defined identifiers from language-specific reserved keywords, so that the parser can handle tokens accordingly. Apart from the program's keywords, the lexer adds a special token at the end of the token array, called the end-of-file token. This token serves as an indicator to the program's end.
+#### 4.1.2 Lexer
+As opposed to the symbolizer, lexer performs a slightly more complicated task. The lexer module contains language and syntax-specific logic for correctly recognizing tokens supported by the language. It groups together symbols sequentially and produces corresponding tokens with correct types. For instance, it distinguishes user-defined identifiers from language-specific, reserved keywords, so that the parser can handle these tokens accordingly. Apart from the program's keywords, the lexer adds a special token at the end of the token array, called the end-of-file token. This token serves as an indicator to the program's end.
 
 The token has again a very simple interface, holding its value, type and position in the source code. The position of a token is naturally defined by the position of the first character.
 ```ts
@@ -727,7 +726,7 @@ export enum TokenType {
   // more token types ...
 }
 ```
-The lexer itself traverses through the array of symbols and checks their value, based on which it decides which token to generate.
+The `tokenize()` method traverses the array of symbols and checks their value, based on which it decides which token to generate.
 ```ts
 public tokenize(): Token[] {
   this.clearTokens();
@@ -749,12 +748,12 @@ public tokenize(): Token[] {
 }
 ```
 
-#### 3.1.3 Parser
-Parser is without doubt one of the most interesting parts of the interpreter. Parsers are usually implemented as pushdown automata with states and transitions representing the syntax grammar of the specific language they parse. The parser automaton is fed a stream of tokens from the lexer. The evaluation starts at the initial state and based on the next token, it decides what states it goes to next. In case it comes across a token which cannot be pushed to a new state, since such state does not exist, it is redirected to a fallback state, which represents a semantical error in terms of language interpretation.
+#### 4.1.3 Parser
+Parser is without doubt one of the most interesting parts of the interpreter. Parsers are usually implemented as pushdown automata with states and transitions representing the syntax grammar of the specific language they parse. The parser automaton is fed a stream of tokens from the lexer. The evaluation starts at the initial state and based on the next token, it decides what state it goes to next. In case it comes across a token which cannot be pushed to a new state, since such state does not exist, it is redirected to a fallback state, which represents a semantical error in terms of language interpretation.
 
 Pushdown automata can be implemented in various ways. I opted for recursive descent parsing, which is a top-down parsing technique where the parser starts with the top-level grammar rule and recursively applies production rules to recognize the input. Each non-terminal in the grammar corresponds to a method of the parser and these methods call each other to parse different structures and parts of the input. The idea behind the implementation of such pushdown automaton is that the stack of the automaton is implemented using the call-stack of the language (TypeScript) itself. We are pushing non-terminals onto the stack, processing them, producing parts of the AST and in case of correct input eventually ending up back in the initial state with an empty stack.
 
-The first non-terminal is the initial state, which is the program itself.
+The first non-terminal is the initial state, which is the program itself, represented by the `parse()` method. It reads the tokens one by one, until it reaches the end of the program, represented by the end-of-file token.
 ```ts
 public parse(): Program {
   const program = this.createEmptyProgram();
@@ -767,7 +766,7 @@ public parse(): Program {
   return program;
 }
 ```
-In AgentLang, the top-level program scope allows for two declarations, which is the declaration of a global variable or an agent, both are statements.
+In AgentLang, the top-level program scope allows for two declarations, which is the declaration of a global variable or an agent. Both of them are statements.
 ```ts
 private parseStatement(): Statement {
   switch (this.at().type) {
@@ -780,9 +779,9 @@ private parseStatement(): Statement {
   }
 }
 ```
-The parser checks whether the program continues with a `define` declaration or an `agent` declaration. If so, it parses the appropriate declaration and returns it as a sub-part of the AST which is being generated. Otherwise, it is redirected to the fallback state (semantical error), which is implemented as an exception.
+The parser checks whether the program continues with a `define` keyword or an `agent` keyword. If so, it parses the appropriate declaration using another specific method and returns it as a sub-part of the AST which is being generated. Otherwise, it is redirected to the fallback state (semantical error), which is implemented as an exception.
 
-To illustrate a basic technique for parsing a variable, we provide an example of parsing the `define` declaration.
+To illustrate a basic technique for parsing a variable, below is an example of parsing the `define` declaration.
 ```ts
 private parseDefineDeclaration(): DefineDeclaration {
   if (this.isNotOf(TokenType.Define)) {
@@ -821,7 +820,9 @@ private parseDefineDeclaration(): DefineDeclaration {
   return defineDeclaration;
 }
 ```
-This method sequentially checks for current token types, saves the important tokens and their values to local variables and if all is correct, returns an object representing the `define` declaration with all its metadata needed for the runtime module. This object is one node of the AST, which is being generated by the parser. There are numerous node types (non-terminals), each representing an essential meaningful unit of the AST, such as variable declaration, binary expression, call expression etc.
+This method sequentially checks for current token types, saves the important tokens and their values to local variables and if all is correct, returns an object representing the `define` declaration with all its metadata needed by the runtime module. This object is one node of the AST, which is being generated by the parser.
+
+There are numerous node types (non-terminals), each representing an essential meaningful unit of the AST, such as variable declaration, binary expression, call expression etc.
 
 It is also important to mention, that the order in which these parser methods call themselves is of high importance, especially in parsing expressions. Let's illustrate this on an example of parsing additive and multiplicative expressions.
 ```ts
@@ -847,16 +848,16 @@ private parseAdditiveExpression(): Expression {
   return left;
 }
 ```
-This method is responsible for parsing an additive binary expression in form of `number +/- number`. Notice that first, the left-hand side of the expression is evaluated by the `parseMultiplicativeExpression()` function call. This is due to the operator precedence in mathematics. During runtime, the AST is evaluated using depth-first search (DFS), meaning that the lower a node is, the sooner is is evaluated. Since multiplicative operators have higher precedence than additive operators, we need to parse them first. This also applies to the right-hand side of the additive binary expression, which is evaluated using the `parseMultiplicativeExpression()` function call, which attempts to parse a potential multiplicative binary expression before returning the additive binary expression. After parsing the left-hand side of the expression, if the additive operator is not found, the left-hand side is returned as it is (which is expected to be a multiplicative binary expression, however, since the `parseMultiplicativeExpression()` works based on the same mechanism, it further nests into more and more low-level expression types, reaching primary expressions at the end).
+This method is responsible for parsing an additive binary expression. Note that firstly the left-hand side of the expression is evaluated by the `parseMultiplicativeExpression()` function call. This is due to the concept of operator precedence in mathematics. During runtime, the AST is evaluated using depth-first search (DFS), meaning that the lower a node is, the sooner it is evaluated. Since multiplicative operators have higher precedence than additive operators, we need to parse them first. This also applies to the right-hand side of the additive binary expression, which is evaluated using the `parseMultiplicativeExpression()` function call, which attempts to parse a potential multiplicative binary expression before returning the parent additive binary expression. After parsing the left-hand side of the expression, if the additive operator is not found, the left-hand side is returned as it is (which is expected to be a multiplicative binary expression, however, since the `parseMultiplicativeExpression()` works based on the same mechanism, it further nests into more and more low-level expression types, reaching primary expressions at the end).
 
-We talk a lot about the AST, now let's look at how the AST actually looks like. Suppose the following simple AgentLang program.
+To better understand the AST structure, let's look at the following AgentLang code.
 ```
 agent person 1 {
     const age = 28;
     const is_employed = false;
 }
 ```
-The corresponding AST looks like this.
+It is a simple program containing one agent declaration with two constant properties. The program is syntactically valid and after evaluation, the parser returns the following AST.
 ```json
 {
   "type": "Program",
@@ -920,14 +921,14 @@ The corresponding AST looks like this.
   }
 }
 ```
-The top-level unit (root node) is the program itself. It has a body, which is an array of statements (declarations). In our program, the only statement is the one agent declaration with identifier `person`. The agent declaration also has a body, which is an array of property declarations. The first property declaration has a value of a numeric literal, whereas the second property declaration has a value of a boolean literal. Each node also has the `position` property holding the line number and character of the corresponding node in the source code, which is useful for providing the user a detailed description of potential errors. This above AST is a real example of the AgentLang parser's output, which is then passed to the runtime module for real-time AST evaluation.
+The top-level unit (root node) is the program itself. It has a body, which is an array of statements (declarations). In our example program, the only statement is an agent declaration with identifier `person`. This agent declaration also has a body, which is an array of property declarations. The first property declaration has a value of a numeric literal, whereas the second property declaration has a value of a boolean literal. Each node also has the `position` property holding the line number and character of the corresponding node in the source code, which is useful for providing the user a detailed description of potential errors. This above AST is a real example of the AgentLang parser's output, which is then passed to the runtime module for real-time AST evaluation.
 
-#### 3.1.4 Runtime
-The runtime module is responsible for traversing the input AST, evaluating it in real-time and producing the program's output. This technique is however specific to interpreters only. Interpreters depend on the implementation language, in this case TypeScript, that only recognizes the intentions of the AgentLang program and performs calculations of the AgentLang's program using its own data types, structures and mechanisms, whereas compilers transform the AST into machine instructions directly executable by the target CPU architecture. Therefore interpreters are in most cases slower than compilers.
+#### 4.1.4 Runtime
+The runtime module is responsible for traversing the input AST, evaluating it in real-time and producing the program's output. This technique is however specific to interpreters only. Interpreters depend on the implementation language, in this case TypeScript, that merely recognizes the intentions of the AgentLang program and performs calculations of the AgentLang's program using its own data types, structures and mechanisms, whereas compilers transform the AST into machine instructions directly executable by the target CPU architecture. Therefore interpreters are in most cases slower than compilers.
 
-AgentLang's runtime module uses an abstract interface called `RuntimeValue` across all its functionality, which represents a real value calculated from the AST. For instance, binary expressions contain many operands, operators and nested or parenthesised expressions. However, these binary expressions are only defined in the context of AST. When a binary expression in an AST is being evaluated by the runtime module, it is traversed, calculated and its result is a single instance of the `RuntimeValue` interface holding the resulting numeric value.
+AgentLang's runtime module uses an abstract interface called `RuntimeValue` across all its functions, which represents a real value calculated from the AST. For instance, binary expressions contain many operands, operators and nested or parenthesised expressions. However, these binary expressions are only defined in the context of AST. When a binary expression in an AST is being evaluated by the runtime module, it is traversed using depth-first search, calculated and its result is a single instance of the `RuntimeValue` interface holding the resulting value (numeric value in case of binary expressions).
 
-The output of the runtime module is an object based on the `RuntimeOutput` interface, defined as follows.
+As mentioned earlier, the input of the runtime module is the AST structure. However, its output is an object based on the `RuntimeOutput` interface, defined as follows.
 ```ts
 export interface RuntimeOutput extends RuntimeValue {
     type: ValueType.Output;
@@ -941,11 +942,11 @@ export interface RuntimeAgent {
     variables: Map<string, RuntimeValue>;
 }
 ```
-The output emits an array of agents with their current property values as well as the value of the current step.
+Note that the `RuntimeOutput` interface is also based on the `RuntimeValue` interface to keep the compatibility of the runtime module methods. The output emits an array of agents with their current property values as well as the number of the current step.
 
-The array of agents is saved in the runtime module to a variable called `previousAgents: RuntimeAgent[]`. This is because the values of properties in the next step are calculated from their previous values (values in the last step). This is to ensure the avoidance of problems with sequential interpreting. Since agent are evaluated one by one, it could happen that an agent's property is dependent on the previous agent's property and that would result in a chain of unwanted values in the same step. Therefore, new values are always calculated based on previous values. Step 0 is therefore a special case of step, where not only `const` properties are initialised, but also default initial values are calculated and saved to the previous output.
+After every evaluation of the current step, the resulting array of agents is cached by the runtime module to a variable called `previousAgents: RuntimeAgent[]`. This is done because the values of properties in the next step are always calculated based on their previous values (values in the last step). This is to ensure the avoidance of problems with sequential interpreting. Since agents are evaluated one by one, it could happen that an agent's property is dependent on the previous agent's property. This would result in a chain of unwanted values in the same step. Therefore, new values are always calculated based on previous values. Step 0 is therefore a special case of step, where not only `const` properties are initialised, but also default initial values are calculated and saved to the previous output.
 
-The runtime module is implemented in a similar way to the parser module. Each method has its own domain logic and is responsible for a certain type of `RuntimeValue`. These methods call each other to calculate property values. There are two special methods that do not return anything, which are the `define` declaration and `agent` declaration. The former only saves the global variable to the global environment and the latter saves the agent instance to the previous output. Below is an example of the `evaluateDefineDeclaration()` method, which evaluates the value of the global variable and saves it to the global environment for future uses.
+The runtime module is implemented in a similar way to the parser module. Each method has its own domain logic and is responsible for a certain type of `RuntimeValue` evaluation. These methods call each other to calculate property values. There are two special methods that do not return anything, which are the `define` declaration and `agent` declaration. The former only saves the global variable to the global environment and the latter saves the agent instance to the previous output. Below is an example of the `evaluateDefineDeclaration()` method, which evaluates the value of the global variable and saves it to the global environment for future uses.
 ```ts
 private evaluateDefineDeclaration(declaration: DefineDeclaration): void {
   const { identifier, value, position } = declaration;
@@ -1002,7 +1003,7 @@ The remaining evaluator methods handle specific types of nodes and return their 
 
 One interesting concept used by the runtime module is the concept of environments. There are multiple environments in an AgentLang program. Firstly, there is a global environment containing all user-defined global variables as well as built-in functions provided by the core library. Then there is the lambda environment, which holds the current value of the lambda parameter so that it can be accessed and used by the lambda value expression during calculations. Local agent environments are not needed, since agent property values are stored in the `previousOutput` variable, which serves as some kind of its own environment.
 
-#### 3.1.5 Interpreter
+#### 4.1.5 Interpreter
 The interpreter module is the last link in the chain. More specifically, it is the mother module that controls all of the aformentioned modules and handles their linking and cooperation. Moreover, it is the only public module that is intended to be used in external projects when implementing AgentLang interpreter. The interpreter module uses the `rxjs` library because of its extensive functionality over observables and subscriptions.
 
 The interpreter module contains a set of public control methods used for controlling the interpreting process. These include:
@@ -1041,12 +1042,12 @@ interpreter.start();
 ```
 After calling `interpreter.start()`, the interpreter subscription will start emitting the output 10 times with the delay of 500 milliseconds.
 
-## 4. Web Interface
+## 5. Web Interface
 Apart from the AgentLang's language interpreter, the project features a web-based interface for trying out AgentLang in practice. It consists of a code editor, visualisation view and a spreadsheet interface for manipulating agent property values during runtime.
 
 The web interface is a multi-page web application built in TypeScript on top of the Next.js framework. It consists of a landing page, sandbox page and a documentation page.
 
-### 4.1 Code Sandbox
+### 5.1 Code Sandbox
 The code sandbox is the main page of the AgentLang web interface. It is a place where the user can create projects, model simulations using the AgentLang language, run the simulations and see their results in the visualisation view and the spreadsheet interface.
 
 <img src="./assets/images/web-sandbox-page.png" width="700">
@@ -1055,14 +1056,14 @@ On the left-hand side of the window, there is a vertical scrollable list of all 
 
 On the top-right side of the window, there is a control panel with the current project's name, two input fields for updating the `steps` and `delay` parameters and a set of buttons used for handling the start, stop, pause, resume and reset of the current simulation.
 
-#### 4.1.1 Code Editor
+#### 5.1.1 Code Editor
 The code editor is a place where the user inputs the AgentLang code. It is used to model the simulation. The code editor features basic syntax highlighting and line numbering. However, it does not support code completion and code suggestions.
 
 The most recent code updates are saved automatically on every keypress without the need to press the `save` button located in the control panel. The `save` button is primarily used for saving the updated simulation name and the `steps` and `delay` parameters.
 
 After modeling the simulation, the user can start the simulation using the `start` button in the control panel.
 
-#### 4.1.2 Spreadsheet Interface
+#### 5.1.2 Spreadsheet Interface
 The spreadsheet interface is initialised and filled with data as soon as the user starts the simulation.
 
 <img src="./assets/images/spreadsheet-interface.png" width="700">
@@ -1082,25 +1083,25 @@ The visualisation view contains a panel with a real-time 2D simulation visualisa
 
 <img src="./assets/images/visualisation.png" width="700">
 
-## 5. Interesting Concepts
+## 6. Interesting Concepts
 
-### 5.1 Code Formatter
+### 6.1 Code Formatter
 
-### 5.2 Topological Sort of Properties
+### 6.2 Topological Sort of Properties
 
-## 6. Examples
+## 7. Examples
 - epidemic
 - bird flocking
 - forest fire
 - snowfall'
 
-## 7. Limitations & Future Improvements
+## 8. Limitations & Future Improvements
 
-## 7.1 Known Bugs
+### 8.1 Known Bugs
 
-## 7.2 Limitations
+### 8.2 Limitations
 
-## 7.3 Future Improvements
+### 8.3 Future Improvements
 
 ## Conclusion
 
