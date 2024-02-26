@@ -1187,29 +1187,142 @@ private topologicalSort(graph: DependencyGraph): Node[] {
 ```
 This algorithm iterates over the agent's property declarations and for each declaration, it recursively visits each node to which a directed edge from the current node exists. Moreover, it saves the visited nodes in a hash map. If we come to a node which was already visited in one iteration, we know there is a cycle in the graph. In that case, we throw an exception. Otherwise, the graph is acyclic and we can return the resulting ordering of the graph's nodes representing the order in which the agent's properties should be evaluated by the interpreter.
 
+### 6.2 Source Code Formatter
+Although AgentLang's syntax is not dependent on indents or other whitespace characters, it is a good practice to follow specific syntactical rules or recommendations for the given language. Therefore, the interpreter features a source code formatter, which formats the source code in the language-specific way on the simulation startup.
+
+The code formatter works in a straightforward way. First, it parses the source code and produces an AST representing the semantics of the program. Then, it passes this AST into a function which recursively traverses the structure and produces plain source code equivalent to the input source code, formatted to the specific way defined by this function.
+
+However, producing a semantically equivalent source code is not as straightforward as it may appear. More specifically, a great problem arises with complex parenthesised expressions, where the code formatter must correctly assess the expression tree and parenthesised it in way that the resulting evaluation of the formatted expression is semantically equivalent to the user-defined expression in the input source code.
+
+One of the most important concepts in AgentLang source code formatting is the operator precedence in binary expressions. Each operator has a certain level of precedence represented by a numeric value. The higher this level of precedence is, the sooner the sub-expression must be evaluated. Moreover, parentheses surpass the operator precedence, rendering the whole sub-expression more important than a non-parenthesised expression.
+
+In AST, parentheses are completely omitted. Instead, the tree structure is composed in a way it abides by the user parenthetisation. Suppose the following two examples:
+```
+const a = 5 + 2 * 3;
+const b = (5 + 2) * 3;
+```
+The result of `a` is 11, since `2 * 3` is evaluated sooner. However, the result of `b` is 21, since the additive binary expression is evaluated sooner becuase of the parenthetisation. Let's look at the resulting AST of these two property declarations.
+
+This is an AST node representing the property declaration of `a`.
+```
+{
+    "type": "VariableDeclaration",
+    "variableType": "const",
+    "identifier": "a",
+    "value": {
+        "type": "BinaryExpression",
+        "left": {
+            "type": "NumericLiteral",
+            "value": 5,
+        },
+        "right": {
+            "type": "BinaryExpression",
+            "left": {
+                "type": "NumericLiteral",
+                "value": 2,
+            },
+            "right": {
+                "type": "NumericLiteral",
+                "value": 3,
+            },
+            "operator": "*",
+        },
+        "operator": "+",
+    },
+},
+```
+This is an AST node representing the property declaration of `b`:
+```
+{
+    "type": "VariableDeclaration",
+    "variableType": "const",
+    "identifier": "b",
+    "value": {
+        "type": "BinaryExpression",
+        "left": {
+            "type": "BinaryExpression",
+            "left": {
+                "type": "NumericLiteral",
+                "value": 5,
+            },
+            "right": {
+                "type": "NumericLiteral",
+                "value": 2,
+            },
+            "operator": "+",
+        },
+        "right": {
+            "type": "NumericLiteral",
+            "value": 3,
+        },
+        "operator": "*",
+    },
+}
+```
+Each binary expression in the AST has a `left` and `right` value as well as the `operator` value. We can see that the declaration of `a` represents a binary expression, where the `left` value is of type `NumericLiteral` and the `right` value is of type `BinaryExpression`. That is due to the operator precedence, where multiplication has higher precedence that addition. Since ASTs are evaluated using a depth-first search algorithm, the `right` value will be evaluated sooner than the `left` value, resulting in a correct evaluation of the expression. However, in the declaration of `b`, the `left` value is of type `BinaryExpression` and the `right` value is of type `NumericLiteral`. This happens due to the fact that the additive sub-expression has been parenthesised. Therefore, the AST knows to evaluate the left-hand side of the expression sooner than the right-hand side.
+
+This proves that although the AST does not explicitely hold any information about user-defined parentheses, it holds this information using its structure and semantics. This implies that we can reconstruct the parenthetisation from the AST itself, proving that the source code formatter can truly produce a semantically equivalent source code from the AST alone.
+
+The source code formatter formats the source code recursivelly by calling one function called `nodeToSourceCode`. This function takes any generic AST node as its input, in our case the `Program` node and recursively evaluates each node of the tree, producing a new source code during its runtime. Below is an example of producing a correctly parenthesised binary expression:
+```ts
+public static nodeToSourceCode(ast: ParserValue): string {
+  let sourceCode = "";
+
+  switch (ast.type) {
+    case NodeType.BinaryExpression: {
+        const binaryExpression = ast as BinaryExpression;
+        const { operator } = binaryExpression;
+
+        let left = Formatter.nodeToSourceCode(binaryExpression.left);
+        let right = Formatter.nodeToSourceCode(binaryExpression.right);
+
+        // handle left parentheses
+        if (binaryExpression.left.type === NodeType.BinaryExpression) {
+            const needsLeftParentheses = Formatter.binaryOperatorPrecedence[operator] > Formatter.binaryOperatorPrecedence[(binaryExpression.left as BinaryExpression).operator];
+            left = needsLeftParentheses ? `(${left})` : left;
+        }
+
+        // handle right parentheses
+        if (binaryExpression.right.type === NodeType.BinaryExpression) {
+            const needsLeftParentheses = Formatter.binaryOperatorPrecedence[operator] > Formatter.binaryOperatorPrecedence[(binaryExpression.right as BinaryExpression).operator];
+            right = needsLeftParentheses ? `(${right})` : right;
+        }
+
+        sourceCode += `${left} ${operator} ${right}`;
+        break;
+    }
+  }
+
+  return sourceCode;
+}
+```
+It checks the binary precedence defined by the below rules and based on it parenthesises the resulting expression:
+```ts
+const binaryOperatorPrecedence: { [key: string]: number } = { "+": 1, "-": 1, "*": 2, "/": 2, "%": 2 };
+```
+The source code formatter serves as a tool to achieve code readability across all AgentLang simulations, forcing the user to abide by the syntactical rules defined by the AgentLang project.
+
 ## 7. Examples
-- epidemic
-- bird flocking
-- forest fire
-- snowfall
+- TODO
+- Epidemic, Bird Flocking, Forest Fire, Convay's Game of Life
 
 ## 8. Limitations & Future Improvements
 The following sections describe the most significant and critical limitations of the current state of AgentLang and provide a list of possible future improvements.
 
 ### 8.1 Limitations
-At the moment, AgentLang is a very limited programming language serving as a proof of concept of this new approach to agent-based modeling it aims to provide. Therefore, it has many limitations which cannot be overlooked.
+At the moment, AgentLang is a limited language serving primarily as a proof of concept of the new approach to agent-based modeling it aims to provide. Therefore, it has several significant limitations worth mentioning.
 
 #### 8.1.1 Performance
-The most significant bottleneck of the AgentLang's interpreter is its performance. With the rising number of agents, the simulation slows down exponentially. The problem is most visible when there are a lot of properties manipulating AgentList values, since such operations are very costly. Since agents of the same type are evaluated the same way using the same model, with the rising number of agents also rises the number of agent instances in properties holding AgentList values. If we generate 10 agents, each of them needs to iterate over 9 other agents, resulting in 90 iterations. However, with only 10 times more agents, which is 100 total agents, the iteration count rises to 9900 (100 * 99), which is 110 times more iterations than with 10 agents.
+The most significant bottleneck of the AgentLang's interpreter is its performance. With the rising number of agents, the simulation slows down exponentially. The problem is most visible when there are numerous properties manipulating AgentList values, for those operations are very costly. Since agents of the same type are evaluated the same way using the same model, with the rising number of agents also rises the number of agent instances in properties holding AgentList values. If we generate 10 agents, each of them needs to iterate over 9 other agents, resulting in 90 iterations. However, with only 10 times more agents, which is 100 total agents, the iteration count rises to 9900 (100 * 99), which is 110 times more iterations than with 10 agents.
 
-Moreover, the evaluation of agents of the same type is handled greedily. That means that for each agent of the same type, its entire body is reevaluated by the runtime module iteratively. Although this problem seems easy to solve by caching mechanisms, it is de facto quite non-trivial. There are only very few cases of property declarations that are static - only use constant values, and in most cases, such properties are therefore declared as `const` properties, evaluated only once. Other properties usually use some agent-specific values in their declarations, which does not allow for trivial caching mechanisms.
+Moreover, the evaluation of agents of the same type is handled greedily. That means that for each agent type, the entire model is reevaluated by the runtime module for each agent of that type. Although this problem seems easy to solve by caching mechanisms for example, it is de facto quite non-trivial. As far as caching is concerned, there are not many cases where caching is as straightforward as saving the intermediate resulsts of expressions to a cache. This is due to the fact that in AgentLang, almost all properties have dependencies on other properties, whose values vary from agent to agent. Caching such values would thus be of no use to other agent instances.
 
-This entire problem of low performance is also affected by the choice of TypeScript as the implementation language of the interpreter. TypeScript as such is an interpreted language, slower than most compiled languages like C++ or Java. The fact that the interpreter is integrated in a web-based environment running in a web browser slows down the overall performance even more, resulting in a chain of performance downfalls.
+This issue of low performance is also affected by the choice of TypeScript as the implementation language of the interpreter. TypeScript as such is an interpreted language, slower than most compiled languages like C++ or Java. The fact that the interpreter is integrated into a web-based environment running in a web browser slows down the overall performance even more, resulting in a chain of performance downfalls.
 
-However, using various simulations, models and experiments, it has been proven that AgentLang is able to handle simple to mid-sized simulations and a few hundreds of agents without slowing down significantly, not affecting performance to a high degree. With more complex simulations and higher agent volumes, however, the delay in evaluation between each step rises, rendering the simulation slower than desired.
+However, using various simulations, models and experiments, it has been proven that AgentLang is able to handle simple to mid-sized simulations and a few hundreds of agents without slowing down significantly, not affecting performance to a significant degree. With more complex simulations and higher agent volumes, however, the delay in evaluation between each step rises, rendering the simulation slower than desired.
 
-#### 8.1.2 Lack of Functionality
-Currently, AgentLang is in a limited state of development and has only limited built-in functionality. This is sufficient for simple simulations with a few tens to hundreds of agents and properties as well as non-complex semantic nature of the simulations. With more complex economical, sociological or organisational simulation needs, however, the core library of built-in functions and language constructs would not be sufficient.
+#### 8.1.2 Language Constructs
+Currently, AgentLang is in a limited state of development and has only limited built-in functionality and language constructs support. This is sufficient for simple simulations with a few tens to hundreds of agents and properties as well as non-complex semantic nature of the simulations. With more complex economical, sociological or organisational simulation needs, however, the core library of built-in functions as well as the limited number of language constructs would not be sufficient.
 
 For instance, AgentLang does not support the generation of new agents and the deletion of existing agents during the runtime of the simulation. Moreover, it does not support parameterised functions with multi-statement bodies for reusing code blocks and more complex calculations. All these functionalities would be provide great endorsements in making AgentLang more flexible and extensible.
 
@@ -1242,6 +1355,7 @@ First and foremost, AgentLang currently does not support user-defined parameteri
 Moreover, the core library of AgentLang built-in functions is currently very thin. It consists of the necessary mathematical and agent manipulation functions to handle simple simulations. However, more complex calculations need to be done manually and together with the inability to reuse calculations using parameterised functions, this becomes a huge problem with more complex simulations. Therefore, a possible improvement would be to add a new set of built-in functions.
 
 ## Conclusion
+- TODO
 
 ## Bibliography
 [1. Eric Bonabeau - Agent-based modeling: Methods and techniques for simulating human systems](https://www.pnas.org/doi/10.1073/pnas.082080899) \
