@@ -1204,7 +1204,7 @@ const b = (5 + 2) * 3;
 The result of `a` is 11, since `2 * 3` is evaluated sooner. However, the result of `b` is 21, since the additive binary expression is evaluated sooner becuase of the parenthetisation. Let's look at the resulting AST of these two property declarations.
 
 This is an AST node representing the property declaration of `a`.
-```
+```json
 {
     "type": "VariableDeclaration",
     "variableType": "const",
@@ -1232,7 +1232,7 @@ This is an AST node representing the property declaration of `a`.
 },
 ```
 This is an AST node representing the property declaration of `b`:
-```
+```json
 {
     "type": "VariableDeclaration",
     "variableType": "const",
