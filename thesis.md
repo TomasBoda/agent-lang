@@ -15,11 +15,11 @@ Keywords: agent-based modeling, simulation, programming language, interpreter
 ## Introduction
 In the realm of many scientific fields, the importance of simulations and predictions of certain events within an isolated environment cannot be overstated. This is on one hand due to the lack of resources and space for such simulations in the scale of real-world scenarios, on the other hand due to ethical and moral reasons, such as in epidemiology or sociology. As our understanding of complex systems deepens, the demand for sophisticated tools to model and analyse the dynamics of simulations increases. This is where agent-based modeling comes into play, offering a new and more straightforward approach for handling complex simulations.
 
-Agent-based models are built on top of agents, which represent the fundamental units of the given system, such as people in an epidemic or birds in a flock. To build such models, there is a need for tools or languages that provide constructs for representing agents, their properties and their decision-making logic. Such tools already exist and are widely used to model agent-based simulations, such as NetLogo or AgentScript. These tools are powerful and can handle large volumes of agents. However, with their performance comes the cost of complexity of usage and inaccessiblity to people with little to none technical knowledge. They are many times difficult to learn, since they are based on modern programming languages, restricting the use case to developers only. And since the demand for agent-based models can be seen in non-technical scientific fields such as epidemiology or sociology, there is a need for simpler tools and languages.
+Agent-based models are built on top of agents, which represent the fundamental units of the given system, such as people in an epidemic or birds in a flock. To build such models, there is a need for tools or languages that provide constructs for representing agents, their properties and their decision-making logic. Such tools already exist and are widely used to model agent-based simulations, such as NetLogo, GAMA or AgentScript. These tools are powerful and can handle large volumes of agents. However, with their performance comes the cost of complexity of usage and inaccessiblity to people with little to none technical knowledge. They are many times difficult to learn, since they are based on modern programming languages, restricting the use case to developers only. And since the demand for agent-based models can be seen in non-technical scientific fields such as epidemiology or sociology, there is a need for simpler tools and languages.
 
-AgentLang aims to provide a new approach to modeling agent-based simulations. This is on one hand due to the simplicity of the language itself, since it features very simple syntax and only the necessary constructs for modeling almost any simulation. On the other hand, the language is integrated into a specialised web-based interface, which offers a code editor, a visualisation module and most importantly, a spreadsheet interface with run-time agent editing capabilities, which allows the users to fine-tune the simulation in real-time. These above features of the AgentLang project provide all the necessary tools to model agent-based simulations and get a hands-on experience with the language itself.
+AgentLang aims to provide a new approach to modeling agent-based simulations. This is on one hand due to the simplicity of the language itself, since it features very simple syntax and only the necessary constructs for modeling almost any simulation. On the other hand, the language is integrated into a specialised web-based interface, which offers a code editor, a visualisation module and most importantly, a spreadsheet interface with run-time agent editing capabilities, which allows users to fine-tune the simulation in real-time. These above features of the AgentLang framework provide all the necessary tools to model agent-based simulations and get a hands-on experience with the language itself.
 
-The structure of AgentLang is very straightforward. We define standalone agent models and for each model, we define its behaviour using a set of properties.
+The structure of AgentLang is very straightforward. We define the individual agent models and for each model, we define its behaviour using a set of properties.
 ```
 agent snowflake 500 {
     const speed = random(10, 20);
@@ -36,15 +36,15 @@ In conclusion, the main intention behind the creation of AgentLang is to make ag
 - built-in visualisation module for better understanding of the simulation
 
 ## 1. Theoretical Background
-Before diving into the AgentLang's language specification, it's important to introduce and briefly explain the theoretical background behind the most important concepts used in AgentLang. The following sections aim to provide an introduction to agent-based modeling and its use cases as well as a brief overview of language parsers and interpreters.
+Before diving into the language specification, it's important to introduce and briefly explain the theoretical background behind the most important concepts used in AgentLang. The following sections aim to provide an introduction to agent-based modeling, its use cases and real-world applications as well as a brief overview of language interpreters and parsers.
 
 ### 1.1 Agent-based Modeling
-AgentLang is a domain specific language designed exclusively for modeling agent-based simulations. Therefore it is necessary to understand the motivation behind the invention of agent-based modeling and its increasing popularity in the recent years as well as to demonstrate its power and significance on several use cases and real-world examples.
+AgentLang is a domain-specific language designed exclusively for modeling agent-based simulations. Therefore it is necessary to understand the motivation behind the agent-based modeling technique and its increasing popularity in the recent years as well as to demonstrate its power and applications on several use cases on real-world examples.
 
 #### 1.2.1 Introduction
-Agent-based modeling is a simulation technique used in many scientific fields to model and understand complex simulations. In agent-based modeling, a system is modeled using a set of autonomous entities called agents. An agent represents a fundamental meaningful unit of a system, such as a person in an epidemic or a bird in a flock. Each agent individually asseses the current situation, both itself as well as other agents and makes decisions based on a set of defined rules.
+Agent-based modeling is a simulation technique used in many scientific fields to model and understand complex simulations. In agent-based modeling, a system is modeled using a set of autonomous entities called agents. An agent represents a fundamental meaningful unit of a system, such as a person in an epidemic or a bird in a flock. Each agent individually asseses the current situation, both of itself as well as of other agents and makes decisions based on a set of defined rules.
 
-It's important to mention that agent-based modeling is more of a mindset than a technology. The main idea behind it is to describe a system from the perspective of its constituent units. If we can assess and understand the behaviour of a fundamental unit of the system, we can define the model or structure of this unit, generate a set of these units and let their behaviour and interaction among themselves determine the outcome of the simulation. The advantage of such models is their simplicity in terms of understanding and implementation. However, even a simple agent-based model can portray complex behavioral patterns and provide insights into the dynamics of the system that it emulates.
+It's important to note that agent-based modeling is more of a mindset than a technology. The main idea behind it is to describe a system from the perspective of its constituent units. If we can assess and understand the behaviour of a fundamental unit of the system, we can define the model or structure of this unit, generate a set of these units and let their behaviour and interaction among themselves determine the outcome of the simulation. The advantage of such models is their simplicity in terms of understanding and implementation. However, even a simple agent-based model can portray complex behavioral patterns and provide insights into the dynamics of the system that it emulates.
 
 #### 1.2.2 Benefits of Agent-based Models
 Agent-based modeling offers numerous advantages when compared to other mathematical models and simulation techniques.
@@ -85,47 +85,47 @@ In contrast to market risks, operational risks predominantly arise internally wi
 Given all of these characteristics of operational risks within organisations, it is obviously difficult to quantify. Therefore, a bottom-up simulation to assess the probabilities of operational risks looks like a promising approach, since what is needed is a framework that includes the possibility of non-linear effects because of interactions among sub-units and to cascading events. Modeling the bank's agents, such as their workflow and risk factors that could potentially impact their activities and performance is the first step. Then, external factors, such as the bank's customers, markets and regulators are modelled to simulate the bank's environment. Using this approach, we can observe the emergent phenomena in form of cascading failures and analyse the operational risks of an organisation in a more straightforward way, without the knowledge of any direct relationships between failures and the bank's inner workings in advance.
 
 ### 1.2 Interpreters
-AgentLang is an interpreted language, which poses various advantages as well as disadvantages in terms of implementation and performance. The following sections aim to provide a brief introduction into the inner workings of interpreters and language parsers and describe the main concepts used in their implementation.
+AgentLang is an interpreted language, which poses various advantages as well as disadvantages in terms of implementation and performance. This section aims to provide a brief introduction into the inner workings of interpreters and language parsers and describe the main concepts used in their implementation.
 
 #### 1.2.1 Compilers vs. Interpreters
-In order to better understand the main advantages and disadvantages of interpreters, let's introduce and compare the concepts of the two primary approaches to developing programming languages - compilers and interpreters.
+In order to better understand the main advantages and disadvantages of interpreters, let's introduce and compare the two primary approaches to developing programming languages - compilers and interpreters.
 
 Compilers and interpreters are the fundamental components of programming languages. They are responsible for reading the source code of the target language and executing its instructions. They both work in a slightly different way, each boasting its own set of strengths and weaknesses.
 
-A compiler translates the source code of a program into machine instructions or an intermediate representation of the code before execution. The process of reading, analysing and transforming the source code involves several stages, including lexical analysis, semantical analysis, optimisations and code generation. Once compiled to machine code, the resulting executable can run independently of the original source code. Since compilers transform the source code to direct machine instructions, they tend to offer high speed and performance, however, they are more difficult to understand, implement and debug.
+A compiler translates the source code of a program into machine instructions or an intermediate representation of the code before execution. The process of reading, analysing and transforming the source code involves several stages, including lexical analysis, semantical analysis, optimisations and code generation. Once compiled to machine code, the resulting executable can run independently of the original source code. Since compilers transform the source code to direct machine instructions, they tend to offer high performance, however, they are difficult to understand, implement and debug.
 
-In contrast, an interpreter processes the source code line by line during execution, translating and executing each instruction sequentially. Interpreters can also feature lexical and semantical analysis, but they do not produce an intermediate representation of the source code. They generate a semantical representation of the program's source code, which is then evaluated instruction by instruction during run-time. Therefore, interpreters usually tend to be slower than compilers. However, they provide higher flexibility and ease of debugging.
+In contrast, an interpreter processes the source code line by line, translating and executing each instruction in real-time as the line is being read. Interpreters can also feature lexical and semantical analysis, but they do not produce an intermediate representation of the source code. They generate a semantical representation of the program's source code, also referred to as the abstract syntax tree (AST), which is then evaluated instruction by instruction during run-time. Therefore, interpreters usually tend to be slower than compilers. However, they provide higher flexibility and ease of debugging.
 
 #### 1.2.2 Workflow
-Interpreters are usually implemented in a manner similar to the pipeline architectural style. During the process of interpretation, the source code is fed through and transformed by several processors before finally being executed by the interpreter's run-time.
+Interpreters are usually implemented in a manner similar to the pipeline architectural style. During the process of interpretation, the source code is fed through and transformed by several processors before finally being executed by the interpreter's runtime.
 
-Firstly, the source code is read by the lexer, which produces an array of tokens. A token is a single basic unit of the language, such as a keyword or a numeric literal. The lexer has a set of defined, language-specific rules for producing the tokens, such as recognizing and classifying reserved language keywords or special characters. This step is called the lexical analysis.
+Firstly, the source code is read by the lexer, which produces an array of tokens. A token is a single basic unit of the language, such as an identifier, a keyword or a numeric literal. The lexer has a set of defined, language-specific rules for producing the tokens, such as recognizing and classifying reserved language keywords or special characters. This step is called the lexical analysis.
 
-The array of tokens is then passed to the parser, which based on a set of defined rules of the target language's grammar analyses sub-sequences of tokens, validates their integrity and produces a semantic representation of the program. This representation is also called the abstract syntax tree (AST), since it is a tree-like structure holding the semantics of the program. It can be understood as an intermediate code representation, which is validated and ready to be passed to and evaluated by the run-time module. This step is called the semantical analysis.
+The array of tokens is then passed to the parser, which based on a set of defined rules of the target language's grammar analyses sub-sequences of tokens, validates their integrity and produces a semantic representation of the program. This representation is also called the abstract syntax tree (AST), since it is a tree-like structure holding the semantics of the program. It can be understood as an intermediate code representation, which is validated and ready to be passed to and evaluated by the runtime module. This step is called the semantical analysis.
 
-Finally, the abstract syntax tree is passed to the run-time module, which traverses the tree using a depth-first search algorithm and executes the program instruction by instruction. The instructions are evaluated and executed by the programming language in which the interpreter is implemented in.
+Finally, the abstract syntax tree is passed to the interpreter's runtime, which traverses the AST using a depth-first search algorithm and evaluates the program instruction by instruction. Therefore, the instructions of the target language are evaluated and executed by the programming language in which the interpreter is implemented in.
 
 #### 1.2.3 Parsers
-Although each part of the process of transforming the source code and generating the program's output is interesting and worth explaining to greater detail, the parser is without doubt one of the most interesting part of an interpreter. The main responsibility of a parser is to evaluate the stream of tokens coming from the lexer, validate these tokens against the production rules of the target language's grammar and produce an intermediate code representation, also referred to as the abstract syntax tree (AST).
+Although each part of the process of transforming the source code and generating the program's output is interesting and worth explaining to greater detail, the parser is without doubt one of the most interesting part of an interpreter. The main responsibility of a parser is to evaluate the stream of tokens coming from the lexer, validate these tokens against the production rules of the target language's grammar and produce the semantic representation of the program - the abstract syntax tree.
 
-Parser is usually implemented as a pushdown automaton (PDA). This is because the syntax of the language can be defined by a set of production rules called the syntax grammar. This automaton accepts the given grammar, therefore is able to validate the correctness of the input source code. The automaton is fed a stream of tokens from the lexer. The evaluation starts at the intitial state and based on the next token, it decides which state it goes to next. In case it comes across a token which cannot be pushed to a new state, since such state does not exist, it is redirected to the fallback state. This scenario is called a semantical error and in such case, the interpreter throws an exception.
+Parser is usually implemented as a pushdown automaton (PDA). This is because the syntax of a language can be defined by a set of production rules called the syntax grammar. This automaton accepts the given grammar, therefore is able to validate the correctness of the input source code. The automaton is fed a stream of tokens from the lexer. The evaluation starts at the intitial state and based on the next token, it decides which state it goes to next. In case it comes across a token which cannot be pushed to a new state, since such state does not exist, it is redirected to the fallback state. This scenario is called a semantical error and in such case, the interpreter throws an exception. This aforementioned approach, however, is specific to top-down parsing only. There are various parsing techniques, each suitable for different use cases.
 
 ##### 1.2.3.1 Top-down vs. Bottom-up Parsing
 There are two primary techniques in parsing language grammars: top-down parsing and bottom-up parsing.
 
 In top-down parsing, the parsing starts from the root of the parse tree, which is the start symbol of the language grammar and proceeds towards the leaf nodes of the parse tree, attempting to match the current input token against the production rules of the grammar. This technique is relatively easy to implement, since it corresponds well to the way humans tend to think about parsing.
 
-In contrast, bottom-up parsing starts from the input string and proceeds by identifying sequences of terminals and non-terminals in the input string that match the right-hand side of some production rule in the grammar. These sequences are then replaced by the corresponding non-terminal symbol, eventually resulting in the entire input string being replaced by the start symbol of the grammar. The advantage of bottom-up parsing is that it can handle a wider class of language grammars than top-down parsing, including left-recursive grammars and is in many cases more efficient than top-down parsing. However, it is much more difficult to implement and understand conceptually.
+In contrast, bottom-up parsing starts from the input string and proceeds by identifying sequences of terminals and non-terminals in the input string that match the right-hand side of some production rule in the grammar. These sequences are then replaced by the corresponding non-terminal symbol. The parser iteratively attemps to match the terminals and newly created non-terminals agains the production rules of the grammar, eventually resulting in the entire input string being replaced by the start symbol of the grammar. The advantage of bottom-up parsing is that it can handle a wider class of language grammars than top-down parsing, including left-recursive grammars and is in many cases more efficient than top-down parsing. However, it is much more difficult to implement and understand conceptually.
 
 ##### 1.2.3.2 Recursive Descent Parsing
-One of the more popular top-down parsing techniques is recursive descent parsing, also used and implemented in the AgentLang's interpreter. In recursive descent parsing, each non-terminal in the grammar corresponds to a function in the parser module. These functions call each other to parse different structures and parts of the input source code. When parsing the program, we call the `parseProgram` function, which further calls `parseVariableDeclaration` and `parseObjectDeclaration` functions, based on the next token in the stream. This goes all the way to the `parsePrimaryExpression` function, which parses low-level expressions, such as numeric or string literals.
+One of the more popular top-down parsing techniques is recursive descent parsing, also used and implemented in the AgentLang's interpreter. In recursive descent parsing, each non-terminal in the grammar corresponds to a function in the parser module. These functions call each other to parse different parts of the input source code. When parsing a program from the beginning, the parser calls the `parseProgram` function, which further calls `parseVariableDeclaration` and `parseObjectDeclaration` functions, based on the type of the token in the stream. This goes all the way to the `parsePrimaryExpression` function, which parses low-level expressions, such as numeric or string literals.
 
-The idea behind the implementation of such pushdown automaton is that the stack of the automaton is implemented using the call-stack of the language in which the interpreter is implemented. When the function calls nest into each other, they are stored onto the call-stack, preserving their state. We are pushing non-terminals onto the stack, processing them, producing parts of the abstract syntax tree and in case of correct input eventually ending up back in the initial state with an empty stack, having the abstract syntax tree of the program produced and validated.
+The idea behind the implementation of such pushdown automaton is that the stack of the automaton is implemented using the call-stack of the language in which the interpreter is implemented. When the function calls nest into each other, they are stored onto the call-stack, preserving their state. We are pushing non-terminals onto the stack, processing them, producing parts of the AST and in case of correct input eventually ending up back in the initial state with an empty stack, having the AST of the program produced and validated.
 
 The technique of recursive descent parsing is used in the implementation of the AgentLang's parser. This is due to the simplicity of the language's syntax grammar and is a good starting point for implementing a simple parser such as that of AgentLang.
 
 ## 2. Analysis
-The previous section covered the most important theoretical concepts and terms that will be used throughout the thesis that are the main building blocks of the AgentLang project. This section explores the motivation behind the creation of AgentLang, analysis and comparison with existing agent-based tools and finally outlines the main goals that this thesis strives to achieve.
+The previous section covered the most important theoretical concepts and terms that will be used throughout the thesis and that are the main building blocks of the AgentLang framework. This section explores the motivation behind the creation of AgentLang, analysis and comparison with existing agent-based tools and finally outlines the main goals that this thesis strives to achieve.
 
 ### 2.1 Motivation
 Developing a programming language that addresses challenges and introduces innovation is increasingly difficult nowadays, given the wast number of languages offering all kinds of features. These languages can be classified into several categories, spanning from general-purpose programming languages to domain-specific languages as well as modelling languages. General-purpose languages, renowned for their versatility and widespread adoption among developers worldwide offer a broad set of language constructs and concepts. Therefore, developing a general-purpose programming language introducing innovations is rather challenging. Moreover, such languages are difficult to implement and require a lot of time and effort for their development. On the other hand, domain-specific languages serve as more of niche tools for tackling issues with domain-specific challenges. As technology is on the rise these days, new domains emerge that need specific tools to handle the tasks they pose. One of such domains is agent-based modeling.
@@ -133,10 +133,10 @@ Developing a programming language that addresses challenges and introduces innov
 Agent-based modeling, although being a simulation technique with a long history, continues to reveal variety of new applications and use cases across numerous scientific fields and domains. There are many agent-based specific tools that allow for modeling agent-based simulations, each boasting its set of strengths and weaknesses. Despite their power and extensive feature set, these tools often feature complex syntax and language constructs, limiting their usage to technical scientific domains only. Moreover, many of these tools are tailored to specific domains only, such as NetLogo for social and natural sciences. In response to these reasons, the idea of AgentLang emerged, aiming to offer a unified language and environment for agent-based simulations of any nature, accessible to all scientific fields, regardless of their technical proficiency.
 
 ### 2.2 Existing Agent-based Tools
-Before stating the primary goals of this thesis, it is important to mention some of the existing agent-based tools to highlight the main differences between these tools and AgentLang.
+Before outlining the primary goals of this thesis, it is important to mention some of the existing agent-based tools to highlight the main differences between existing agent-based frameworks and AgentLang.
 
 #### 2.2.1 NetLogo
-Perhaps one of the most wide-spread agent-based modeling software is NetLogo. It is a multi-agent programmable modeling environment with its own domain-specific language as well as a web-based modeling interface. NetLogo also provides a rich library of simulation models and examples, with some of its primary domains being social and natural sciences. It was first created in 1999 by Uri Wilensky, a professor at the Northwestern University in Illinois, US. Nowadays, it is used by hundreds of thousands of students, teachers and researches all among the world.
+Perhaps one of the most wide-spread agent-based modeling software is NetLogo. It is a multi-agent programmable modeling environment with its own domain-specific language as well as a web-based modeling interface. NetLogo's primary simulation domains are social and natural sciences, for which ti provides a rich library of simulation models and examples. It was first introduced and released in 1999 by Uri Wilensky, a professor at the Northwestern University in Illinois, US. Nowadays, it is used by hundreds of thousands of students, teachers and researches all among the world.
 
 Below is an example NetLogo simulation source code.
 ```
@@ -168,8 +168,8 @@ Another popular modeling and simulation framework is GAMA. It is designed to han
 
 Below is an example GAMA simulation source code.
 ```
-species people skills: [moving]{  
-    ...
+species people skills: [moving] {  
+
     reflex time_to_work when: current_date.hour = start_work and objective = "resting" {
         objective <- "working" ;
 	      the_target <- any_location_in (working_place);
@@ -179,12 +179,11 @@ species people skills: [moving]{
         objective <- "resting" ;
 	      the_target <- any_location_in (living_place); 
     } 
-    ...
 }
 ```
 
 #### 2.2.3 AgentScript
-Finally, a more familiar agent-based framework utilising an existing programming language is called AgentScript. AgentScript is more of a library than a framework though. It provides a set of JavaScript classes and methods used to create and run agent-based models in the browser. AgentScript is heavily inspired by NetLogo, therefore its main building blocks consist of three actors: turtles, patches and links. The user defines the behaviour and interaction logic of these three actors and the library takes care of the rest, such as real-time simulation visualisation or agent manipulation. Although the whole concept of AgentScript is familiar, easily understandable and usable by JavaScript developers, it poses challenges for people with limited programming and JavaScript skills. JavaScript, as many other programming languages has its structure and rules, which the user needs to know apart from the AgentScript library itself.
+Finally, a more familiar agent-based framework utilising an existing programming language is called AgentScript. AgentScript is more of a library than a framework. It provides a set of JavaScript classes and methods used to create and run agent-based models in the browser. AgentScript is heavily inspired by NetLogo, thus its main building blocks consist of three actors: turtles, patches and links. The user defines the behaviour and interaction logic of these three actors and the library takes care of the rest, such as real-time simulation visualisation or agent manipulation. Although the whole concept of AgentScript is familiar, easily understandable and usable by JavaScript developers, it poses challenges for people with limited programming and JavaScript skills. JavaScript, as many other programming languages has its structure and rules, which the user needs to know apart from the AgentScript semantics itself.
 
 Below is an example AgentScript simulation source code.
 ```
@@ -221,10 +220,10 @@ export default class FireModel extends Model {
 ```
 
 ### 2.3 Goals
-By analysing the above existing agent-based tools, we come to the following conclusions. Firstly, each of these tools is either directly based on an existing general-purpose programming language, such as AgentScript or provides its own domain language, which is very specific in terms of syntax and structure, such as NetLogo or GAMA. The former requires the understanding of the underlaying programming language, whereas the latter requires to learn a brand new language. Moreover, these tools are often very complex and offer a wide range of features, which at one hand is useful for agent-based specialised scientists, but on the other hand discourages other scientists by their steep learning curve. In response to these reasons, AgentLang aims to fulfil the following goals:
-- provide a language with simple and straightforward syntax and structure
-- offer only the necessary, but also essential core library of features
-- allow for an alternative way of simulation modeling using a spreadsheet interface
+By analysing the above existing agent-based tools, we come to the following conclusions. Firstly, each of these tools is either directly based on an existing general-purpose programming language, such as AgentScript or provides its own domain-specific language, which is very distinct in terms of syntax and structure, such as NetLogo or GAMA. The former requires the understanding of the underlaying programming language, whereas the latter requires to learn a brand new language. Moreover, these tools are often very complex and offer a wide range of features, which at one hand is useful for agent-based specialised scientists, but on the other hand discourages the rest by their steep learning curves. In response to these characteristics, AgentLang aims to fulfil the following goals:
+- provide a unified, balanced language with simple and straightforward syntax and structure
+- offer only the necessary, essential core library of features
+- allow for an alternative way of simulation modeling using a familiar approach in form of spreadsheet representation
 
 ## 3. Language Specification
 The following sections focus on the detailed language specification of AgentLang, describing its structure, syntax, data types as well as its standard library and core functionality.
@@ -401,19 +400,15 @@ property_declaration:
 ```
 Below is an example of a `const` declaration holding a numeric value.
 ```
-agent car 20 {
-    const max_speed = 260;
-}
+const max_speed = 260;
 ```
 Properties of type `const` are used in cases when we need to for instance generate random initial coordinates of agents, since they are calculated only once at the beginning of the simulation.
 ```
-agent person 10 {
-    const x_spawn = random(100, 200);
-    const y_spawn = random(100, 200);
+const x_spawn = random(100, 200);
+const y_spawn = random(100, 200);
 
-    property x: x_spawn = x + 1;
-    property y: y_spawn = y + 1;
-}
+property x: x_spawn = x + 1;
+property y: y_spawn = y + 1;
 ```
 
 ##### 3.3.2.2 Property
@@ -426,15 +421,11 @@ property_declaration:
 ```
 Below is an example of a `property` declaration that holds a random numeric value between 5 and 10 in each step of the simulation.
 ```
-agent car 20 {
-    property current_speed = random(5, 10);
-}
+property current_speed = random(5, 10);
 ```
 However, what if we want to set the property to some initial value and use this property's value in its own declaration?
 ```
-agent car 20 {
-    property x = x + 1;
-}
+property x = x + 1;
 ```
 In the above example, it is not possible. The `x` property is incremented by 1 in each step of the simulation, however, it is not set to any default value to start with. That is why AgentLang supports default property values.
 
@@ -445,33 +436,25 @@ property_declaration:
 ```
 The expression after the semicolon is used to initialise the `property` to some default value in the first step of the simulation. In each next step, the second expression is used to recalculate its value.
 ```
-agent point {
-    property x: 15 = x + 1;
-    property y: 5 = y * 2;
-}
+property x: 15 = x + 1;
+property y: 5 = y * 2;
 ```
-A better example would be the earlier example with the car's current speed. We want the car to accelarate, so we increment its speed by one.
+A better example would be the earlier example with the current speed. We want the agent to accelarate, so we increment its speed by one.
 ```
-agent car {
-    const initial_speed = 0;
-    property speed: initial_speed = speed + 1;
-}
+const initial_speed = 0;
+property speed: initial_speed = speed + 1;
 ```
 In this way, the speed is set to 0 in the first step and is incremented by 1 in each following step, producing values 1, 2, 3, 4 and so on.
 
 However, this is not the only use case of default property values. Suppose the following exaggerated example, where we have two properties, where each depends on the other.
 ```
-agent entity 1 {
-    property a = b + 1;
-    property b = a + 2;
-}
+property a = b + 1;
+property b = a + 2;
 ```
 This example would throw an error, since there is a cycle in the property declarations. In order to fix this, we need to assign a default value to one of the properties, so that the interpreter knows which property will be evaluated first, so that the other property can calculate its value based on the first property.
 ```
-agent entity 1 {
-    property a = b + 1;
-    property b: 0 = a + 2;
-}
+property a = b + 1;
+property b: 0 = a + 2;
 ```
 The above example would work, since at least one of the properties is initialised with a default value. This topic, however, concerns the topological sorting mechanism implemented in the AgentLang's interpreter, which will be explained later in this paper.
 
@@ -777,6 +760,8 @@ The interpreter itself follows an architecture resembling the pipeline architect
 - parser - produces an abstract syntax tree holding the semantical structure of the program
 - runtime - traverses and evaluates the abstract syntax tree instruction by instruction and produces the program's output
 - interpreter - holds all of the above parts together and provides a public API for starting, pausing, resuming, stopping and reseting the simulation
+
+<img src="./assets/architecture.png" width="700">
 
 First and foremost, the source code is read by the symbolizer module, which splits the source code into individual symbols, each holding further information about its position in the source code. This array of symbols is forwarded to the lexer module, which groups together and transforms the symbols into meaningful units of the language called tokens, representing keywords, language-specific symbols, identifier, numeric literals, boolean literals etc. This step is called the lexical analysis. The array of tokens is further passed to the parser module, whose main responsibility is to analyze these tokens, validate them against the production rules of the language's syntax grammar and produce a tree-like structure called the abstract syntax tree (AST holding the entire semantic structure of the program. This step is called the semantical analysis. The AST is then passed to the runtime module, which traverses the AST, evaluates its individual nodes in real-time and produces the program's output. All of these four modules are controlled by the interpreter module, which takes the source code as its input, runs it through these four aforementioned steps and returns the output of the program.
 
