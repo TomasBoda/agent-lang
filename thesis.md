@@ -1151,7 +1151,7 @@ private evaluateRuntimeValue(node: ParserValue, id: string): RuntimeValue {
 ```
 
 #### 5.1.5 Interpreter
-The interpreter module is a place where all of the above modules are used from and controlled. The main responsibility of the interpreter module is to provide a public API for developers to integrate and use the interpreter in external projects. The input to the interpreter module is a plain string representing the source code of an AgentLang's simulation and the output is the simulation's output itself, returned by the runtime module. For controlling the simulation's runtime, the interpreter module uses the `rxjs` library for of its extensive functionality with observables and subscriptions.
+The interpreter module is a place where all of the above modules are used from and controlled by. The main responsibility of the interpreter module is to provide a public API for developers to integrate and use the interpreter in external projects. The input to the interpreter module is a plain string representing the source code of an AgentLang's simulation and the output is the simulation's output itself, returned by the runtime module. For controlling the simulation's runtime, the interpreter module uses the `rxjs` library for of its extensive functionality with observables and subscriptions.
 
 The structure of the interpreter module looks as below:
 ```ts
@@ -1497,12 +1497,9 @@ The visualisation module is used to visualise the simulation\s agents in real ti
 
 After starting the simulation, the user is redirected to the visualisation panel by default, where they can observe the agent's positions, dimensions and colour.
 
-### 6.3 Documentation
-The web interface also contains a documentation page. The documentation page consists of the AgentLang language specification and API docs. It contains all necessary information for users to learn AgentLang and use it in practice using the AgentLang web interface.
-
 ## 7. Examples
-- TODO
 - Epidemic, Bird Flocking, Forest Fire, Convay's Game of Life
+TODO: add code examples and comparisons
 
 ## 8. Limitations & Future Work
 The following sections describe the most significant and critical limitations of the current state of AgentLang and provide a list of possible future improvements.
@@ -1556,9 +1553,6 @@ The most important language constructs AgentLang currently lacks are user-define
 ##### 8.2.2.2 Wider Core Library
 Moreover, the core library of AgentLang's built-in set of functions is very stripped. It consists of the essentual mathematical functions to provide the necessary tools to perform calculations upon agents. Moreover, it has the necessary set of agent manipulation functions to provide agent interaction capabilities across different agent models. However, more complex calculations need to be done manually, resulting in bigger code base and thus slower performance. Therefore, a possible improvement to the AgentLang core library would be a new set of functions capable of handling frequently used and needed calculations internally, without the need to introduce multiple helper properties and to overburden the runtime module with further calculations.
 
-#### 8.2.3 Code Suggestion Support
-- TODO
-
 ## Conclusion
 The main goal of AgentLang stated at the beginning of the thesis was to introduce a framework which provides a new approach to the agent-based modeling technique. Let us revisit the primary goals of AgentLang outlined in section 2.3.
 
@@ -1574,3 +1568,5 @@ First and foremost, the language simplicity was achieved by the straightforward 
 [3. NetLogo](https://ccl.northwestern.edu/netlogo/)
 [4. GAMA Platform](https://gama-platform.org/)
 [5. AgentScript](https://agentscript.org/)
+
+TODO: add more sources
