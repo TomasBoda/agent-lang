@@ -1564,9 +1564,9 @@ First and foremost, the language simplicity was achieved by the straightforward 
 
 ## Bibliography
 [1. Eric Bonabeau - Agent-based modeling: Methods and techniques for simulating human systems](https://www.pnas.org/doi/10.1073/pnas.082080899) \
-[2. Marco Pangallo, Jean-Pierre Nadal, Annick Vignes = Residential income segregation: A behavioral model of the housing market](https://arxiv.org/pdf/1606.00424.pdf) \
-[3. NetLogo](https://ccl.northwestern.edu/netlogo/) \
-[4. GAMA Platform](https://gama-platform.org/) \
-[5. AgentScript](https://agentscript.org/)
+[2. Marco Pangallo, Jean-Pierre Nadal, Annick Vignes - Residential income segregation: A behavioral model of the housing market](https://arxiv.org/pdf/1606.00424.pdf) \
+[3. NetLogo - Official Website](https://ccl.northwestern.edu/netlogo/) \
+[4. GAMA Platform - Official Website](https://gama-platform.org/) \
+[5. AgentScript - Official Website](https://agentscript.org/)
 
 TODO: add more sources
