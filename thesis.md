@@ -8,18 +8,18 @@ Charles University in Prague, Czech Republic
 **Supervisor**: Tomáš Petříček
 
 ## Abstract
-In this thesis, we develop a new programming language (AgentLang) designed exclusively for modeling agent-based simulations. Agent-based modeling refers to a simulation technique that analyses the dynamics of a simulation using the decisions of autonomous entities called agents and is becoming more and more popular, since these models are easier to understand than more complex mathematical models. The language provides constructs for defining agents and their decision-making logic, while maintaining high level of syntax and semantic simplicity, making it simple to learn and use. The simulation operates in an incremental manner, allowing for evalutation and debugging of each step separately. Apart from the language itself, the project provides a web-based sandbox with a spreadsheet interface, through which it is possible to adjust agent properties and values during runtime of the simulation. Although there are numerous agent-based tools available, this language together with the spreadsheet interface aims to provide a new approach for modeling agent-based simulations and makes agent-based modeling more accessible to people of all scientific and non-scientific fields.
+With the increasing popularity of the agent-based simulation technique in various scientific fields, there is a demand for an all-in-one framework for modeling agent-based simulations. Although there are numerous agent-based tools available on the market, these in most cases feature complex syntax and language structures or are aimed to be used in specific domains only. In response to these reasons, this thesis provides a new approach to modeling agent-based simulations by developing a brand new agent-based framework - AgentLang. The framework features a brand new programming language with a unified and simplistic syntax for defining agents and their properties. Moreover, it provides a web-based interface with a spreadsheet module for manipulating agents and their values using the familiar spreadsheet format as well as a visualisation module for rendering the simulation in real-time. These three features of the AgentLang framework aim to introduce a new way for modeling agent-based simulations and attempt to make agent-based modeling more accessible to people of all scientific fields.
 
 Keywords: agent-based modeling, simulation, programming language, interpreter
 
 ## Introduction
-In the realm of many scientific fields, the importance of simulations and predictions of certain events within an isolated environment cannot be overstated. This is on one hand due to the lack of resources and space for such simulations in the scale of real-world scenarios, on the other hand due to ethical and moral reasons, such as in epidemiology or sociology. As our understanding of complex systems deepens, the demand for sophisticated tools to model and analyse the dynamics of simulations increases. This is where agent-based modeling comes into play, offering a new and more straightforward approach for handling complex simulations.
+Simulations and predicitons of certain future events within an isolated environment play a significant role in many scientific fields nowadays. This is especially true in economy, stock markets or housing markets, where there is a need for accurate predicitons of future developments. Moreover, simulations are also commonly used in epidemiology or sociology, where the evaluation of the dynamics of a sociological group cannot be tested on real-world entities due to moral and ethical reasons. As our understanding of complex systems deepens, the demand for sophisticated tools to model and analyse the dynamics of simulations increases. This is where agent-based modeling comes into play, offering a new and more straightforward approach for handling complex simulations.
 
-Agent-based models are built on top of agents, which represent the fundamental units of the given system, such as people in an epidemic or birds in a flock. To build such models, there is a need for tools or languages that provide constructs for representing agents, their properties and their decision-making logic. Such tools already exist and are widely used to model agent-based simulations, such as NetLogo, GAMA or AgentScript. These tools are powerful and can handle large volumes of agents. However, with their performance comes the cost of complexity of usage and inaccessiblity to people with little to none technical knowledge. They are many times difficult to learn, since they are based on modern programming languages, restricting the use case to developers only. And since the demand for agent-based models can be seen in non-technical scientific fields such as epidemiology or sociology, there is a need for simpler tools and languages.
+Agent-based models are built on top of agents, which represent the fundamental units of the given system, such as people in an epidemic or birds in a flock. To build such models, there is a need for tools or languages that provide constructs for representing agents, their properties and their decision-making logic. Such tools already exist and are widely used to model agent-based simulations, such as NetLogo, GAMA or AgentScript. These tools are powerful and can handle large volumes of agents. However, with their performance comes the cost of complexity of usage and inaccessiblity to people with little to none programming knowledge. They are often difficult to learn, since they are based on modern programming languages, restricting the use case to developers only. And since the demand for agent-based models can be seen in non-technical scientific fields such as epidemiology or sociology, there is a need for simpler tools and languages.
 
-AgentLang aims to provide a new approach to modeling agent-based simulations. This is on one hand due to the simplicity of the language itself, since it features very simple syntax and only the necessary constructs for modeling almost any simulation. On the other hand, the language is integrated into a specialised web-based interface, which offers a code editor, a visualisation module and most importantly, a spreadsheet interface with runtime agent editing capabilities, which allows users to fine-tune the simulation in real-time. These above features of the AgentLang framework provide all the necessary tools to model agent-based simulations and get a hands-on experience with the language itself.
+AgentLang aims to provide a new approach to modeling agent-based simulations. This is on the one hand due to the simplicity of the language itself, since it features simple syntax and only the necessary constructs for modeling almost any simulation. On the other hand, the language is integrated into a specialised web-based interface, which offers a code editor, a visualisation module and most importantly, a spreadsheet interface, which allows the user to edit agent properties and values manually during the runtime of the simulation. These above features of the AgentLang framework provide all the necessary tools to model agent-based simulations and get a hands-on experience with the language itself.
 
-The structure of AgentLang is very straightforward. We define the individual agent models and for each model, we define its behaviour using a set of properties.
+The structure of AgentLang is straightforward. We define the individual agent models and for each model, we define its behaviour using a set of properties.
 ```
 agent snowflake 500 {
     const speed = random(10, 20);
@@ -30,13 +30,13 @@ agent snowflake 500 {
 ```
 The above example generates a set of 500 snowflakes, each with a random falling speed and lets them fall on the ground by incrementing their vertical coordinates by their speed.
 
-In conclusion, the main intention behind the creation of AgentLang is to make agent-based modeling available to all scientific domains, regardless of their technical background, allowing for a very shallow learning curve and usability using the following benefits:
+In conclusion, the main intention behind the creation of AgentLang is to make agent-based modeling available to all scientific domains, regardless of their technical background, allowing for a shallow learning curve and usability using the following benefits:
 - simplistic language syntax designed for easy conversion to the spreadsheet representation
 - spreadsheet interface for almost no-code modeling
 - built-in visualisation module for better understanding of the simulation
 
 ## 1. Theoretical Background
-Before diving into the language specification, it's important to introduce and briefly explain the theoretical background behind the most important concepts used in AgentLang. The following sections aim to provide an introduction to agent-based modeling, its use cases and real-world applications as well as a brief overview of language interpreters and parsers.
+Before diving into the language specification, it's important to introduce and briefly explain the theoretical background behind the most important concepts used in AgentLang. The following chapters aim to provide an introduction to agent-based modeling, its use cases and real-world applications as well as a brief overview of language interpreters and parsers.
 
 ### 1.1 Agent-based Modeling
 AgentLang is a domain-specific language designed exclusively for modeling agent-based simulations. Therefore it is necessary to understand the motivation behind the agent-based modeling technique and its increasing popularity in the recent years as well as to demonstrate its power and applications on several use cases on real-world examples.
@@ -49,11 +49,11 @@ It's important to note that agent-based modeling is more of a mindset than a tec
 #### 1.2.2 Benefits of Agent-based Models
 Agent-based modeling offers numerous advantages when compared to other mathematical models and simulation techniques.
 
-First and foremost, the approach of agent-based modelling allows us to uncover novel emergent phenomena within the system, phenomena that were previously unknown or considered improbable. When we establish and define the rules governing the behaviour of agents, the anticipated actions of individual agents seem straightforward, given the simplicity and predictability of these rules. However, upon executing an agent-based model involving numerous interacting agents, the system's behavior often proves to be surprisingly complex. Even slight changes to the agents' behaviour may have a profound impact on the overall outcome of the system, a phenomenon that can be seen for instance in sociology, where the collective behavior of a group can be significantly influenced by subtle changes in the behavior of an individual.
+First and foremost, the approach of agent-based modelling allows us to uncover novel emergent phenomena within the system, such as complex emergent behavioral patterns in sociology or economy, phenomena that were previously unknown or considered improbable. When we establish and define the rules governing the behaviour of agents, the anticipated actions of individual agents seem straightforward, given the simplicity and predictability of these rules. However, upon executing an agent-based model involving numerous interacting agents, the system's behavior often proves to be surprisingly complex. Even slight changes to the agents' behaviour may have a profound impact on the overall outcome of the system, a phenomenon that can be seen for instance in sociology, where the collective behavior of a group can be significantly influenced by subtle changes in the behavior of an individual.
 
-Furthermore, agent-based modeling is particularly well-suited for simulation domains involving individual behavioral entity types and their mutual interactions. This is especially true in scenarios requiring the analysis of human interaction, understanding principles behind bird flocking, or predicting traffic jam occurrences on certain city roads. These situations pose challenges for other mathematical models, which may not explicitly consider the fundamental unit of the system as a whole.
+Furthermore, agent-based modeling is particularly well-suited for simulation domains involving individual behavioral entity types and their mutual interactions. This is especially true in scenarios requiring the analysis of human interaction, understanding principles behind bird flocking, or predicting traffic jam occurrences on certain city roads. These situations pose challenges for other mathematical models, which may not explicitly consider and model the fundamental units of the system, rather the system as a whole.
 
-Last but not least, agent-based models are flexible and extensible. We can easily introduce new agents to the system or increase the quantity of existing agents. Modifying the model's behavior is as simple as fine-tuning the decision-making logic within the agent's model, which may lead to a whole new beahviour of the whole system. This degree of flexibility and extensibility implies the usage of agent-based models in scenarios where the level of complexity of the simulation is either highly unpredictable or unknown in advance, making it easy to fine-tune the simulation without the need for making too many adjustments.
+Last but not least, agent-based models are flexible and extensible. We can easily introduce new agents to the system or increase the quantity of existing agents. Modifying the model's behavior is as simple as remodelling the decision-making logic within one agent model, which may lead to a whole new beahviour of the whole system. This degree of flexibility and extensibility implies the usage of agent-based models in scenarios where the level of complexity of the simulation is either highly unpredictable or unknown in advance, making it easy to fine-tune the simulation without the need for making too many adjustments.
 
 #### 1.2.3 Use Cases
 Agent-based modeling is used in numerous scientific areas and systems. Let's dive deeper into some of the major classifications of its usage, which are:
@@ -62,14 +62,14 @@ Agent-based modeling is used in numerous scientific areas and systems. Let's div
 3. organizations
 
 ##### 1.2.3.1 Flows
-To describe the idea behind flows, let's consider the evacuation of people. The behaviour of a crowd in a sudden or unexpected dangerous situation often leads to panic and chaos. These situation usually arise during mass events such as concerts, sporting events and demonstrations, where there is high density of people on a certain area. In case of fire or other disasters of such nature, people in panic are obsessed by short-term personal interests uncontrolled by social and cultural constraints.
+To describe the idea behind flows, let's consider the evacuation of people. The behaviour of a crowd in a sudden or unexpected dangerous situation often leads to panic and chaos. These situation usually arise during mass events such as concerts, sporting events and demonstrations, where there is high density of people on a certain area. In case of fire or other disasters of such nature, people in panic are governed by short-term personal interests uncontrolled by social and cultural constraints.
 
 To prevent uncontrolled behaviour and maximize the chances of successful evacuation, we need to design venues and their escape exits in the best way possible. This is a typical scenario suitable for agent-based modeling. In agent terms, collective panic behaviour is an emergent phenomenon that results from relatively complex individual behaviour patterns and interactions between individuals, such as mutual excitation of a primordial instinct, chain reaction or social facilitaion. Based on prior historical observations, statistics and sociological studies, we can fairly accurately define the behaviour of a person in such situations and observe the reaction of masses during evacuation.
 
 ##### 1.2.3.2 Markets
 Another typical usage of agent-based models is in economics, where the dynamics of the stock market or the housing market results from the behaviour of many interacting agents, leading to the aforementioned emergent phenomena that are best understood by using a bottom-up approach - agent-based modeling.
 
-In a study published in 2018, a consortium of three scientists and academics embarked on an inqiuiry into the housing market, leveraging an agent-based model with the aim to analyse the relation between income segregation, income inequality and house prices. Through the specification of the buyer-seller dynamics and the price formation mechanisms, the study concluded two primary insights:
+In a study published in 2018, a consortium of three scientists and academics - Marco Pangallo, Jean-Pierre Nadal, Annick Vignes, studied the housing market, leveraging an agent-based model with the aim to analyse the relation between income segregation, income inequality and house prices. Through the specification of the buyer-seller dynamics and the price formation mechanisms, the study concluded two primary insights:
 1. a more unequal income distribution lowers the prices globally, but implies stronger segregation
 2. a spike of the demand in one part of the city increases the prices all over the city
 
@@ -85,30 +85,30 @@ In contrast to market risks, operational risks predominantly arise internally wi
 Given all of these characteristics of operational risks within organisations, it is obviously difficult to quantify. Therefore, a bottom-up simulation to assess the probabilities of operational risks looks like a promising approach, since what is needed is a framework that includes the possibility of non-linear effects because of interactions among sub-units and to cascading events. Modeling the bank's agents, such as their workflow and risk factors that could potentially impact their activities and performance is the first step. Then, external factors, such as the bank's customers, markets and regulators are modelled to simulate the bank's environment. Using this approach, we can observe the emergent phenomena in form of cascading failures and analyse the operational risks of an organisation in a more straightforward way, without the knowledge of any direct relationships between failures and the bank's inner workings in advance.
 
 ### 1.2 Interpreters
-AgentLang is an interpreted language, which poses various advantages as well as disadvantages in terms of implementation and performance. This section aims to provide a brief introduction into the inner workings of interpreters and language parsers and describe the main concepts used in their implementation.
+AgentLang is an interpreted language, which poses various advantages as well as disadvantages in terms of implementation and performance. This chapter provides a brief introduction into the inner workings of interpreters and language parsers and describe the main concepts used in their implementation.
 
 #### 1.2.1 Compilers vs. Interpreters
 In order to better understand the main advantages and disadvantages of interpreters, let's introduce and compare the two primary approaches to developing programming languages - compilers and interpreters.
 
-Compilers and interpreters are the fundamental components of programming languages. They are responsible for reading the source code of the target language and executing its instructions. They both work in a slightly different way, each boasting its own set of strengths and weaknesses.
+Compilers and interpreters are the fundemental building blocks of programming languages. They are responsible for reading the source code of the target language and executing its instructions. They both work in a slightly different way, each boasting its own set of strengths and weaknesses.
 
 A compiler translates the source code of a program into machine instructions or an intermediate representation of the code before execution. The process of reading, analysing and transforming the source code involves several stages, including lexical analysis, semantical analysis, optimisations and code generation. Once compiled to machine code, the resulting executable can run independently of the original source code. Since compilers transform the source code to direct machine instructions, they tend to offer high performance, however, they are difficult to understand, implement and debug.
 
-In contrast, an interpreter processes the source code line by line, translating and executing each instruction in real-time as the line is being read. Interpreters can also feature lexical and semantical analysis, but they do not produce an intermediate representation of the source code. They generate a semantical representation of the program's source code, also referred to as the abstract syntax tree (AST), which is then evaluated instruction by instruction during runtime. Therefore, interpreters usually tend to be slower than compilers. However, they provide higher flexibility and ease of debugging.
+In contrast, an interpreter processes the source code line by line, translating and executing each instruction in real-time as the line is being read. However, interpreters also feature lexical and semantical analysis used to statically analyse the code before execution. For this, they usually produce and validate an intermediate representation of the source code known as the abstract syntax tree (AST), which is then evaluated instruction by instruction during runtime. For these reasons, nterpreters usually tend to be slower than compilers, however, they provide higher flexibility and ease of debugging.
 
 #### 1.2.2 Workflow
-Interpreters are usually implemented in a manner similar to the pipeline architectural style. During the process of interpretation, the source code is fed through and transformed by several processors before finally being executed by the interpreter's runtime.
+Interpreters are usually implemented in a manner similar to the pipeline architectural style. During the process of interpretation, the source code is transformed through several processors before finally being executed by the interpreter's runtime.
 
 Firstly, the source code is read by the lexer, which produces an array of tokens. A token is a single basic unit of the language, such as an identifier, a keyword or a numeric literal. The lexer has a set of defined, language-specific rules for producing the tokens, such as recognizing and classifying reserved language keywords or special characters. This step is called the lexical analysis.
 
 The array of tokens is then passed to the parser, which based on a set of defined rules of the target language's grammar analyses sub-sequences of tokens, validates their integrity and produces a semantic representation of the program. This representation is also called the abstract syntax tree (AST), since it is a tree-like structure holding the semantics of the program. It can be understood as an intermediate code representation, which is validated and ready to be passed to and evaluated by the runtime module. This step is called the semantical analysis.
 
-Finally, the abstract syntax tree is passed to the interpreter's runtime, which traverses the AST using a depth-first search algorithm and evaluates the program instruction by instruction. Therefore, the instructions of the target language are evaluated and executed by the programming language in which the interpreter is implemented in.
+Finally, the abstract syntax tree is passed to the interpreter's runtime, which traverses the AST using using a certain traversal algorithm, such as the depth-first search algorithm and evaluates the program instruction by instruction. Therefore, the instructions of the target language are evaluated and executed by the programming language in which the interpreter is implemented in.
 
 #### 1.2.3 Parsers
-Although each part of the process of transforming the source code and generating the program's output is interesting and worth explaining to greater detail, the parser is without doubt one of the most interesting part of an interpreter. The main responsibility of a parser is to evaluate the stream of tokens coming from the lexer, validate these tokens against the production rules of the target language's grammar and produce the semantic representation of the program - the abstract syntax tree.
+Although each part of the process of transforming the source code and generating the program's output is interesting and worth explaining in greater detail, the parser is one of the most interesting parts of an interpreter. The main responsibility of a parser is to evaluate the stream of tokens coming from the lexer, validate these tokens against the production rules of the target language's grammar and produce the semantic representation of the program - the abstract syntax tree.
 
-Parser is usually implemented as a pushdown automaton (PDA). This is because the syntax of a language can be defined by a set of production rules called the syntax grammar. This automaton accepts the given grammar, therefore is able to validate the correctness of the input source code. The automaton is fed a stream of tokens from the lexer. The evaluation starts at the intitial state and based on the next token, it decides which state it goes to next. In case it comes across a token which cannot be pushed to a new state, since such state does not exist, it is redirected to the fallback state. This scenario is called a semantical error and in such case, the interpreter throws an exception. This aforementioned approach, however, is specific to top-down parsing only. There are various parsing techniques, each suitable for different use cases.
+Parser is usually implemented as a pushdown automaton (PDA). This is because the syntax of a language can be defined by a set of production rules called the syntax grammar. This automaton accepts the language's grammar, therefore is able to validate the correctness of the input source code. The automaton reads a stream of tokens from the lexer. The evaluation starts at the intitial state and based on the next token, it decides which state it goes to next. In case it comes across a token which cannot be pushed to a new state, since such state does not exist, it is redirected to the fallback state. This scenario is called a semantical error and in such case, the interpreter throws an exception. This aforementioned approach, however, is specific to top-down parsing only. There are various parsing techniques, each suitable for different use cases.
 
 ##### 1.2.3.1 Top-down vs. Bottom-up Parsing
 There are two primary techniques in parsing language grammars: top-down parsing and bottom-up parsing.
@@ -125,12 +125,12 @@ The idea behind the implementation of such pushdown automaton is that the stack 
 The technique of recursive descent parsing is used in the implementation of the AgentLang's parser. This is due to the simplicity of the language's syntax grammar and is a good starting point for implementing a simple parser such as that of AgentLang.
 
 ## 2. Analysis
-The previous section covered the most important theoretical concepts and terms that will be used throughout the thesis and that are the main building blocks of the AgentLang framework. This section explores the motivation behind the creation of AgentLang, analysis and comparison with existing agent-based tools and finally outlines the main goals that this thesis strives to achieve.
+The previous chapter covered the most important theoretical concepts and terms that will be used throughout the thesis and that are the main building blocks of the AgentLang framework. This chapter explores the motivation behind the creation of AgentLang, analysis and comparison with existing agent-based tools and finally outlines the main goals that this thesis strives to achieve.
 
 ### 2.1 Motivation
-Developing a programming language that addresses challenges and introduces innovation is increasingly difficult nowadays, given the wast number of languages offering all kinds of features. These languages can be classified into several categories, spanning from general-purpose programming languages to domain-specific languages as well as modelling languages. General-purpose languages, renowned for their versatility and widespread adoption among developers worldwide offer a broad set of language constructs and concepts. Therefore, developing a general-purpose programming language introducing innovations is rather challenging. Moreover, such languages are difficult to implement and require a lot of time and effort for their development. On the other hand, domain-specific languages serve as more of niche tools for tackling issues with domain-specific challenges. As technology is on the rise these days, new domains emerge that need specific tools to handle the tasks they pose. One of such domains is agent-based modeling.
+Developing a programming language that addresses challenges and introdudec innovation is increasingly difficult nowadays, given the wast number of languages offering all kinds of features. On the one hand, general-purpose languages, renowned by their versatility and widespread adoption among developes offer a broad set of concepts, therefore developing a general-purpose programming language introducing innovation in rather challenging. On the other hand, domain-specific languages serve as more of niche tools for tackling challenges with domain-specific tasks. As technology is on the rise these days, new domains emerge that need specific tools to handle the tasks they pose. One of such domains is agent-based modeling.
 
-Agent-based modeling, although being a simulation technique with a long history, continues to reveal variety of new applications and use cases across numerous scientific fields and domains. There are many agent-based specific tools that allow for modeling agent-based simulations, each boasting its set of strengths and weaknesses. Despite their power and extensive feature set, these tools often feature complex syntax and language constructs, limiting their usage to technical scientific domains only. Moreover, many of these tools are tailored to specific domains only, such as NetLogo for social and natural sciences. In response to these reasons, the idea of AgentLang emerged, aiming to offer a unified language and environment for agent-based simulations of any nature, accessible to all scientific fields, regardless of their technical proficiency.
+Agent-based modeling, although being a simulation technique with a long history, continues to reveal variety of new applications and use cases across numerous scientific fields and domains. There are many agent-based specific tools that allow for modeling agent-based simulations, each boasting its set of strengths and weaknesses. Despite their power and extensive feature set, these tools often feature complex syntax and language constructs, limiting their usage to technical scientific domains only. Moreover, many of these tools are tailored to specific domains only, such as NetLogo for social and natural sciences. Hence the idea of AgentLang emerged, aiming to offer a unified language and environment for agent-based simulations of any nature, accessible to all scientific fields, regardless of their technical proficiency.
 
 ### 2.2 Existing Agent-based Tools
 Before outlining the primary goals of this thesis, it is important to mention some of the existing agent-based tools to highlight the main differences between existing agent-based frameworks and AgentLang.
@@ -161,7 +161,7 @@ to flock
           cohere ] ]
 end
 ```
-NetLogo is a powerful tool capable of handling thousands of agents and their complex behavioural patterns seamlessly. However, with its performance comes the cost of language complexity and a steep learning curve. The language has a specific syntax, which may be unfamiliar for developers and data analysts, not to mention scientists of non-technical scientific fields.
+NetLogo is a powerful tool capable of handling thousands of agents and their complex behavioural patterns seamlessly. However, the expressivity of the language results in a steep learning curve. The language is notably specific, which may be unfamiliar for developers and data analysts, not to mention scientists of non-technical scientific fields.
 
 #### 2.2.2 GAMA
 Another popular modeling and simulation framework is GAMA. It is designed to handle spatially explicit agent-based simulations, such as urban mobility, climate change adaptation, epidemiology, disaster evacuation strategies or urban planning. Its advantages include the generality of the framework and opennes to user-defined plugins as well as the possibility to use GAMA externally in custom software or in different programming languages. One of the most important strengths of GAMA is the availability to non-technical scientists. It is quite easy and straightforward to create and run the first simulation in the matter of minutes. However, GAMA is a large and rich environment with a steep learning curve if the aim is to use it regularly and in non-trivial ways. Moreover, as well as in NetLogo, its language is specific in design and structure, making it difficult to learn, even for people of technical scientific domains.
@@ -183,7 +183,7 @@ species people skills: [moving] {
 ```
 
 #### 2.2.3 AgentScript
-Finally, a more familiar agent-based framework utilising an existing programming language is called AgentScript. AgentScript is more of a library than a framework. It provides a set of JavaScript classes and methods used to create and run agent-based models in the browser. AgentScript is heavily inspired by NetLogo, thus its main building blocks consist of three actors: turtles, patches and links. The user defines the behaviour and interaction logic of these three actors and the library takes care of the rest, such as real-time simulation visualisation or agent manipulation. Although the whole concept of AgentScript is familiar, easily understandable and usable by JavaScript developers, it poses challenges for people with limited programming and JavaScript skills. JavaScript, as many other programming languages has its structure and rules, which the user needs to know apart from the AgentScript semantics itself.
+Finally, another agent-based framework utilising an existing programming language is called AgentScript. AgentScript is more of a library rather than a framework. It provides a set of JavaScript classes and methods used to create and run agent-based models in the browser. AgentScript is heavily inspired by NetLogo, thus its main building blocks consist of three actors: turtles, patches and links. The user defines the behaviour and interaction logic of these three actors and the library takes care of the rest, such as real-time simulation visualisation or agent manipulation. Although the whole concept of AgentScript is familiar, easily understandable and usable by JavaScript developers, it poses challenges for people with limited programming and JavaScript skills. JavaScript, as many other programming languages has its structure and rules, which the user needs to know apart from the AgentScript semantics itself.
 
 Below is an example AgentScript simulation source code.
 ```
@@ -219,28 +219,71 @@ export default class FireModel extends Model {
 }
 ```
 
+### 2.2.4 Comparison
+Below is the comparison of the most important features of the aforementioned agent-based tools and AgentLang.
+
+<table>
+  <tr>
+    <th></th>
+    <th>General-purpose</th>
+    <th>Ease of learning</th>
+    <th>Language Simplicity</th>
+    <th>Web-based</th>
+  </tr>
+
+  <tr>
+    <th>NetLogo</th>
+    <td>❌</td>
+    <td>❌</td>
+    <td>❌</td>
+    <td>✅</td>
+  </tr>
+
+  <tr>
+    <th>AgentScript</th>
+    <td>✅</td>
+    <td>❌</td>
+    <td>❌</td>
+    <td>✅</td>
+  </tr>
+
+  <tr>
+    <th>GAMA</th>
+    <td>✅</td>
+    <td>✅</td>
+    <td>❌</td>
+    <td>❌</td>
+  </tr>
+
+  <tr>
+    <th>AgentLang</th>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+    <td>✅</td>
+  </tr>
+</table>
+
 ### 2.3 Goals
-By analysing the above existing agent-based tools, we come to the following conclusions. Firstly, each of these tools is either directly based on an existing general-purpose programming language, such as AgentScript or provides its own domain-specific language, which is very distinct in terms of syntax and structure, such as NetLogo or GAMA. The former requires the understanding of the underlaying programming language, whereas the latter requires to learn a brand new language. Moreover, these tools are often very complex and offer a wide range of features, which at one hand is useful for agent-based specialised scientists, but on the other hand discourages the rest by their steep learning curves. In response to these characteristics, AgentLang aims to fulfil the following goals:
+By analysing the above existing agent-based tools, we come to the following conclusions. Firstly, each of these tools is either directly based on an existing general-purpose programming language, such as AgentScript or provides its own domain-specific language, which is distinct in terms of syntax and structure, such as NetLogo or GAMA. The former requires the understanding of the underlaying programming language, whereas the latter requires to learn a brand new language. Moreover, these tools are often complex and offer a wide range of features, which at one hand is useful for agent-based specialised scientists, but on the other hand discourages the rest by their steep learning curves. In response to these characteristics, AgentLang aims to fulfil the following goals:
 1. provide a unified, balanced language with simple and straightforward syntax and structure
 2. offer only the necessary, essential core library of features
 3. allow for an alternative way of simulation modeling using a familiar approach in form of spreadsheet representation
 
 ## 3. Language Specification
-The following sections focus on the detailed language specification of AgentLang, describing its structure, syntax, data types as well as its standard library and core functionality.
+The following chapters focus on the detailed language specification of AgentLang, describing its structure, syntax, data types as well as its standard library and core functionality.
 
 ### 3.1 Introduction
-AgentLang is a programming language designed exclusively for modeling agent-based simulations. It is an interpreted programming language and its interpreter is written in TypeScript. Its syntax is very simple and straightforward, yet it may resemble modern general-purpose programming languages such as Python or JavaScript, establishing a nice balance between the ease of use for non-technical scientists as well as familiarity for developers.
+AgentLang is an interpreted programming language and its interpreter is written in TypeScript. Its syntax is simple and straightforward, yet it may resemble modern general-purpose programming languages such as Python or JavaScript, establishing a nice balance between the ease of use for non-technical scientists as well as familiarity for developers.
 
-The structure of AgentLang is very natural and straightforward in terms of the way humans tend to think about agent-based models. The user defines one or multiple agents and for each agent a set of their properties. An agent can be viewed as a class in an object-oriented programming language and a property can be understood as a member variable of this class. Apart from the declarations of agents and their properties, AgentLang supports the declarations of global variables, which are constant values that can be reused among all agents. User-defined functions with parameters are however not supported.
+The structure of AgentLang is natural in terms of the way humans tend to think about agent-based models. The user defines one or multiple agents and for each agent a set of their properties. An agent can be viewed as a class in an object-oriented programming language and a property can be understood as a member variable of this class. Apart from the declarations of agents and their properties, AgentLang supports the declarations of global variables, which are constant values that can be reused among all agents. User-defined functions with parameters are however not supported in order to keep the language simple and allow for easy conversion to the spreadsheet interface.
 
 Each agent property has a strictly inline value defined by an expression. The language does not allow for code blocks with multi-statement definitions, except for the agent body.
 
-Since AgentLang is an interpreted language, the program is evaluated in an incremental manner, agent by agent, property by property. Although this would imply that a property cannot be accessed unless defined earlier, it is not so, since the interpreter has a built-in topological property sorting mechanism, which determines the order in which properties are evaluated during runtime. However, more about this concept will be discussed in later sections. The output of the interpreter is an array of agents and the current values of their properties. This gives the developer the flexibility to analyse and use the output in any way they need.
-
-Apart from the source code, the AgentLang interpreter takes four additional configuration parameters, which are `steps`, `delay`, `width` and `height`. The `steps` parameter sets the number of steps the simulation should run. A step refers to a single evaluation of the program. The `delay` parameter determines how often the interpreter should emit the output, more specifically, how long it should wait (in milliseconds) before evaluating the next step of the simulation. The `width` and `height` parameters are important for the interpreter to initialize the built-in `width()` and `height()` functions used in the simulation's visualisation. For instance, a configuration with `steps = 100` and `delay = 10` means that the simulation will emit 100 uniformly distributed program evaluations in the matter of 1000 milliseconds.
+Since AgentLang is an interpreted language, the program is evaluated in an incremental manner, agent by agent, property by property. Although this would imply that a property cannot be accessed unless defined earlier, it is not so, since the interpreter has a built-in topological property sorting mechanism, which determines the order in which properties are evaluated during runtime. However, more about this concept will be discussed in later chapters. The output of the interpreter is an array of agents and the current values of their properties. This gives the developer the flexibility to analyse and use the output in any way they need.
 
 ### 3.2 Syntax Grammar
-To give a brief overview of the AgentLang's syntax, below are the production rules of the AgentLang's syntax grammar. Terminal symbols are encapsulated in double quotes and non-terminal symbols are represented by pure identifiers written in snake case.
+To give a brief overview of the AgentLang's syntax, below are the production rules of the AgentLang's syntax grammar. Terminal symbols are enclosed in double quotes and non-terminal symbols are represented by identifiers written in snake case.
 ```
 program:
     | declaration
@@ -285,14 +328,13 @@ expression:
     | binary_expression
     | unary_expression
     | logical_expression
-    | lambda_expression
     | otherwise_expression
 
 identifier:
-    | "[a-zA-Z\_]+"
+    | [a-zA-Z\_]+
 
 numeric_literal:
-    | "([0-9]+)|([0-9]+.[0-9]+)"
+    | ([0-9]+)|([0-9]+.[0-9]+)
 
 boolean_literal: "true" | "false"
 
@@ -306,6 +348,10 @@ argument_list:
 
 argument:
     | expression
+    | set_comprehension
+
+set_comprehension:
+    | expression "|" identifier "->" expression
 
 conditional_expression:
     | "if" expression "then" expression "else" expression
@@ -325,21 +371,12 @@ unary_expression:
     | numeric_unary_operator numeric_literal
     | boolean_unary_operator boolean_literal
 
-unary_operator:
-    | boolean_unary_operator
-    | numeric_unary_operator
-
-boolean_unary_operator: "!"
-
-numeric_unary_operator: "-"
+unary_operator: "!" | "-"
 
 logical_expression:
     | expression logical_operator expression
 
 logical_operator: "and" | "or"
-
-lambda_expression:
-    | expression "=>" identifier "=>" expression
 
 otherwise_expression:
     | expression "otherwise" expression
@@ -381,7 +418,7 @@ agent car car_count {
 ...
 }
 ```
-More about global variables will be explained later in this section.
+More about global variables will be explained later in this chapter.
 
 After defining agent models, AgentLang will generate the corresponding number of agents for each agent model and evaluate their properties during runtime.
 
@@ -522,7 +559,7 @@ agent predator 5 {
 ```
 The `preys` property holds an array of agent instances of type `prey` with their most recent values.
 
-There are numerous built-in functions used for retrieving or manipulating values of type AgentList, which will be described later in this section.
+There are numerous built-in functions used for retrieving or manipulating values of type AgentList, which will be described later in this chapter.
 
 #### 3.4.4 AgentObject
 AgentObject is a special data type representing one specific agent instance and its properties. It can be used to retrieve the property values of an agent and use them in later calculations.
@@ -561,10 +598,10 @@ agent person 10 {
 ```
 The `close_person` property attempts to find an agent that is the closest to the current agent, but is also in the visual range of 65. If there are no agents in this visual range, the `close_person` searches an empty array and cannot retrieve a specific agent instance. Therefore, it is assigned a Null value.
 
-A problem with Null values, however, is that we cannot use it in other properties. More specifically, we cannot retrieve the agent's properties, since it does not hold any agent instance, rather a Null value. That is why AgentLang supports the `otherwise` operator, which tackles issues with Null values. The `otherwise` operator will be discussed later in this section.
+A problem with Null values, however, is that we cannot use it in other properties. More specifically, we cannot retrieve the agent's properties, since it does not hold any agent instance, rather a Null value. That is why AgentLang supports the `otherwise` operator, which tackles issues with Null values. The `otherwise` operator will be discussed later in this chapter.
 
 ### 3.5 Expressions
-The following sections introduce and showcase all expression types supported by AgentLang, from the most basic ones such as binary or relational expressions to more complex, language-specific expressions such as `otherwise` or `lambda` expressions.
+The following chapters introduce and showcase all expression types supported by AgentLang, from the most basic ones such as binary or relational expressions to more complex, language-specific expressions such as `otherwise` or `lambda` expressions.
 
 #### 3.5.1 Binary Expressions
 Binary expression is the most basic expression in AgentLang. It consists of two numeric operands and one binary operator. The operator can be of type addition, subtraction, multiplication, division or modulo. These expressions can be arbitrarily nested and parenthesised.
@@ -749,10 +786,10 @@ The `index(): number` function returns the numeric index of the current agent, s
 The `step(): number` function returns the value of the current step, starting from 0.
 
 ## 5. Implementation
-The following sections describe the most important concepts in the AgentLang interpreter's implementation and point out the most important and interesting parts of its architecture and functioning.
+The following chapters describe the most important concepts in the AgentLang interpreter's implementation and point out the most important and interesting parts of its architecture and functioning.
 
 ### 5.1 Overview and Architecture
-The AgentLang's interpreter is written in TypeScript. The choice of this specific language resulted from various reasons. First and foremost, we needed good compatibility and integrability with the web-based interface, which is the primary environment where AgentLang is intended to be used. Furthemore, there was no primary need for high performance, since AgentLang is intended mainly for simple simulations, as a proof of concept of the language itself. Since modern web applications are written mainly in JavaScript frameworks and we opted for the TypeScript-based Next.js framework for the web-based interface, TypeScript felt like a natural choice and and common ground for this thesis.
+The AgentLang's interpreter is written in TypeScript. The choice of this specific language resulted from various reasons. First and foremost, we needed good compatibility and integrability with the web-based interface, which is the primary environment where AgentLang is intended to be used. Furthemore, there was no primary need for high performance, since AgentLang is intended mainly for simple simulations, as a proof of concept of the language itself. Since modern web applications are written mainly in JavaScript frameworks and we opted for the TypeScript-based Next.js framework for the web-based interface, TypeScript felt like a natural choice.
 
 The interpreter itself follows an architecture resembling the pipeline architectural style. It consists of five main parts, which are
 - **symbolizer** - produces an array of symbols together with their positions in the source code
@@ -764,7 +801,7 @@ The interpreter itself follows an architecture resembling the pipeline architect
 <img src="./assets/architecture.png" width="700">
 
 #### 5.1.1 Symbolizer
-Symbolizer is a very simple module responsible for one task only - to convert the source code into individual symbols and produce metadata for each symbol, such as its position in the source code. Although it is usually part of the lexer module itself, we decided to put it to a standalone module for better modularity and code readability.
+Symbolizer is a simple module responsible for one task only - to convert the source code into individual symbols and produce metadata for each symbol, such as its position in the source code. Although it is usually part of the lexer module itself, we decided to put it to a standalone module for better modularity and code readability.
 
 The primary and only method in the symbolizer module is the `symbolize()` method, which reads the source code character by character and produces an array of symbols.
 ```ts
@@ -785,7 +822,7 @@ public symbolize(): Symbol[] {
   return symbols;
 }
 ```
-A symbol is based on a simple interface containing the symbol's value and position.
+Each symbol consists of its string value, which is stricly one character only and its position in the source code. The position contains the line number and the charatcer number.
 ```ts
 export interface Symbol {
   value: string;
@@ -920,7 +957,7 @@ private parseStatement(): Statement {
 ```
 We can see that it abides by the grammar rules of statements (declarations). A global variable declaration always starts with the `define` keyword, whereas an agent declaration always starts with the `agent` keyword. If the current token is of any of these two types, we parse the corresponding declaration by calling the `parseDefineDeclaration()` or `parseObjectDeclaration()` methods respectively. In case of other token types, the parser throws an exception, since other token types do not abide by the grammar rules of the language.
 
-These two above parsing methods are very simple, since the right-hand side of their grammar rules are simple. Let us look at a more explicit example of an agent declaration, defined by the following grammar rule.
+These two above parsing methods are simple, since the right-hand side of their grammar rules are simple. Let us look at a more explicit example of an agent declaration, defined by the following grammar rule.
 ```
 agent_declaration:
     | "agent" identifier agent_count "{" "}"
@@ -1051,7 +1088,7 @@ The top-level unit (root node) is the program itself. It has a body, which is an
 #### 5.1.4 Runtime
 The runtime module is the final step in the process of interpreting AgentLang's source code. It's main responsibility is traversing the valid AST structure, evaluating it in real-time and producing the final program's output. This technique is, however, specific to interpreters only. Interpreters depend on the implementation language, in this case TypeScript, that merely recognizes the intentions of the AgentLang's program instructions and performs calculations of the AgentLang's program using its own data types, structures and mechanisms.
 
-The runtime module works fundamentally in a very similar way to the parser module, as far as the structure and recursive evaluation is concerned. The structure of the runtime module looks like the following:
+The runtime module works fundamentally in a similar way to the parser module, as far as the structure and recursive evaluation is concerned. The structure of the runtime module looks like the following:
 ```ts
 class Runtime {
 
@@ -1109,7 +1146,7 @@ private evaluateNumericBinaryExpression(expression: BinaryExpression): RuntimeVa
   return { type: ValueType.Number, value: result } as NumberValue;
     }
 ```
-Firstly, the runtime module needs to evaluate both operands of the binary expression. The resulting values should be numeric literals. Then, based on the operator of the binary expression, we perform mathematical calculations to get the resulting value of the binary expression and we return this result as an instance of the `RuntimeValue` interface.
+First, the runtime module needs to evaluate both operands of the binary expression. The resulting values should be numeric literals. Then, based on the operator of the binary expression, we perform mathematical calculations to get the resulting value of the binary expression and we return this result as an instance of the `RuntimeValue` interface.
 
 The result of the program is a descendant of the `RuntimeValue` interface called `RuntimeOutput`:
 ```ts
@@ -1205,12 +1242,12 @@ private getInterpreterOutput(step: number): InterpreterOutput {
 The `getRuntimeOutput` and `getRuntimeError` are plain mapper functions that ensure correct mapping from the raw input to a desired output for the user.
 
 ### 5.2. Interesting Concepts
-The following sections describe some of the interesting concepts used in the implementation of the AgentLang's interpreter.
+The following chapters describe some of the interesting, non-trivial concepts used in the implementation of the AgentLang's interpreter, such as the topological property sorting or the automatic source code formatting.
 
 #### 5.2.1 Topological Property Sorting
-When modeling an AgentLang simulation, there are many times numerous dependencies between the agents' properties. Sometimes two properties can depend on each other respectively, which poses a significant problem to the evaluation process of their values. Although the properties can be assigned a default value which is a constant calculated at the beginning of the simulation, it often does not make sense to use default values for each property. Moreover it poses bad development experience if the user needs to declare properties in the order in which they should be evaluated by the interpreter. Fortunately, there is a way to solve such issues in a general way using topological sort.
+When modeling an AgentLang simulation, there are often numerous dependencies between the agents' properties. Sometimes two properties can depend on each other respectively, which poses a significant problem to the evaluation process of their values. Although the properties can be assigned a default value which is a constant calculated at the beginning of the simulation, it often does not make sense to use default values for each property. Moreover it poses bad development experience if the user needs to declare properties in the order in which they should be evaluated by the interpreter. Fortunately, there is a way to solve such issues in a general way using topological sort.
 
-Topological sort is a sorting mechanism that operates on directed acyclic graphs (henceforth referred to as DAGs). It is a linear ordering of the graph's vertices such that for every directed edge from vertex `u` to vertex `v`, vertex `u` comes before vertex `v` in the ordering. This algorithm does not work on cyclic graphs, since their ordering would not be linear. In other words, the vertices would depend on each other in a cyclic manner, not allowing the algorithm to determine which vertex to start with and which vertex to finish with.
+Topological sort is a sorting mechanism that operates on directed acyclic graphs (henceforth referred to as DAGs). It is a linear ordering of the graph's vertices such that for every directed edge from vertex `u` to vertex `v`, vertex `u` comes before vertex `v` in the ordering. This algorithm does not work on cyclic graphs, since there is no linear ordering. In other words, the vertices would depend on each other in a cyclic manner, not allowing the algorithm to determine which vertex to start with and which vertex to finish with.
 
 In terms of programming language interpreters, topological sort is a useful technique for tackling issues with variable dependencies. Interpreters read and evaluate source code line by line, instruction by instruction. This mechanism implies that before we can access a variable by its identifier, we first need to define it. That is fine by most general-purpose programming languages, since they feature various other complex language structures to work around this problem. However, AgentLang is designed in a specifically variable-oriented way, therefore the issues with the ordering of variable evaluation needs to be handled. And that is where the topological sorting mechanism can be used.
 
@@ -1238,7 +1275,7 @@ export class Node {
 ```
 Such graph structure can be passed to the topological sorting algorithm depicted below:
 ```ts
-private topologicalSort(graph: DependencyGraph): Node[] {
+function topologicalSort(graph: DependencyGraph): Node[] {
     const visited: { [key: string]: boolean } = {};
     const recursionStack: { [key: string]: boolean } = {};
     const result: Node[] = [];
@@ -1263,7 +1300,7 @@ private topologicalSort(graph: DependencyGraph): Node[] {
         recursionStack[node.identifier] = true;
 
         for (const dependency of node.dependencies) {
-            if (!isSelfLoop(dependency)) {
+            if (dependency && !isSelfLoop(dependency)) {
                 visit(dependency);
             }
         }
@@ -1277,7 +1314,7 @@ private topologicalSort(graph: DependencyGraph): Node[] {
     }
 
     if (containsCycle) {
-        throw new ErrorParser("Agent properties contain a dependency loop");
+        throw new ErrorParser("Agent variables contain a dependency loop");
     }
 
     return result;
@@ -1288,7 +1325,7 @@ This algorithm iterates over the agent's property declarations and for each decl
 #### 5.2.2 Source Code Formatter
 Although AgentLang's syntax is not dependent on indents or other whitespace characters, it is a good practice to follow specific syntactical rules or recommendations for the given language. Therefore, the interpreter features a source code formatter, which formats the source code in the language-specific way on the simulation startup.
 
-The code formatter works in a straightforward way. First, it parses the source code and produces an AST representing the semantics of the program. Then, it passes this AST into a function which recursively traverses the structure and produces plain source code equivalent to the input source code, formatted to the specific way defined by this function.
+The code formatter works in a straightforward way. First, it parses the source code and produces an AST representing the semantics of the program. Then, it passes this AST into a function which recursively traverses the structure and produces plain source code equivalent to the input source code, formatted to the specific way defined by a set of rules.
 
 However, producing a semantically equivalent source code is not as straightforward as it may appear. More specifically, a great problem arises with complex parenthesised expressions, where the code formatter must correctly assess the expression tree and parenthesised it in way that the resulting evaluation of the formatted expression is semantically equivalent to the user-defined expression in the input source code.
 
@@ -1299,64 +1336,75 @@ In AST, parentheses are completely omitted. Instead, the tree structure is compo
 const a = 5 + 2 * 3;
 const b = (5 + 2) * 3;
 ```
-The result of `a` is 11, since `2 * 3` is evaluated sooner. However, the result of `b` is 21, since the additive binary expression is evaluated sooner becuase of the parenthetisation. Let's look at the resulting AST of these two property declarations.
+The result of `a` is 11, since `2 * 3` is evaluated sooner. However, the result of `b` is 21, since the additive binary expression is evaluated first becuase of the parenthetisation. Let's look at the resulting AST of these two property declarations.
 
-This is an AST node representing the property declaration of `a`.
-```json
-{
-    "type": "VariableDeclaration",
-    "variableType": "const",
-    "identifier": "a",
-    "value": {
-        "type": "BinaryExpression",
-        "left": {
+<table style="width: 100%;">
+  <tr>
+    <th>Declaration of property <code>a</code></th>
+    <th>Declaration of property <code>b</code></th>
+  </tr>
+  <tr>
+    <td>
+      <pre>
+      {
+        "type": "VariableDeclaration",
+        "variableType": "const",
+        "identifier": "a",
+        "value": {
+          "type": "BinaryExpression",
+          "left": {
             "type": "NumericLiteral",
             "value": 5,
-        },
-        "right": {
+          },
+          "right": {
             "type": "BinaryExpression",
             "left": {
-                "type": "NumericLiteral",
-                "value": 2,
+              "type": "NumericLiteral",
+              "value": 2,
             },
             "right": {
                 "type": "NumericLiteral",
                 "value": 3,
             },
             "operator": "*",
+          },
+          "operator": "+",
         },
-        "operator": "+",
-    },
-},
-```
-This is an AST node representing the property declaration of `b`:
-```json
-{
-    "type": "VariableDeclaration",
-    "variableType": "const",
-    "identifier": "b",
-    "value": {
-        "type": "BinaryExpression",
-        "left": {
+      }
+      </pre>
+    </td>
+    <td>
+      <pre>
+      {
+        "type": "VariableDeclaration",
+        "variableType": "const",
+        "identifier": "b",
+        "value": {
+          "type": "BinaryExpression",
+          "left": {
             "type": "BinaryExpression",
             "left": {
-                "type": "NumericLiteral",
-                "value": 5,
+              "type": "NumericLiteral",
+              "value": 5,
             },
             "right": {
-                "type": "NumericLiteral",
-                "value": 2,
+              "type": "NumericLiteral",
+              "value": 2,
             },
             "operator": "+",
-        },
-        "right": {
+          },
+          "right": {
             "type": "NumericLiteral",
             "value": 3,
+          },
+          "operator": "*",
         },
-        "operator": "*",
-    },
-}
-```
+      }
+      </pre>
+    </td>
+  </tr>
+</table>
+
 Each binary expression in the AST has a `left` and `right` value as well as the `operator` value. We can see that the declaration of `a` represents a binary expression, where the `left` value is of type `NumericLiteral` and the `right` value is of type `BinaryExpression`. That is due to the operator precedence, where multiplication has higher precedence that addition. Since ASTs are evaluated using a depth-first search algorithm, the `right` value will be evaluated sooner than the `left` value, resulting in a correct evaluation of the expression. However, in the declaration of `b`, the `left` value is of type `BinaryExpression` and the `right` value is of type `NumericLiteral`. This happens due to the fact that the additive sub-expression has been parenthesised. Therefore, the AST knows to evaluate the left-hand side of the expression sooner than the right-hand side.
 
 This proves that although the AST does not explicitely hold any information about user-defined parentheses, it holds this information using its structure and semantics. This implies that we can reconstruct the parenthetisation from the AST itself, proving that the source code formatter can truly produce a semantically equivalent source code from the AST alone.
@@ -1395,7 +1443,7 @@ public static nodeToSourceCode(ast: ParserValue): string {
   return sourceCode;
 }
 ```
-It checks the binary precedence defined by the below rules and based on it parenthesises the resulting expression:
+This function checks the binary precedence defined by the below rules and based on it parenthesises the resulting expression:
 ```ts
 const binaryOperatorPrecedence: { [key: string]: number } = { "+": 1, "-": 1, "*": 2, "/": 2, "%": 2 };
 ```
@@ -1462,7 +1510,7 @@ On the top-right side of the screen, there is a control panel with the current p
 #### 6.2.1 Code Editor
 The code editor is a place where the user inputs the AgentLang source code in order to model an agent-based simulation. The code editor features basic syntax highlighting and line numbering, supporting all AgentLang syntactical constructs and concepts. However, it does not provide code completion or code suggestions.
 
-The most recent source code updates are saved automatically on every key press without the need to press the `save` button located in the upper control panel. The `save` button serves mainly for saving the latest `steps` and `delay` parameters, which are not saved automatically upon changing. After modeling the simulation, the user can start the simulation by clicking on the `start` button located in the control panel.
+The most recent source code updates are saved automatically to the browser's local storage on every key press without the need to press the `save` button located in the upper control panel. The `save` button serves mainly for saving the latest `steps` and `delay` parameters, which are not saved automatically upon changing. After modeling the simulation, the user can start the simulation by clicking on the `start` button located in the control panel.
 
 On every simulation startup, the AgentLang code is parsed and run by the interpreter. In case of syntactical or semantical errors, the interpreter raises an exception, which is caught by the web interface and shown to the user using a popup message appearing on the bottom of the screen. In such case scenario, the simulation is not started and the user must fix the errors first. In case of correct source code, however, a success popup message is shown to the user and the simulation starts.
 
@@ -1487,11 +1535,9 @@ The second primary feature of the spreadsheet interface is the possibility to up
 The visualisation module is used to visualise the simulation\s agents in real time on a two-dimensional plane. The visualisation of agent's depends on a set of standards - each agent that should be visualised needs to have the following properties:
 - `x` - a numeric value representing the `x` coordinate of the agent
 - `y` - a numeric value representing the `y` coordinate of the agent
-- `width` - a numeric value representing the `width` of the agent
-- `height` - a numeric value representing the `height` of the agent
-- `coloured` - a boolean representing the colour of the agent
-    - `true` stands for a red colour
-    - `false` stands for a white colour
+- `w` - a numeric value representing the `width` of the agent
+- `w` - a numeric value representing the `height` of the agent
+- `c` - an rgb value representing the colour of the agent (using the built-in function `rgb(r, g, b)`)
 
 <img src="./assets/images/visualisation.png" width="700">
 
@@ -1502,17 +1548,17 @@ After starting the simulation, the user is redirected to the visualisation panel
 TODO: add code examples and comparisons
 
 ## 8. Limitations & Future Work
-The following sections describe the most significant and critical limitations of the current state of AgentLang and provide a list of possible future improvements.
+The following chapters describe the most significant and critical limitations of the current state of AgentLang and provide a list of possible future improvements.
 
 ### 8.1 Limitations
 At the moment, AgentLang is a limited language serving primarily as a proof of concept of the new approach to agent-based modeling it aims to provide. Therefore, it has several significant limitations worth mentioning.
 
 #### 8.1.1 Performance
-The most significant bottleneck of the AgentLang's interpreter is its performance. With the rising number of agents, the simulation slows down exponentially. The problem is most visible when there are numerous properties manipulating AgentList values, for those operations are very costly. Since agents of the same type are evaluated the same way using the same model, with the rising number of agents also rises the number of agent instances in properties holding AgentList values. If we generate 10 agents, each of them needs to iterate over 9 other agents, resulting in 90 iterations. However, with only 10 times more agents, which is 100 total agents, the iteration count rises to 9900 (100 * 99), which is 110 times more iterations than with 10 agents.
+The most significant bottleneck of the AgentLang's interpreter is its performance. With the rising number of agents, the simulation slows down quadratically. The problem is most visible when there are numerous properties manipulating AgentList values, for those operations are costly. Since agents of the same type are evaluated the same way using the same model, with the rising number of agents also rises the number of agent instances in properties holding AgentList values. If we generate 10 agents, each of them needs to iterate over 9 other agents, resulting in 90 iterations. However, with only 10 times more agents, which is 100 total agents, the iteration count rises to 9900 (100 * 99), which is 110 times more iterations than with 10 agents.
 
 Moreover, the evaluation of agents of the same type is handled greedily. That means that for each agent type, the entire model is reevaluated by the runtime module for each agent of that type. Although this problem seems easy to solve by caching mechanisms for example, it is de facto quite non-trivial. As far as caching is concerned, there are not many cases where caching is as straightforward as saving the intermediate resulsts of expressions to a cache. This is due to the fact that in AgentLang, almost all properties have dependencies on other properties, whose values vary from agent to agent. Caching such values would thus be of no use to other agent instances.
 
-This issue of low performance is also affected by the choice of TypeScript as the implementation language of the interpreter. TypeScript as such is an interpreted language, slower than most compiled languages like C++ or Java. The fact that the interpreter is integrated into a web-based environment running in a web browser slows down the overall performance even more, resulting in a chain of performance downfalls. Moreover, the choice of TypeScript does not allow for true parallelism. Evaluation of agent instances by parallely running threads would help in improving the overall performance of the evaluation.
+This issue of low performance is also affected by the choice of TypeScript as the implementation language of the interpreter. TypeScript as such is an interpreted language, often slower than most compiled languages like C++ or Java. The fact that the interpreter is integrated into a web-based environment running in a web browser slows down the overall performance even more, resulting in a chain of performance downfalls. Moreover, the choice of TypeScript does not allow for true parallelism. Evaluation of agent instances by parallely running threads would help in improving the overall performance of the evaluation.
 
 However, by experimenting with various simulations and models, it has been proven that AgentLang is able to handle simple to mid-sized simulations and a few hundreds of agents without slowing down significantly, not affecting performance to a noticable degree. With more complex simulations and higher agent volumes, however, the delay in evaluation of each step rises, rendering the simulation slower than desired.
 
@@ -1524,7 +1570,7 @@ For instance, AgentLang does not support the generation of new agents and the de
 In conclusion, the current state of AgentLang is suitable for simple simulations intended for visual use, such as the flocking simulation, the Convay's Game of Life or the analysis of spreading fire in a forest. However, it is not suitable for simulations of more complex nature such as flows, organisations or economic markets depicted in the above chapters regarding the theoretical background behind agent-based modelling.
 
 ### 8.2 Future Work
-This section describes the possible future improvements in AgentLang.
+This chapter describes the possible future improvements in AgentLang.
 
 #### 8.2.1 Performance Optimisations
 As mentioned earlier, one of the biggest pitfalls of the current state of AgentLang is its performance. There are numerous ways how to optimize the runtime part of the interpreter, so that it could handle greater numbers of agents and more complex mathematical calculations.
@@ -1545,22 +1591,22 @@ For each agent, we generate its unique identifier and evaluate its entire proper
 One improvement in optimizing the performance of this implementation is to use threads. The runtime module could integrate a multi-threading mechanism, where each portion of the agents is evaluated in its own thread. In this way, the computations could run in parallel, optimizing the overall performance and speed of the simulation.
 
 #### 8.2.2 Extended Core Functionality
-At the current state of AgentLang's development, it provides the minimal set of essential functions and language constructs to be capable of modeling a wide range of simulations. However, this set of supported functionalities is not sufficient for more complex economical or organisational simulations. These types of simulation require non-trivial complex mathematical calculations and data types. There are numerous aspects in which AgentLang can be extended of new functionality, described in the following sections.
+At the current state of AgentLang's development, it provides the minimal set of essential functions and language constructs to be capable of modeling a wide range of simulations. However, this set of supported functionalities is not sufficient for more complex economical or organisational simulations. These types of simulation require non-trivial complex mathematical calculations and data types. There are numerous aspects in which AgentLang can be extended of new functionality, described in the following chapters.
 
 ##### 8.2.2.1 User-defined Functions
 The most important language constructs AgentLang currently lacks are user-defined parameterised functions. In many cases, the user needs to perform the same calculations but on different sets of data. This is a typical use case of reusable code blocks with a custom set of parameters. Such functionality is especially important in economical or market simulations, where mathemtacis play a huge role. Therefore, a possible improvement to the AgentLang language would be a new `void` statement, which would allow for parameterised multi-line code blocks with return values, aiming to endorse code reusability across agents.
 
 ##### 8.2.2.2 Wider Core Library
-Moreover, the core library of AgentLang's built-in set of functions is very stripped. It consists of the essentual mathematical functions to provide the necessary tools to perform calculations upon agents. Moreover, it has the necessary set of agent manipulation functions to provide agent interaction capabilities across different agent models. However, more complex calculations need to be done manually, resulting in bigger code base and thus slower performance. Therefore, a possible improvement to the AgentLang core library would be a new set of functions capable of handling frequently used and needed calculations internally, without the need to introduce multiple helper properties and to overburden the runtime module with further calculations.
+Moreover, the core library of AgentLang's built-in set of functions is stripped. It consists of the essentual mathematical functions to provide the necessary tools to perform calculations upon agents. Moreover, it has the necessary set of agent manipulation functions to provide agent interaction capabilities across different agent models. However, more complex calculations need to be done manually, resulting in bigger code base and thus slower performance. Therefore, a possible improvement to the AgentLang core library would be a new set of functions capable of handling frequently used and needed calculations internally, without the need to introduce multiple helper properties and to overburden the runtime module with further calculations.
 
 ## Conclusion
-The main goal of AgentLang stated at the beginning of the thesis was to introduce a framework which provides a new approach to the agent-based modeling technique. Let us revisit the primary goals of AgentLang outlined in section 2.3.
+The main goal of AgentLang stated at the beginning of the thesis was to introduce a framework which provides a new approach to the agent-based modeling technique. Let us revisit the primary goals of AgentLang outlined in chapter 2.3.
 
 1. provide a unified, balanced language with simple and straightforward syntax and structure
 2. offer only the necessary, essential core library of features
 3. allow for an alternative way of simulation modeling using a familiar approach in form of spreadsheet representation
 
-First and foremost, the language simplicity was achieved by the straightforward structure of the language that aligns with the way humans tend to think about agent-based models. This was achieved by limiting the language to only the necessary declarations of agents, properties and global variables. The set of the language's syntactical constructs is also stripped down to the essential minimum necessary to be capable of modeling almost any simulation. Moreover, the core library provides all the fundamental mathematical and agent manipulation and interaction functions with self-explanatory names and natural usage. Last but not least, the spreadsheet interface built on top of the interpreter provides an easy and elegant way to modify the agent models and values of individual runtime agent instances. Although the AgentLang framework is very limited at its current state of development, it is built in a way to be extensible to future work and improvements, allowing for the possibility to become fully-usable agent-based modeling language.
+First and foremost, the language simplicity was achieved by the straightforward structure of the language that aligns with the way humans tend to think about agent-based models. This was achieved by limiting the language to only the necessary declarations of agents, properties and global variables. The set of the language's syntactical constructs is also stripped down to the essential minimum necessary to be capable of modeling almost any simulation. Moreover, the core library provides all the fundamental mathematical and agent manipulation and interaction functions with self-explanatory names and natural usage. Last but not least, the spreadsheet interface built on top of the interpreter provides an easy and elegant way to modify the agent models and values of individual runtime agent instances. Although the AgentLang framework is limited at its current state of development, it is built in a way to be extensible to future work and improvements, allowing for the possibility to become fully-usable agent-based modeling language.
 
 ## Bibliography
 [1. Eric Bonabeau - Agent-based modeling: Methods and techniques for simulating human systems](https://www.pnas.org/doi/10.1073/pnas.082080899) \
