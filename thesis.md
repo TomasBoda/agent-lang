@@ -35,6 +35,8 @@ In conclusion, the main intention behind the creation of AgentLang is to make ag
 - spreadsheet interface for almost no-code modeling
 - built-in visualisation module for better understanding of the simulation
 
+The thesis first dives into the important theoretical concepts behind AgentLang, where it introduces the benefits and use cases of agent-based modeling as well as provides a brief look into the idea behind language interpreters and parsers. Then, we will look at and compare existing agent-based tools to depict the main goals of the AgentLang framework. Furthermore, we will provide the AgentLang's language specification and dive deeper into the implementation of its interpreter. Then, we will briefly look at the web-based interface of the AgentLang framework and provide several simulation examples as well as compare them with other agent-based tools to see if the main goals were achieved. Finally, we will reflect back on the project and depict its main limitations and talk about future work and improvements.
+
 ## 1. Theoretical Background
 Before diving into the language specification, it's important to introduce and briefly explain the theoretical background behind the most important concepts used in AgentLang. The following chapters aim to provide an introduction to agent-based modeling, its use cases and real-world applications as well as a brief overview of language interpreters and parsers.
 
@@ -136,37 +138,62 @@ Agent-based modeling, although being a simulation technique with a long history,
 Before outlining the primary goals of this thesis, it is important to mention some of the existing agent-based tools to highlight the main differences between existing agent-based frameworks and AgentLang.
 
 #### 2.2.1 NetLogo
-Perhaps one of the most wide-spread agent-based modeling software is NetLogo. It is a multi-agent programmable modeling environment with its own domain-specific language as well as a web-based modeling interface. NetLogo's primary simulation domains are social and natural sciences, for which ti provides a rich library of simulation models and examples. It was first introduced and released in 1999 by Uri Wilensky, a professor at the Northwestern University in Illinois, US. Nowadays, it is used by hundreds of thousands of students, teachers and researches all among the world.
+Perhaps one of the most wide-spread agent-based modeling software is NetLogo. It is a multi-agent programmable modeling environment with its own domain-specific language as well as a web-based modeling interface. NetLogo's primary simulation domains are social and natural sciences, for which ti provides a rich library of simulation models and examples. It was first introduced and released in 1999 by Uri Wilensky, a professor at the Northwestern University in Illinois, US and is inspired by the functional programming language Logo introduced in 1967 by the company BBN. Nowadays, it is used by hundreds of thousands of students, teachers and researches all among the world.
 
-Below is an example NetLogo simulation source code.
+Below is an example NetLogo simulation modeling the spreading of fire in a forest.
 ```
-turtles-own [
-  flockmates
-  nearest-neighbor
+globals [
+  initial-trees
+  burned-trees
 ]
 
+breed [fires fire]
+breed [embers ember]
+
+to setup
+  clear-all
+  set-default-shape turtles "square"
+  ask patches with [(random-float 100) < density]
+    [ set pcolor green ]
+  ask patches with [pxcor = min-pxcor]
+    [ ignite ]
+  set initial-trees count patches with [pcolor = green]
+  set burned-trees 0
+  reset-ticks
+end
+
 to go
-  ask turtles [ flock ]
-  repeat 5 [ ask turtles [ fd 0.2 ] display ]
+  if not any? turtles
+    [ stop ]
+  ask fires
+    [ ask neighbors4 with [pcolor = green]
+        [ ignite ]
+      set breed embers ]
+  fade-embers
   tick
 end
 
-to flock
-  find-flockmates
-  if any? flockmates
-    [ find-nearest-neighbor
-      ifelse distance nearest-neighbor < minimum-separation
-        [ separate ]
-        [ align
-          cohere ] ]
+to ignite
+  sprout-fires 1
+    [ set color red ]
+  set pcolor black
+  set burned-trees burned-trees + 1
+end
+
+to fade-embers
+  ask embers
+    [ set color color - 0.3
+      if color < red - 3.5
+        [ set pcolor color
+          die ] ]
 end
 ```
-NetLogo is a powerful tool capable of handling thousands of agents and their complex behavioural patterns seamlessly. However, the expressivity of the language results in a steep learning curve. The language is notably specific, which may be unfamiliar for developers and data analysts, not to mention scientists of non-technical scientific fields.
+NetLogo is a powerful tool capable of handling thousands of agents and their complex behavioural patterns. However, the expressivity of the language results in a steep learning curve. The language is notably specific, which may be unfamiliar for developers and data analysts, not to mention scientists of non-technical scientific fields.
 
 #### 2.2.2 GAMA
 Another popular modeling and simulation framework is GAMA. It is designed to handle spatially explicit agent-based simulations, such as urban mobility, climate change adaptation, epidemiology, disaster evacuation strategies or urban planning. Its advantages include the generality of the framework and opennes to user-defined plugins as well as the possibility to use GAMA externally in custom software or in different programming languages. One of the most important strengths of GAMA is the availability to non-technical scientists. It is quite easy and straightforward to create and run the first simulation in the matter of minutes. However, GAMA is a large and rich environment with a steep learning curve if the aim is to use it regularly and in non-trivial ways. Moreover, as well as in NetLogo, its language is specific in design and structure, making it difficult to learn, even for people of technical scientific domains.
 
-Below is an example GAMA simulation source code.
+Below is a code snippet from a GAMA simulation model representing the behaviour of people (resting, working).
 ```
 species people skills: [moving] {  
 
@@ -185,36 +212,55 @@ species people skills: [moving] {
 #### 2.2.3 AgentScript
 Finally, another agent-based framework utilising an existing programming language is called AgentScript. AgentScript is more of a library rather than a framework. It provides a set of JavaScript classes and methods used to create and run agent-based models in the browser. AgentScript is heavily inspired by NetLogo, thus its main building blocks consist of three actors: turtles, patches and links. The user defines the behaviour and interaction logic of these three actors and the library takes care of the rest, such as real-time simulation visualisation or agent manipulation. Although the whole concept of AgentScript is familiar, easily understandable and usable by JavaScript developers, it poses challenges for people with limited programming and JavaScript skills. JavaScript, as many other programming languages has its structure and rules, which the user needs to know apart from the AgentScript semantics itself.
 
-Below is an example AgentScript simulation source code.
+Below is an example AgentScript simulation modeling bird flocking using the Boid's algorithm.
 ```
-export default class FireModel extends Model {
-    density = 60;
+export default class FlockModel extends Model {
+    population = 100; vision = 3; speed = 0.25; maxTurn = 3.0; minSeparation = 0.75;
 
-    constructor(worldDptions = World.defaultOptions(125)) {
-        super(worldDptions);
+    constructor(worldDptions) { super(worldDptions); }
+
+    setup() {
+        this.turtles.setDefault('speed', this.speed)
+        this.patches.cacheRect(this.vision)
+        util.repeat(this.population, () => this.patches.oneOf().sprout())
     }
 
-    step() {
-        this.fires.ask(p => {
-            p.neighbors4.ask(n => { if (this.isTree(n)) this.ignite(n); });
-            p.setBreed(this.embers);
-        });
-        this.fadeEmbers();
+    step() { this.turtles.ask(t => this.flock(t)); }
+
+    flock(t) {
+        const flockmates = this.turtles.inRadius(t, this.vision, false)
+        if (flockmates.length !== 0) {
+            const nearest = flockmates.minOneOf(f => f.distance(t))
+            if (t.distance(nearest) < this.minSeparation) { this.separate(t, nearest); }
+            else { this.align(t, flockmates); this.cohere(t, flockmates); }
+        }
+        t.forward(t.speed)
+    }
+  
+    separate(t, nearest) { this.turnTowards(t, nearest.towards(t)); }
+    align(t, flockmates) { this.turnTowards(t, this.averageHeading(flockmates)); }
+    cohere(t, flockmates) { this.turnTowards(t, this.averageHeadingTowards(t, flockmates)); }
+    turnTowards(t, heading) { t.rotate(util.clamp(t.subtractHeading(heading), -this.maxTurn, this.maxTurn)); }
+  
+    averageHeading(flockmates) {
+        const thetas = flockmates.map(f => f.theta);
+        const dx = thetas.map(t => Math.cos(t)).reduce((x, y) => x + y);
+        const dy = thetas.map(t => Math.sin(t)).reduce((x, y) => x + y);
+        return util.radToHeading(Math.atan2(dy, dx));
     }
 
-    ignite(p) {
-        p.type = this.fireType;
-        p.setBreed(this.fires);
-        this.burnedTrees++;
+    averageHeadingTowards(t, flockmates) {
+        const towards = flockmates.map(f => f.towards(t));
+        const dx = towards.map(t => Math.cos(t)).reduce((x, y) => x + y);
+        const dy = towards.map(t => Math.sin(t)).reduce((x, y) => x + y);
+        return util.radToHeading(Math.atan2(dy, dx));
     }
 
-    fadeEmbers() {
-        this.embers.ask(p => {
-            const type = p.type;
-            const ix = this.patchTypes.indexOf(type);
-            if (type === 'ember0') p.setBreed(this.patches);
-            else p.type = this.patchTypes[ix + 1];
-        });
+    flockVectorSize() {
+        const thetas = this.turtles.map(t => t.theta)
+        const dx = thetas.map(theta => Math.cos(theta)).reduce((x, y) => x + y);
+        const dy = thetas.map(theta => Math.sin(theta)).reduce((x, y) => x + y);
+        return Math.sqrt(dx * dx + dy * dy) / this.population;
     }
 }
 ```
@@ -785,10 +831,10 @@ The `index(): number` function returns the numeric index of the current agent, s
 
 The `step(): number` function returns the value of the current step, starting from 0.
 
-## 5. Implementation
+## 4. Implementation
 The following chapters describe the most important concepts in the AgentLang interpreter's implementation and point out the most important and interesting parts of its architecture and functioning.
 
-### 5.1 Overview and Architecture
+### 4.1 Overview and Architecture
 The AgentLang's interpreter is written in TypeScript. The choice of this specific language resulted from various reasons. First and foremost, we needed good compatibility and integrability with the web-based interface, which is the primary environment where AgentLang is intended to be used. Furthemore, there was no primary need for high performance, since AgentLang is intended mainly for simple simulations, as a proof of concept of the language itself. Since modern web applications are written mainly in JavaScript frameworks and we opted for the TypeScript-based Next.js framework for the web-based interface, TypeScript felt like a natural choice.
 
 The interpreter itself follows an architecture resembling the pipeline architectural style. It consists of five main parts, which are
@@ -1099,7 +1145,7 @@ class Runtime {
     this.program = program;
   }
 
-  public run(): RuntimeValue {}
+  public run(step: number): RuntimeValue {}
 
   private evaluateProgram(program: Program): RuntimeValue {}
 
@@ -1113,6 +1159,8 @@ class Runtime {
 }
 ```
 Whereas in the parser module each method returned a part of the AST as the descendant of the `ParserValue` interface, the runtime module uses an abstract interface called `RuntimeValue` representing the actual value of each data type, such as a numeric literal or a boolean literal. Notice that the `evaluateObjectDeclaration` and `evaluateVariableDeclaration` methods are of type `void` and they do not return anything. That is because both object declaration and variable declaration are statements. In the `objectDeclaration` method, the final step is to save the evaluated agent to the `output: InterpreterOutput` variable, which after the evaluation of the program is returned by the `run` method.
+
+The runtime module is not responsible for stepping throigh the simulation. The `run` method takes the step as the parameter and performs one evaluation of a single simulation step. The stepping functionality is implemented in the interpreter module discussed in following chapters.
 
 To better understand the evaluation of expressions from the AST, below is the implementation of the `evaluateBinaryExpression` method:
 ```ts
@@ -1241,10 +1289,10 @@ private getInterpreterOutput(step: number): InterpreterOutput {
 ```
 The `getRuntimeOutput` and `getRuntimeError` are plain mapper functions that ensure correct mapping from the raw input to a desired output for the user.
 
-### 5.2. Interesting Concepts
+### 4.2. Interesting Concepts
 The following chapters describe some of the interesting, non-trivial concepts used in the implementation of the AgentLang's interpreter, such as the topological property sorting or the automatic source code formatting.
 
-#### 5.2.1 Topological Property Sorting
+#### 4.2.1 Topological Property Sorting
 When modeling an AgentLang simulation, there are often numerous dependencies between the agents' properties. Sometimes two properties can depend on each other respectively, which poses a significant problem to the evaluation process of their values. Although the properties can be assigned a default value which is a constant calculated at the beginning of the simulation, it often does not make sense to use default values for each property. Moreover it poses bad development experience if the user needs to declare properties in the order in which they should be evaluated by the interpreter. Fortunately, there is a way to solve such issues in a general way using topological sort.
 
 Topological sort is a sorting mechanism that operates on directed acyclic graphs (henceforth referred to as DAGs). It is a linear ordering of the graph's vertices such that for every directed edge from vertex `u` to vertex `v`, vertex `u` comes before vertex `v` in the ordering. This algorithm does not work on cyclic graphs, since there is no linear ordering. In other words, the vertices would depend on each other in a cyclic manner, not allowing the algorithm to determine which vertex to start with and which vertex to finish with.
@@ -1322,7 +1370,7 @@ function topologicalSort(graph: DependencyGraph): Node[] {
 ```
 This algorithm iterates over the agent's property declarations and for each declaration, it recursively visits each node to which a directed edge from the current node exists. Moreover, it saves the visited nodes in a hash map. If we come to a node which was already visited in one iteration, we know there is a cycle in the graph. In that case, we throw an exception. Otherwise, the graph is acyclic and we can return the resulting ordering of the graph's nodes representing the order in which the agent's properties should be evaluated by the interpreter.
 
-#### 5.2.2 Source Code Formatter
+#### 4.2.2 Source Code Formatter
 Although AgentLang's syntax is not dependent on indents or other whitespace characters, it is a good practice to follow specific syntactical rules or recommendations for the given language. Therefore, the interpreter features a source code formatter, which formats the source code in the language-specific way on the simulation startup.
 
 The code formatter works in a straightforward way. First, it parses the source code and produces an AST representing the semantics of the program. Then, it passes this AST into a function which recursively traverses the structure and produces plain source code equivalent to the input source code, formatted to the specific way defined by a set of rules.
@@ -1450,7 +1498,7 @@ const binaryOperatorPrecedence: { [key: string]: number } = { "+": 1, "-": 1, "*
 The source code formatter serves as a tool to achieve code readability across all AgentLang simulations, forcing the user to abide by the syntactical rules defined by the AgentLang project.
 
 
-### 5.3 API Reference
+### 4.3 API Reference
 The AgentLang interpreter can be integrated into any TypeScript-based project and used using its public API. The public API contains three main exports:
 - `Interpreter` - the interpreter class with all its functionality
 - `InterpreterConfiguration` - an interface representing the interpreter's configuration structure
@@ -1458,37 +1506,26 @@ The AgentLang interpreter can be integrated into any TypeScript-based project an
 
 The following example demonstrates the usage of the AgentLang interpreter in a TypeScript-based project:
 ```ts
-import {
-  Interpreter,
-  InterpreterConfiguration,
-  InterpreterOutput,
-} from "./agent-lang-interpreter";
+import { Interpreter, InterpreterConfiguration, InterpreterOutput } from "./agent-lang-interpreter";
 
 const sourceCode: string = readFileSync("sourceCode.txt", "utf-8");
-const configuration: InterpreterConfiguration = {
-  steps: 1000,
-  delay: 100,
-  width: 500,
-  height: 500
-};
 const interpreter: Interpreter = new Interpreter();
+const configuration: InterpreterConfiguration = { steps: 1000, delay: 100, width: 500, height: 500 };
 
-interpreter
-  .get(sourceCode, configuration)
-  .subscribe((interpreterOutput: InterpreterOutput) => {
+interpreter.get(sourceCode, configuration).subscribe((interpreterOutput: InterpreterOutput) => {
   const { status, output } = interpreterOutput;
-  console.log(status, output);
+  // do something with the output
 });
 
 interpreter.start();
 ```
 The `get(sourceCode: string, config: InterpreterConfiguration)` method returns an `Observable` object to which the user can subscribe to capture the outputs of individual simulation steps. The `start()` method starts the interpreter and the simulation.
 
-## 6. Web Interface
+## 5. Web Interface
 Apart from the AgentLang's language interpreter, the thesis provides a web-based interface serving as the main environment for trying out AgentLang in practice. The web application features a code editor for modeling AgentLang simulations, a visualisation view for quick visual rendering of the simulations and last but not least, a spreadsheet interface for manipulating agent property declarations and values during runtime.
 
-### 6.1 Motivation
-The motivation behind the creation of the web-based interface as the primary environment for AgentLang is deeply connected to the motivation behind the creation of the AgentLang programming language itself. As mentioned earlier, AgentLang aims to provide a brand new approach for handling and modeling agent-based simulations. On one hand this is possible due to the simplicity of the language and its syntax itself. However, on the same level of importance lies the possibility to manipulate the simulation using a visual, interactive tool - the spreadsheet interface, which allows for quick and simple fine-tuning of the simulation during its runtime.
+### 5.1 Motivation
+The motivation behind the creation of the web-based interface as the primary environment for AgentLang is deeply connected to the motivation behind the creation of the AgentLang programming language itself. As mentioned earlier, AgentLang aims to provide a brand new approach for handling and modeling agent-based simulations. On the one hand this is possible due to the simplicity of the language and its syntax itself. However, on the same level of importance lies the possibility to manipulate the simulation using a visual, interactive tool - the spreadsheet interface, which allows for quick and simple fine-tuning of the simulation during its runtime.
 
 In order to create and use the spreadsheet interface as a tool to manipulate AgentLang simulations, a user interface of some kind is required, preferably one which is easily portable and usable everywhere without the need for any kind of manual installation. For these reasons, we opted for a web-based environment integrating both the interpreter and the spreadsheet interface, enabling to create, model and run user-defined AgentLang simulations all in one place.
 
@@ -1498,40 +1535,40 @@ Additionally, since AgentLang is primarily intended for simple simulations as a 
 
 These aforementioned features of the AgentLang project are complementary to each other and together provide an all-in-one suite of tools to model and analyse AgentLang simulations.
 
-### 6.2 Code Sandbox
+### 5.2 Code Sandbox
 The code sandbox is the main page of the AgentLang web interface. It is a place where the user can create projects, model simulations using the AgentLang language, run the simulations and finally see their results in the visualisation module and the spreadsheet interface.
 
 <img src="./assets/images/web-sandbox-page.png" width="700">
 
 On the left-hand side of the screen, there is a vertical scrollable list of all user-defined projects. The user can create new projects, edit existing projects or remove existing projects. After clicking on any of the projects, the project code and the simulation configuration is loaded into the code editor on the right-hand side of the screen.
 
-On the top-right side of the screen, there is a control panel with the current project's name, two input fields for updating the `steps` and `delay` configuration parameters of the selected simulation and a set of buttons used for handling the start, stop, pause, resume and reset of the current simulation.
+On the top-right side of the screen, there is a control panel with the current project's name, two input fields for updating the `steps` and `delay` configuration parameters of the selected simulation and a set of buttons used for handling the start, stop, pause, resume and reset of the current simulation. These buttons directly use the public API of the AgentLang interpreter, more specifically the `start`, `stop`, `pause`, `resume` and `reset` methods.
 
-#### 6.2.1 Code Editor
+#### 5.2.1 Code Editor
 The code editor is a place where the user inputs the AgentLang source code in order to model an agent-based simulation. The code editor features basic syntax highlighting and line numbering, supporting all AgentLang syntactical constructs and concepts. However, it does not provide code completion or code suggestions.
 
 The most recent source code updates are saved automatically to the browser's local storage on every key press without the need to press the `save` button located in the upper control panel. The `save` button serves mainly for saving the latest `steps` and `delay` parameters, which are not saved automatically upon changing. After modeling the simulation, the user can start the simulation by clicking on the `start` button located in the control panel.
 
 On every simulation startup, the AgentLang code is parsed and run by the interpreter. In case of syntactical or semantical errors, the interpreter raises an exception, which is caught by the web interface and shown to the user using a popup message appearing on the bottom of the screen. In such case scenario, the simulation is not started and the user must fix the errors first. In case of correct source code, however, a success popup message is shown to the user and the simulation starts.
 
-#### 6.2.2 Spreadsheet Interface
+#### 5.2.2 Spreadsheet Interface
 The spreadsheet interface is initialised and filled with data as soon as the user starts the simulation. Otherwise a "No data" message is shown in the spreadsheet view.
 
 <img src="./assets/images/spreadsheet-interface.png" width="700">
 
 The spreadsheet interface consists of one spreadsheet for each agent model. A spreadsheet contains columns representing individual agent properties defined in the source code and rows representing individual agent instances. The spreadsheet cells represent current values of the agent's properties. Moreover, the spreadsheets are reclaculated and provided with new data in each step of the simulation.
 
-##### 6.2.2.1 Updating Property Definition
+##### 5.2.2.1 Updating Property Definition
 One of two main features of the spreadsheet interface is the real-time update of the agent properties' definitions. To update the definition of a property, the simulation must be paused first. Then, the user needs to click on the desired property name located in the table header. A small code editor with the definition of the given property is displayed above the list of spreadsheets. The user can redefine and consecutively save the property's new definition by clicking the `save` button under the code editor. The new property definition is updated, the interpreter rebuilds simulation and the user can resume the simulation by clicking the `resume` button located in the upper toolbar.
 
 <img src="./assets/images/spreadsheet-property-update.png" width="700">
 
-##### 6.2.2.2 Updating Property Value
+##### 5.2.2.2 Updating Property Value
 The second primary feature of the spreadsheet interface is the possibility to update a specific property's value in a specific agent instance. To update a specific property value, click on the given cell in the spreadsheet. An input field will appear inside the corresponding cell where the user can input the new property value and save the new property value by clcking the `save` button next to the input field. The new property value is updated and the user can resume the simulation by clicking the `resume` button located in the upper toolbar.
 
 <img src="./assets/images/spreadsheet-value-update.png" width="700">
 
-#### 6.2.3 Visualisation
+#### 5.2.3 Visualisation
 The visualisation module is used to visualise the simulation\s agents in real time on a two-dimensional plane. The visualisation of agent's depends on a set of standards - each agent that should be visualised needs to have the following properties:
 - `x` - a numeric value representing the `x` coordinate of the agent
 - `y` - a numeric value representing the `y` coordinate of the agent
@@ -1543,17 +1580,399 @@ The visualisation module is used to visualise the simulation\s agents in real ti
 
 After starting the simulation, the user is redirected to the visualisation panel by default, where they can observe the agent's positions, dimensions and colour.
 
-## 7. Examples
+## 6. Examples
+This chapter provides specific examples of simulations and compares the simulation models using different agent-based frameworks and AgentLang.
+
+### 6.1 Flocking
+Below are the modeled flocking simulations in AgentScript, NetLogo and AgentLang.
+
+#### 6.1.1 AgentScript
+```ts
+export default class FlockModel extends Model {
+    population = 100
+    vision = 3
+    speed = 0.25
+    maxTurn = 3.0
+    minSeparation = 0.75
+
+    constructor(worldDptions) {
+        super(worldDptions)
+    }
+
+    setup() {
+        this.turtles.setDefault('speed', this.speed)
+        this.patches.cacheRect(this.vision)
+
+        util.repeat(this.population, () => {
+            this.patches.oneOf().sprout()
+        })
+    }
+
+    step() {
+        this.turtles.ask(t => {
+            this.flock(t)
+        })
+        if (this.ticks % 50 === 49) this.report()
+    }
+    report() {
+        console.log('step', this.ticks + 1, 'cohesion:', this.flockVectorSize())
+    }
+
+    flock(t) {
+        const flockmates = this.turtles.inRadius(t, this.vision, false)
+        if (flockmates.length !== 0) {
+            const nearest = flockmates.minOneOf(f => f.distance(t))
+            if (t.distance(nearest) < this.minSeparation) {
+                this.separate(t, nearest)
+            } else {
+                this.align(t, flockmates)
+                this.cohere(t, flockmates)
+            }
+        }
+        t.forward(t.speed)
+    }
+    separate(t, nearest) {
+        const heading = nearest.towards(t)
+        this.turnTowards(t, heading)
+    }
+    align(t, flockmates) {
+        this.turnTowards(t, this.averageHeading(flockmates))
+    }
+    cohere(t, flockmates) {
+        this.turnTowards(t, this.averageHeadingTowards(t, flockmates))
+    }
+
+    turnTowards(t, heading) {
+        let turn = t.subtractHeading(heading)
+        turn = util.clamp(turn, -this.maxTurn, this.maxTurn)
+        t.rotate(turn)
+    }
+    averageHeading(flockmates) {
+        const thetas = flockmates.map(f => f.theta)
+        const dx = thetas.map(t => Math.cos(t)).reduce((x, y) => x + y)
+        const dy = thetas.map(t => Math.sin(t)).reduce((x, y) => x + y)
+        return util.radToHeading(Math.atan2(dy, dx))
+    }
+    averageHeadingTowards(t, flockmates) {
+        const towards = flockmates.map(f => f.towards(t))
+        const dx = towards.map(t => Math.cos(t)).reduce((x, y) => x + y)
+        const dy = towards.map(t => Math.sin(t)).reduce((x, y) => x + y)
+        return util.radToHeading(Math.atan2(dy, dx))
+    }
+
+    flockVectorSize() {
+        const thetas = this.turtles.map(t => t.theta)
+        const dx = thetas.map(theta => Math.cos(theta)).reduce((x, y) => x + y)
+        const dy = thetas.map(theta => Math.sin(theta)).reduce((x, y) => x + y)
+        return Math.sqrt(dx * dx + dy * dy) / this.population
+    }
+}
+```
+
+#### 6.1.2 NetLogo
+```
+turtles-own [
+  flockmates
+  nearest-neighbor
+]
+
+to setup
+  clear-all
+  create-turtles population
+    [ set color yellow - 2 + random 7
+      set size 1.5  ;; easier to see
+      setxy random-xcor random-ycor
+      set flockmates no-turtles ]
+  reset-ticks
+end
+
+to go
+  ask turtles [ flock ]
+  repeat 5 [ ask turtles [ fd 0.2 ] display ]
+  tick
+end
+
+to flock
+  find-flockmates
+  if any? flockmates
+    [ find-nearest-neighbor
+      ifelse distance nearest-neighbor < minimum-separation
+        [ separate ]
+        [ align
+          cohere ] ]
+end
+
+to find-flockmates
+  set flockmates other turtles in-radius vision
+end
+
+to find-nearest-neighbor
+  set nearest-neighbor min-one-of flockmates [distance myself]
+end
+
+to separate
+  turn-away ([heading] of nearest-neighbor) max-separate-turn
+end
+
+to align
+  turn-towards average-flockmate-heading max-align-turn
+end
+
+to-report average-flockmate-heading
+  let x-component sum [dx] of flockmates
+  let y-component sum [dy] of flockmates
+  ifelse x-component = 0 and y-component = 0
+    [ report heading ]
+    [ report atan x-component y-component ]
+end
+
+to cohere
+  turn-towards average-heading-towards-flockmates max-cohere-turn
+end
+
+to-report average-heading-towards-flockmates
+  let x-component mean [sin (towards myself + 180)] of flockmates
+  let y-component mean [cos (towards myself + 180)] of flockmates
+  ifelse x-component = 0 and y-component = 0
+    [ report heading ]
+    [ report atan x-component y-component ]
+end
+
+to turn-towards [new-heading max-turn]
+  turn-at-most (subtract-headings new-heading heading) max-turn
+end
+
+to turn-away [new-heading max-turn]
+  turn-at-most (subtract-headings heading new-heading) max-turn
+end
+
+to turn-at-most [turn max-turn]
+  ifelse abs turn > max-turn
+    [ ifelse turn > 0
+        [ rt max-turn ]
+        [ lt max-turn ] ]
+    [ rt turn ]
+end
+```
+
+#### 6.1.3 AgentLang
+```
+define visual_range = 100;
+define avoid_range = 20;
+define centering_factor = 0.0005;
+define avoid_factor = 0.005;
+define matching_factor = 0.05;
+
+define s_max = 8;
+define s_min = 6;
+
+agent boid 50 {
+
+    const w = 10;
+    const h = 10;
+
+    const x_init = random(100, width() - 100);
+    const y_init = random(100, height() - 100);
+
+    property x: x_init = (x + x_vel_limit) % width();
+    property y: y_init = (y + y_vel_limit) % height();
+
+    property x_vel: choice(-2, 2) = x_vel + x_sep + x_align + x_coh;
+    property y_vel: choice(-2, 2) = y_vel + y_sep + y_align + y_coh;
+
+    property s_sqrt = sqrt(x_vel * x_vel + y_vel * y_vel);
+    property s = if s_sqrt == 0 then 1 else s_sqrt;
+
+    property x_vel_limit = if s > s_max then x_vel / s * s_max else if s < s_min then x_vel / s * s_min else x_vel;
+    property y_vel_limit = if s > s_max then y_vel / s * s_max else if s < s_min then y_vel / s * s_min else y_vel;
+
+    property boids_ar: empty() = filter(agents(boid) | b -> dist(b.x, b.y, x, y) < avoid_range);
+    property boids_vr: empty() = filter(agents(boid) | b -> dist(b.x, b.y, x, y) < visual_range);
+    property bvrc = count(boids_vr);
+
+    # separation #
+    property x_sep = sum(boids_ar | b -> x - b.x) * avoid_factor;
+    property y_sep = sum(boids_ar | b -> y - b.y) * avoid_factor;
+
+    # alignment #
+    property x_align = if bvrc > 0 then (sum(boids_vr | b -> b.x_vel) / bvrc - x_vel) * matching_factor else 0;
+    property y_align = if bvrc > 0 then (sum(boids_vr | b -> b.y_vel) / bvrc - y_vel) * matching_factor else 0;
+
+    # cohesion #
+    property x_coh = if bvrc > 0 then (sum(boids_vr | b -> b.x) / bvrc - x) * centering_factor else 0;
+    property y_coh = if bvrc > 0 then (sum(boids_vr | b -> b.y) / bvrc - y) * centering_factor else 0;
+}
+```
+
+### 6.2 Forest Fire
+Below are the modeled forest fire simulations in AgentScript, NetLogo and AgentLang.
+
+#### 6.2.1 AgentScript
+```ts
+export default class FireModel extends Model {
+    density = 60
+
+    constructor(worldDptions = World.defaultOptions(125)) {
+        super(worldDptions)
+    }
+
+    setup() {
+        this.patchBreeds('fires embers')
+
+        this.patchTypes = ['dirt', 'tree', 'fire', 'ember4', 'ember3', 'ember2', 'ember1', 'ember0', ]
+        this.dirtType = this.patchTypes[0]
+        this.treeType = this.patchTypes[1]
+        this.fireType = this.patchTypes[2]
+
+        this.patches.ask(p => {
+            if (p.x === this.world.minX) this.ignite(p)
+            else if (util.randomInt(100) < this.density) p.type = this.treeType
+            else p.type = this.dirtType
+        })
+
+        this.burnedTrees = 0
+        this.initialTrees = this.patches.filter(p => this.isTree(p)).length
+    }
+
+    step() {
+        this.fires.ask(p => {
+            p.neighbors4.ask(n => {
+                if (this.isTree(n)) this.ignite(n)
+            })
+            p.setBreed(this.embers)
+        })
+        this.fadeEmbers()
+    }
+
+    isTree(p) {
+        return p.type === this.treeType
+    }
+    percentBurned() {
+        return (this.burnedTrees / this.initialTrees) * 100
+    }
+    isDone() {
+        return this.fires.length + this.embers.length === 0
+    }
+
+    ignite(p) {
+        p.type = this.fireType
+        p.setBreed(this.fires)
+        this.burnedTrees++
+    }
+
+    fadeEmbers() {
+        this.embers.ask(p => {
+            const type = p.type
+            const ix = this.patchTypes.indexOf(type)
+            if (type === 'ember0') p.setBreed(this.patches)
+            else p.type = this.patchTypes[ix + 1]
+        })
+    }
+}
+```
+
+#### 6.2.2 NetLogo
+```
+globals [
+  initial-trees
+  burned-trees
+]
+
+breed [fires fire]
+breed [embers ember]
+
+to setup
+  clear-all
+  set-default-shape turtles "square"
+  ask patches with [(random-float 100) < density]
+    [ set pcolor green ]
+  ask patches with [pxcor = min-pxcor]
+    [ ignite ]
+  set initial-trees count patches with [pcolor = green]
+  set burned-trees 0
+  reset-ticks
+end
+
+to go
+  if not any? turtles
+    [ stop ]
+  ask fires
+    [ ask neighbors4 with [pcolor = green]
+        [ ignite ]
+      set breed embers ]
+  fade-embers
+  tick
+end
+
+to ignite
+  sprout-fires 1
+    [ set color red ]
+  set pcolor black
+  set burned-trees burned-trees + 1
+end
+
+to fade-embers
+  ask embers
+    [ set color color - 0.3
+      if color < red - 3.5
+        [ set pcolor color
+          die ] ]
+end
+```
+
+#### 6.2.3 AgentLang
+```
+define forest_size = 324;
+
+agent tree forest_size {
+    const fs = floor(sqrt(forest_size));
+
+    const offset = 0;
+    const size = height() - 2 * offset;
+    const spacing = floor(size / fs);
+    
+    const w = spacing;
+    const h = spacing;
+
+    const x = offset + floor(index() % fs) * spacing;
+    const y = offset + floor(index() / fs) * spacing;
+
+    property trees = agents(tree);
+
+    property tree_t = find_by_coordinates(trees, x, y - spacing);
+    property tree_b = find_by_coordinates(trees, x, y + spacing);
+    property tree_l = find_by_coordinates(trees, x - spacing, y);
+    property tree_r = find_by_coordinates(trees, x + spacing, y);
+    
+    # 1 = idle | 2 = burning | 3 = dead #
+    const initial_index = index() == round(forest_size / 2 + fs / 2);
+    const initial_burning = if initial_index then 2 else 1;
+    
+    property burning_remaining: 10 = if state == 2 then burning_remaining - 1 else 10;
+    
+    property state: initial_burning = if state == 1 and should_burn then 2 else if state == 2 then if burning_remaining == 0 then 3 else 2 else state;
+    
+    property burn_t = tree_t.state == 2 otherwise false;
+    property burn_b = tree_b.state == 2 otherwise false;
+    property burn_l = tree_l.state == 2 otherwise false;
+    property burn_r = tree_r.state == 2 otherwise false;
+
+    property should_burn: false = burn_t or burn_b or burn_l or burn_r and prob(0.08);
+
+    property c = if state == 1 then rgb(48, 107, 64) else if state == 2 then rgb(230, 66, 41) else rgb(92, 53, 47    );
+}
+```
+
 - Epidemic, Bird Flocking, Forest Fire, Convay's Game of Life
 TODO: add code examples and comparisons
 
-## 8. Limitations & Future Work
+## 7. Limitations & Future Work
 The following chapters describe the most significant and critical limitations of the current state of AgentLang and provide a list of possible future improvements.
 
-### 8.1 Limitations
+### 7.1 Limitations
 At the moment, AgentLang is a limited language serving primarily as a proof of concept of the new approach to agent-based modeling it aims to provide. Therefore, it has several significant limitations worth mentioning.
 
-#### 8.1.1 Performance
+#### 7.1.1 Performance
 The most significant bottleneck of the AgentLang's interpreter is its performance. With the rising number of agents, the simulation slows down quadratically. The problem is most visible when there are numerous properties manipulating AgentList values, for those operations are costly. Since agents of the same type are evaluated the same way using the same model, with the rising number of agents also rises the number of agent instances in properties holding AgentList values. If we generate 10 agents, each of them needs to iterate over 9 other agents, resulting in 90 iterations. However, with only 10 times more agents, which is 100 total agents, the iteration count rises to 9900 (100 * 99), which is 110 times more iterations than with 10 agents.
 
 Moreover, the evaluation of agents of the same type is handled greedily. That means that for each agent type, the entire model is reevaluated by the runtime module for each agent of that type. Although this problem seems easy to solve by caching mechanisms for example, it is de facto quite non-trivial. As far as caching is concerned, there are not many cases where caching is as straightforward as saving the intermediate resulsts of expressions to a cache. This is due to the fact that in AgentLang, almost all properties have dependencies on other properties, whose values vary from agent to agent. Caching such values would thus be of no use to other agent instances.
@@ -1562,23 +1981,22 @@ This issue of low performance is also affected by the choice of TypeScript as th
 
 However, by experimenting with various simulations and models, it has been proven that AgentLang is able to handle simple to mid-sized simulations and a few hundreds of agents without slowing down significantly, not affecting performance to a noticable degree. With more complex simulations and higher agent volumes, however, the delay in evaluation of each step rises, rendering the simulation slower than desired.
 
-#### 8.1.2 Language Constructs
-Currently, AgentLang is in a limited state of development, providing only a limited set of built-in functions and language constructs. This is one one hand sufficient for simple simulations with a few tens to hundreds of agents and properties as well as non-complex semantic nature of the simulations. With more complex economical, sociological or organisational simulation needs, on the other hand, the core library of built-in functions as well as the limited number of language constructs would not suffice.
+#### 7.1.2 Language Constructs
 
-For instance, AgentLang does not support the generation of new agents and the deletion of existing agents during the runtime of the simulation. Moreover, it does not support parameterised functions with multi-statement bodies for reusing code blocks of more complex and frequently used calculations. All these functionalities would be provide great improvenemts in making AgentLang more flexible and extensible.
+Currently, AgentLang is in a limited state of development, providing only the necessary set of built-in function and language constructs. Although one of the primary goals of AgentLang is simplicity and ease of use, the core library is currently not entirely sufficient for semantically more complex economical, sociological or organisational simulation needs. For instance, AgentLang does not support the generation of new agents and the deletion of existing agents during the runtime of the simulation. This would benefit the overall control over the simulations and provide the user with more flexibility. Moreover, AgentLang does not support parameterised functions with multi-statement bodies for reusing code blocks for more complex and frequently used calculations. Although this would introduce more complexity to the language, it would benefit the overall usability and extendability of the simulation models.
 
-In conclusion, the current state of AgentLang is suitable for simple simulations intended for visual use, such as the flocking simulation, the Convay's Game of Life or the analysis of spreading fire in a forest. However, it is not suitable for simulations of more complex nature such as flows, organisations or economic markets depicted in the above chapters regarding the theoretical background behind agent-based modelling.
+In conclusion, the current state of AgentLang is suitable for simple simulations intended mainly for visual use, such as the flocking simulation, the Convay's Game of Life or the analysis of spreading fire in a forest. However, it is not suitable for simulations of more complex nature such as flows, organisations or economic markets depicted in the above chapters regarding the theoretical background behind agent-based modelling.
 
-### 8.2 Future Work
+### 7.2 Future Work
 This chapter describes the possible future improvements in AgentLang.
 
-#### 8.2.1 Performance Optimisations
+#### 7.2.1 Performance Optimisations
 As mentioned earlier, one of the biggest pitfalls of the current state of AgentLang is its performance. There are numerous ways how to optimize the runtime part of the interpreter, so that it could handle greater numbers of agents and more complex mathematical calculations.
 
-##### 8.2.1.1 Implementation in a Compiled Language
+##### 7.2.1.1 Implementation in a Compiled Language
 The first and most straightforward step to optimizing performance is choosing a compiled language for the interpreter's implementation. Compiled languages, when used correctly, tend to offer higher-performant programs. However, this is not the improvement compiled languages offer. Parallel evaluation of the simulation using a multi-threaded runtime module would speed the evaluation rapidly. Unfortunately, TypeScript does not provide true parallelism techniques. Although its web workers offer the illusion of parallelism by spawning new virtual Node.js instances, this technique has its pitfalls, both in implementation and performance.
 
-##### 8.2.1.2 Parallel Computing
+##### 7.2.1.2 Parallel Computing
 One of the most signigicant bottlenecks of the AgentLang's performance is the iterative evaluation of agent instances. The generation and evaluation of agents is implemented by a single `for` loop iterating through the number of agents defined in the source code.
 ```ts
 for (let i = 0; i < count.value; i++) {
@@ -1590,13 +2008,13 @@ For each agent, we generate its unique identifier and evaluate its entire proper
 
 One improvement in optimizing the performance of this implementation is to use threads. The runtime module could integrate a multi-threading mechanism, where each portion of the agents is evaluated in its own thread. In this way, the computations could run in parallel, optimizing the overall performance and speed of the simulation.
 
-#### 8.2.2 Extended Core Functionality
+#### 7.2.2 Extended Core Functionality
 At the current state of AgentLang's development, it provides the minimal set of essential functions and language constructs to be capable of modeling a wide range of simulations. However, this set of supported functionalities is not sufficient for more complex economical or organisational simulations. These types of simulation require non-trivial complex mathematical calculations and data types. There are numerous aspects in which AgentLang can be extended of new functionality, described in the following chapters.
 
-##### 8.2.2.1 User-defined Functions
+##### 7.2.2.1 User-defined Functions
 The most important language constructs AgentLang currently lacks are user-defined parameterised functions. In many cases, the user needs to perform the same calculations but on different sets of data. This is a typical use case of reusable code blocks with a custom set of parameters. Such functionality is especially important in economical or market simulations, where mathemtacis play a huge role. Therefore, a possible improvement to the AgentLang language would be a new `void` statement, which would allow for parameterised multi-line code blocks with return values, aiming to endorse code reusability across agents.
 
-##### 8.2.2.2 Wider Core Library
+##### 7.2.2.2 Wider Core Library
 Moreover, the core library of AgentLang's built-in set of functions is stripped. It consists of the essentual mathematical functions to provide the necessary tools to perform calculations upon agents. Moreover, it has the necessary set of agent manipulation functions to provide agent interaction capabilities across different agent models. However, more complex calculations need to be done manually, resulting in bigger code base and thus slower performance. Therefore, a possible improvement to the AgentLang core library would be a new set of functions capable of handling frequently used and needed calculations internally, without the need to introduce multiple helper properties and to overburden the runtime module with further calculations.
 
 ## Conclusion
@@ -1613,6 +2031,7 @@ First and foremost, the language simplicity was achieved by the straightforward 
 [2. Marco Pangallo, Jean-Pierre Nadal, Annick Vignes - Residential income segregation: A behavioral model of the housing market](https://arxiv.org/pdf/1606.00424.pdf) \
 [3. NetLogo - Official Website](https://ccl.northwestern.edu/netlogo/) \
 [4. GAMA Platform - Official Website](https://gama-platform.org/) \
-[5. AgentScript - Official Website](https://agentscript.org/)
-
-TODO: add more sources
+[5. AgentScript - Official Website](https://agentscript.org/) \
+[6. NetLogo - Fire](https://www.netlogoweb.org/launch#http://ccl.northwestern.edu/netlogo/models/models/Sample%20Models/Earth%20Science/Fire.nlogo) \
+[7. GAMA - Movement of People](https://gama-platform.org/wiki/RoadTrafficModel_step3#initialization) \
+[8. AgentScript - Flock](https://agentscript.org/editor/?example=flock) \
