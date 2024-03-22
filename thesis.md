@@ -1272,7 +1272,7 @@ When we start the simulation, a new subscription is created using the `rxjs` lib
 ```ts
 private subscribe(): void {
   this.subscription = interval(this.config.delay).pipe(
-    takeWhile(() => this.currentStep <= this.config.steps),
+    takeWhile(() => this.currentStep == this.config.steps),
   ).subscribe(() => this.dataSubject.next(this.getInterpreterOutput(this.currentStep++)));
 }
 ```
@@ -1330,9 +1330,7 @@ function topologicalSort(graph: DependencyGraph): Node[] {
 
     let containsCycle = false;
 
-    function isSelfLoop(node: Node): boolean {
-        return node.dependencies.some(dep => dep === node);
-    }
+    const isSelfLoop = (node: Node): boolean => node.dependencies.some(dep => dep === node);
 
     function visit(node: Node) {
         if (recursionStack[node.identifier]) {
@@ -1340,30 +1338,22 @@ function topologicalSort(graph: DependencyGraph): Node[] {
             return;
         }
 
-        if (visited[node.identifier]) {
-            return;
-        }
+        if (visited[node.identifier]) return;
 
         visited[node.identifier] = true;
         recursionStack[node.identifier] = true;
 
         for (const dependency of node.dependencies) {
-            if (dependency && !isSelfLoop(dependency)) {
-                visit(dependency);
-            }
+            if (dependency && !isSelfLoop(dependency)) visit(dependency);
         }
 
         recursionStack[node.identifier] = false;
         result.push(node);
     }
 
-    for (const key in graph) {
-        visit(graph[key]);
-    }
+    for (const key in graph) visit(graph[key]);
 
-    if (containsCycle) {
-        throw new ErrorParser("Agent variables contain a dependency loop");
-    }
+    if (containsCycle) throw new ErrorParser("Agent variables contain a dependency loop");
 
     return result;
 }
