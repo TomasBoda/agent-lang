@@ -456,7 +456,7 @@ agent pedestrian 60 {
     ...
 }
 ```
-Note that the `agent_count` parameter does not have to be a numeric literal explicitely. We can define a global variable with a numeric value and use this variable's identifier as the `agent_count` parameter.
+Note that the `agent_count` parameter does not have to be a numeric literal explicitly. We can define a global variable with a numeric value and use this variable's identifier as the `agent_count` parameter.
 ```
 define car_count = 20;
 
@@ -466,12 +466,10 @@ agent car car_count {
 ```
 More about global variables will be explained later in this chapter.
 
-After defining agent models, AgentLang will generate the corresponding number of agents for each agent model and evaluate their properties during runtime.
+After defining agent models, AgentLang will generate the corresponding number of agents for each agent model and evaluate their properties at runtime.
 
 #### 3.3.2 Properties
-Properties are essential in defining the behaviour of an agent model. They can be understood as variables with a value defined based on some inline expression. Agents can have any number of properties, either independent or dependent on each other.
-
-AgentLang supports two types of properties, which are `property` and `const`. The `property` property is recalculated in each step of the simulation based on the most current values, whereas `const` is calculated only at the beginning of the simulation, holding a constant value throughout the entire course of the simulation.
+Properties are essential in defining the behaviour of an agent model. They can be understood as variables with a value defined based on some inline expression. Agents can have any number of properties, either independent or dependent on each other. AgentLang supports two types of properties, which are `property` and `const`, each having its specific use case.
 
 ##### 3.3.2.1 Const
 Property of type `const` is a special kind of property, which holds a constant value during the entire runtime of the simulation. It is calculated only once as the agent is generated.
@@ -512,6 +510,7 @@ property x = x + 1;
 ```
 In the above example, it is not possible. The `x` property is incremented by 1 in each step of the simulation, however, it is not set to any default value to start with. That is why AgentLang supports default property values.
 
+###### 3.3.2.2.1 Default Property Value
 To declare a `property` with a default value, we use the following production rule.
 ```
 property_declaration:
@@ -529,20 +528,21 @@ property speed: initial_speed = speed + 1;
 ```
 In this way, the speed is set to 0 in the first step and is incremented by 1 in each following step, producing values 1, 2, 3, 4 and so on.
 
+###### 3.3.2.2.2 Property Dependency Cycle
 However, this is not the only use case of default property values. Suppose the following exaggerated example, where we have two properties, where each depends on the other.
 ```
 property a = b + 1;
 property b = a + 2;
 ```
-This example would throw an error, since there is a cycle in the property declarations. In order to fix this, we need to assign a default value to one of the properties, so that the interpreter knows which property will be evaluated first, so that the other property can calculate its value based on the first property.
+This example would throw an error, since there is a cycle in the property declarations. In order to fix this issue, we need to assign a default value to one of the properties, so that the interpreter knows which property will be evaluated first, so that the other property can calculate its value based on the first property.
 ```
 property a = b + 1;
 property b: 0 = a + 2;
 ```
-The above example would work, since at least one of the properties is initialised with a default value. This topic, however, concerns the topological sorting mechanism implemented in the AgentLang's interpreter, which will be explained later in this paper.
+The above example would work, since at least one of the properties is initialised with a default value. This topic, however, concerns the topological sorting mechanism implemented in the AgentLang's interpreter, which will be explained later in this thesis.
 
 #### 3.3.3 Global Variables
-Apart from agent and property declarations, AgentLang supports the declaration of global variables which can be reused among all agent models as constant values. Global variables are always declared in the top-level program scope and the best practice is to declare them before all agent declarations.
+Apart from agent and property declarations, AgentLang supports the declaration of global variables which can be reused among all agent models as constant values. Global variables are always declared in the top-level program scope and the best practice is to declare them before all agent declarations. However, it is not necessary, since the AgentLang interpreter has a built-in mechanism for declaration reordering, so that the global variables are always evaluated before agent declarations.
 
 To declare a global variable, we use the following production rule.
 ```
@@ -591,7 +591,7 @@ const is_cold = temperature <= 9;
 ```
 
 #### 3.4.3 AgentList
-AgentList is a special data type representing an array of agent instances. This array cannot be defined explicitely and cannot be indexed and it only results from various built-in function calls.
+AgentList is a special data type representing an array of agent instances. This array cannot be defined explicitly, cannot be indexed and it only results from various built-in function calls.
 
 The easiest way to retrieve an array of agent instances is to use the `agents` function, which returns the current array of agent instances of the specified type.
 ```
@@ -616,14 +616,17 @@ agent person 10 {
     property x = ...;
     property y = ...;
 
-    property closest_person = min(agents(person) => p => dist(p.x, p.y, x, y));
+    property closest_person = min(agents(person) | p -> dist(p.x, p.y, x, y));
 }
 ```
-The above example uses the `min` function together with a lambda expression to retrieve an agent instace of type `person` which is closest to the current person. We can now use the `closest_person` property to retrieve the agent's property values.
+The above example uses the `min` function together with a set comprehension expression to retrieve an agent instace of type `person` which is closest to the current person. We can now use the `closest_person` property to retrieve the agent's property values.
 ```
 agent person 10 {
+    property x = ...;
+    property y = ...;
+
     const is_married = prob(0.5);
-    property closest_person = ...;
+    property closest_person = min(agents(person) | p -> dist(p.x, p.y, x, y));
 
     property is_closest_person_married = closest_person.is_married;
 }
@@ -638,16 +641,16 @@ agent person 10 {
     property x = ...;
     property y = ...;
 
-    property close_people = filter(agents(person) => p => dist(p.x, p.y, x, y) < visual_range);
-    property close_person = min(close_people => c => dist(c.x, c.y, x, y));
+    property close_people = filter(agents(person) | p -> dist(p.x, p.y, x, y) < visual_range);
+    property close_person = min(close_people | c -> dist(c.x, c.y, x, y));
 }
 ```
-The `close_person` property attempts to find an agent that is the closest to the current agent, but is also in the visual range of 65. If there are no agents in this visual range, the `close_person` searches an empty array and cannot retrieve a specific agent instance. Therefore, it is assigned a Null value.
+The `close_person` property attempts to find an agent that is closest to the current agent, but is also in the visual range of 65. If there are no agents in this visual range, the `close_person` searches an empty array and cannot retrieve a specific agent instance. Therefore, it is assigned a Null value.
 
 A problem with Null values, however, is that we cannot use it in other properties. More specifically, we cannot retrieve the agent's properties, since it does not hold any agent instance, rather a Null value. That is why AgentLang supports the `otherwise` operator, which tackles issues with Null values. The `otherwise` operator will be discussed later in this chapter.
 
 ### 3.5 Expressions
-The following chapters introduce and showcase all expression types supported by AgentLang, from the most basic ones such as binary or relational expressions to more complex, language-specific expressions such as `otherwise` or `lambda` expressions.
+The following chapters introduce all expression types supported by AgentLang, from the most basic ones such as binary or relational expressions to more complex, language-specific expressions such as otherwise expressions or set comprehension expressions.
 
 #### 3.5.1 Binary Expressions
 Binary expression is the most basic expression in AgentLang. It consists of two numeric operands and one binary operator. The operator can be of type addition, subtraction, multiplication, division or modulo. These expressions can be arbitrarily nested and parenthesised.
@@ -661,6 +664,7 @@ const mod_expr = 16 % 6;
 const complex_expr = 2 + 3 * 4 - 8 / 14;
 const parenth_expr = (2 + 3) * 4 - (12 + 2);
 ```
+Note that implicit conversions with other operand data types are not supported and result in a runtime error.
 
 #### 3.5.2 Unary Expressions
 Unary expressions consist of one numeric or boolean operand together with a unary operator. There are two unary operators, one for numeric unary expressions and the other for boolean unary expressions.
@@ -711,6 +715,7 @@ const num_expr_4 = num_1 >= num_2;
 const num_expr_5 = num_1 < num_2;
 const num_expr_6 = num_1 <= num_2;
 ```
+Note that other types of operands are not supported and result in a runtime error.
 
 #### 3.5.5 Conditional Expressions
 Conditional expressions are used to control the flow of property evaluation. They decide between two alternatives based on some condition. The condition is always a boolean expression and the results can be of any type, based on the data type of the given property.
@@ -745,8 +750,8 @@ agent person 120 {
 
     property people = agents(person);
 
-    property in_proximity = filter(people => p => dist(p.x, p.y, x, y) <= distance);
-    property closest = min(in_proximity => p => dist(p.x, p.y, x, y));
+    property in_proximity = filter(people | p -> dist(p.x, p.y, x, y) <= distance);
+    property closest = min(in_proximity | p -> dist(p.x, p.y, x, y));
 
     property x_move = (closest.x - x) / 10 otherwise 0;
     property y_move = (closest.y - y) / 10 otherwise 0;
@@ -754,17 +759,17 @@ agent person 120 {
 ```
 The above example finds all people in some visual proximity to the current person and selects the closest person from the list. It then calculates the direction in which the current person should move in order to approach the closest person. However, we cannot be certain that we will find any people in the given proximity. If that's the case, the `in_promixity` property will be an empty array and the `closest` property will therefore result in a Null value. That is why we need to use the `otherwise` operator to ensure that if no such person is found, we will use values `0` for `x_move` and `y_move` properties.
 
-#### 3.5.7 Lambda Expressions
-While being classified as expression, the lambda expression is rather a syntactical structure that an expression. It cannot be used on its own, only as a parameter to lambda-specific built-in functions. They are mainly used for traversing arrays of agent instances and manipulating them in some way. Use cases include filtering of agents, summing certain agent properties or finding a specific agent instance based on some condition.
+#### 3.5.7 Set Comprehension Expressions
+While being classified as expression, the set comprehension expression is rather a syntactical structure that an expression. It cannot be used on its own, only as a parameter to lambda-specific built-in functions. They are mainly used for traversing arrays of agent instances and manipulating them in some way. Use cases include filtering of agents, summing certain agent properties or finding a specific agent instance based on some condition.
 
-There are several built-in functions that take lambda expression as their parameter, some of which are `filter()`, `sum()`, `min()` and `max()`.
+There are several built-in functions that take set comprehension expression as their parameter, some of which are `filter()`, `sum()`, `min()` and `max()`.
 
 To define a lambda expression, we use the following production rule:
 ```
 lambda_expression:
-    | expression "=>" identifier "=>" expression
+    | expression "|" identifier "->" expression
 ```
-We start with an expression holding a value of type AgentList, followed by the lambda arrow `=>`. Then, we declare the lambda parameter name, which is any identifier we choose, such as `item` followed again by the lambda arrow `=>`. This parameter is used to access each agent instance in the array, one by one. The final part of the lambda expression is an expression representing a condition based on which to manipulate the agent instances.
+We start with an expression holding a value of type AgentList, followed by a divider `|`. Then, we declare the set comprehension parameter name, which is any identifier we choose, such as `item` followed again by an arrow `->`. This parameter is used to access each agent instance in the array, one by one. The final part of the set comprehension expression is an expression representing a condition based on which to manipulate the agent instances.
 ```
 define visual_range = 60;
 
@@ -773,10 +778,10 @@ agent person 120 {
     property y = y + random(-1, 1);
 
     property people = agents(person);
-    property in_proximity = filter(people => p => dist(p.x, p.y, x, y) <= distance);
+    property in_proximity = filter(people | p -> dist(p.x, p.y, x, y) <= distance);
 }
 ```
-The `filter()` function takes a Lambda expression as a parameter. We use the `p` parameter to access each individual agent instance and their properties. Finally, the right-hand side of the lambda expression is used for filtering the agent array based on the proximity of each agent instance to the current agent. The result of `in_proximity` property is a filtered array of agents of type `person`.
+The `filter()` function takes a set comprehension expression as a parameter. We use the `p` parameter to access each individual agent instance and their properties. Finally, the right-hand side of the set comprehension expression is used for filtering the agent array based on the proximity of each agent instance to the current agent. The result of `in_proximity` property is a filtered array of agents of type `person`.
 
 ### 3.6 Core Library
 The AgentLang's core library consists of several built-in functions necessary for agent manipulation as well as mathematical calculations. Below is the complete list of built-in functions and their usage.
@@ -803,13 +808,13 @@ The `atan(number): number` function is used to return the arc tangent value of a
 The `pi(): number` function is used to return the value of Pi (3.14...).
 
 #### 3.6.2 Agent Manipulation Functions
-The `filter(lambda): AgentList` function takes a lambda argument with a boolean expression as its value and returns a filtered list of agents based on this value.
+The `filter(set_comprehension): AgentList` function takes a set comprehension argument with a boolean expression as its value and returns a filtered list of agents based on this value.
 
-The `sum(lambda): number` function takes a lambda argument with a numeric expression as its value and returns a sum of these values (from all agents).
+The `sum(set_comprehension): number` function takes a set comprehension argument with a numeric expression as its value and returns a sum of these values (from all agents).
 
-The `min(lambda): AgentObject` function takes a lambda argument with a numeric expression as its value and returns an agent object with the minimum corresponding value.
+The `min(set_comprehension): AgentObject` function takes a set comprehension argument with a numeric expression as its value and returns an agent object with the minimum corresponding value.
 
-The `max(lambda): AgentObject` function takes a lambda argument with a numeric expression as its value and returns an agent object with the maximum corresponding value.
+The `max(set_comprehension): AgentObject` function takes a set comprehension argument with a numeric expression as its value and returns an agent object with the maximum corresponding value.
 
 #### 3.6.3 Utility Functions
 The `agents(identifier): AgentList` function returns the list of all agents of the provided type.
@@ -821,6 +826,8 @@ The `empty(): AgentList` function return an empty array of agents and is used pr
 The `prob(number): boolean` function takes a decimal numeric value between 0 and 1 representing a probability ratio and returns a boolean value based on this probability. If we use `prob(0.8)`, we have a 80% chance of getting a `true` value and a 20% change of getting a `false` value as a result.
 
 The `dist(number, number, number, number): number` function is used to calculate the distance betweem two points in a two-dimensional space. The parameters represent `x1`, `y1`, `x2` and `y2` values.
+
+The `find_by_coordinates(AgentList, number, number): AgentObject` function returns an AgentObject holding an agent whose coordinates match the two numeric `x` and `y` values.
 
 #### 3.6.4 Special Functions
 The `width(): number` function returns the current width of the visualisation grid, which was provided in the interpreter's configuration.
