@@ -32,9 +32,6 @@ To try out AgentLang, visit the [AgentLang website](https://agent-lang-web.verce
 ## Documentation
 Documentation to the AgentLang programming language can be found on the [documentation page](https://agent-lang-web.vercel.app/documentation) of the AgentLang website.
 
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
-
 ## License
 [MIT](/LICENSE.md)
 
