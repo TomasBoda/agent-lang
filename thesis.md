@@ -760,13 +760,13 @@ agent person 120 {
 The above example finds all people in some visual proximity to the current person and selects the closest person from the list. It then calculates the direction in which the current person should move in order to approach the closest person. However, we cannot be certain that we will find any people in the given proximity. If that's the case, the `in_promixity` property will be an empty array and the `closest` property will therefore result in a Null value. That is why we need to use the `otherwise` operator to ensure that if no such person is found, we will use values `0` for `x_move` and `y_move` properties.
 
 #### 3.5.7 Set Comprehension Expressions
-While being classified as expression, the set comprehension expression is rather a syntactical structure that an expression. It cannot be used on its own, only as a parameter to lambda-specific built-in functions. They are mainly used for traversing arrays of agent instances and manipulating them in some way. Use cases include filtering of agents, summing certain agent properties or finding a specific agent instance based on some condition.
+While being classified as expression, the set comprehension expression is rather a syntactical structure that an expression. It cannot be used on its own, only as a parameter to set comprehension-specific built-in functions. They are mainly used for traversing arrays of agent instances and manipulating them in some way. Use cases include filtering of agents, summing certain agent properties or finding a specific agent instance based on some condition.
 
 There are several built-in functions that take set comprehension expression as their parameter, some of which are `filter()`, `sum()`, `min()` and `max()`.
 
-To define a lambda expression, we use the following production rule:
+To define a set comprehension expression, we use the following production rule:
 ```
-lambda_expression:
+set_comprehension_expression:
     | expression "|" identifier "->" expression
 ```
 We start with an expression holding a value of type AgentList, followed by a divider `|`. Then, we declare the set comprehension parameter name, which is any identifier we choose, such as `item` followed again by an arrow `->`. This parameter is used to access each agent instance in the array, one by one. The final part of the set comprehension expression is an expression representing a condition based on which to manipulate the agent instances.
@@ -1199,7 +1199,7 @@ private evaluateNumericBinaryExpression(expression: BinaryExpression): RuntimeVa
   }
 
   return { type: ValueType.Number, value: result } as NumberValue;
-    }
+}
 ```
 First, the runtime module needs to evaluate both operands of the binary expression. The resulting values should be numeric literals. Then, based on the operator of the binary expression, we perform mathematical calculations to get the resulting value of the binary expression and we return this result as an instance of the `RuntimeValue` interface.
 
@@ -1493,7 +1493,6 @@ This function checks the binary precedence defined by the below rules and based 
 const binaryOperatorPrecedence: { [key: string]: number } = { "+": 1, "-": 1, "*": 2, "/": 2, "%": 2 };
 ```
 The source code formatter serves as a tool to achieve code readability across all AgentLang simulations, forcing the user to abide by the syntactical rules defined by the AgentLang project.
-
 
 ### 4.3 API Reference
 The AgentLang interpreter can be integrated into any TypeScript-based project and used using its public API. The public API contains three main exports:
