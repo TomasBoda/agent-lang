@@ -26,6 +26,9 @@ For further details about the AgentLang interpreter, visit the [agent-lang-inter
 ## Web Interface
 For further details about the AgentLang web interface, visit the [agent-lang-web](https://github.com/TomasBoda/agent-lang-web) repository.
 
+## VS Code Extension
+For further details about the AgentLang VS Code syntax highlighting extension, visit the [agent-lang-kit](https://github.com/TomasBoda/agent-lang-kit) repository.
+
 ## Live Demo
 To try out AgentLang, visit the [AgentLang website](https://agent-lang-web.vercel.app) for live code sandbox and simulation modeling.
 
